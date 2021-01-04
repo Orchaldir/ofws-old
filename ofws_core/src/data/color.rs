@@ -1,6 +1,6 @@
 /// Represents a color with the RGB color model.
 ///
-/// See https://en.wikipedia.org/wiki/RGB_color_model
+/// See [Wikipedia](https://en.wikipedia.org/wiki/RGB_color_model).
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Color {
     r: u8,
