@@ -1,14 +1,30 @@
-/// Defines the size of something in 2 dimensions.
+#[svgbobdoc::transform]
+/// Defines the size of something (e.g. a map) in 2 dimensions.
+///
+/// # Diagram
+///
+/// ```svgbob
+///       0   1
+///   +----------> x-axis
+///   |
+///   | +---+---+
+/// 0 | | 0 | 1 |
+///   | +---+---+
+/// 1 | | 2 | 3 |
+///   | +---+---+
+/// 2 | | 4 | 5 |
+///   | +---+---+
+///   v
+/// y-axis
+/// ```
+///
+/// A size with width 2 & height 3.
+/// The numbers are indices of each cell.
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Size2d {
     width: u32,
     height: u32,
 }
-
-pub const ZERO: Size2d = Size2d {
-    width: 0,
-    height: 0,
-};
 
 impl Size2d {
     /// Creates a new Size2d
