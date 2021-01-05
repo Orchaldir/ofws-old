@@ -45,6 +45,12 @@ impl Color {
     }
 }
 
+impl From<Color> for [u8; 3] {
+    fn from(color: Color) -> Self {
+        [color.r, color.g, color.b]
+    }
+}
+
 pub const BLACK: Color = Color::new(0, 0, 0);
 pub const BLUE: Color = Color::new(0, 0, 255);
 pub const CYAN: Color = Color::new(0, 255, 255);

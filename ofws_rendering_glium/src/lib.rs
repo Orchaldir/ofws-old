@@ -1,7 +1,13 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+#[macro_use]
+extern crate glium;
+extern crate ofws_core;
+
+mod builder;
+pub mod renderer;
+mod shader;
+mod vertex;
+pub mod window;
+
+use crate::vertex::ColoredVertex;
+
+implement_vertex!(ColoredVertex, position, color);

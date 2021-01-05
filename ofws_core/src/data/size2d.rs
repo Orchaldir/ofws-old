@@ -1,3 +1,5 @@
+use std::ops::{Add, Mul};
+
 #[svgbobdoc::transform]
 /// Defines the size of something (e.g. a map) in 2 dimensions.
 ///
@@ -107,5 +109,43 @@ impl Size2d {
     /// ```
     pub fn to_index(&self, x: u32, y: u32) -> usize {
         (y * self.width + x) as usize
+    }
+}
+
+// Adds 2 sizes
+///
+/// ```
+///# use ofws_core::data::size2d::Size2d;
+/// let a = Size2d::new(2, 3);
+/// let b = Size2d::new(10, 40);
+/// assert_eq!(a + b, Size2d::new(12, 43));
+/// ```
+impl Add for Size2d {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Size2d {
+            width: self.width + other.width,
+            height: self.height + other.height,
+        }
+    }
+}
+
+/// Multiplies 2 sizes
+///
+/// ```
+///# use ofws_core::data::size2d::Size2d;
+/// let a = Size2d::new(2, 3);
+/// let b = Size2d::new(10, 40);
+/// assert_eq!(a * b, Size2d::new(20, 120));
+/// ```
+impl Mul for Size2d {
+    type Output = Self;
+
+    fn mul(self, other: Self) -> Self {
+        Size2d {
+            width: self.width * other.width,
+            height: self.height * other.height,
+        }
     }
 }
