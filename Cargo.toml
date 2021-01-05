@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-    "ofws_core"
+    "ofws_core",
+    "ofws_rendering_glium"
 ]
