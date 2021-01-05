@@ -1,6 +1,22 @@
 use crate::data::color::Color;
 use crate::data::size2d::Size2d;
 
+pub type TextureId = usize;
+
+/// A trait to load & init resources for rendering during initialization.
+pub trait Initialization {
+    /// Loads a texture from a file and returns a `TextureId` as a handle.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the file does not exist.
+    ///
+    /// Panics if the file is not an image.
+    ///
+    /// Panics if it can not create a texture from the image.
+    fn load_texture(&mut self, filename: &str) -> TextureId;
+}
+
 /// A trait to abstract away different rendering libraries and render targets.
 pub trait Renderer {
     /// Returns the size of the render target in tiles.

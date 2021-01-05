@@ -1,4 +1,4 @@
-use crate::renderer::GliumRenderer;
+use crate::initialization::GliumInitialization;
 use glium::{glutin, Display};
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
@@ -43,12 +43,14 @@ impl Window for GliumWindow {
     fn run(&mut self, app: Rc<RefCell<dyn App>>) -> ! {
         let event_loop = glutin::event_loop::EventLoop::new();
         let display = self.create_display(&event_loop);
-        let mut renderer = GliumRenderer::new(display, self.tiles);
+        let mut initialization = GliumInitialization::new(display);
 
         {
             let mut reference = app.borrow_mut();
-            reference.init();
+            reference.init(&mut initialization);
         }
+
+        let mut renderer = initialization.finish(self.tiles);
 
         event_loop.run(move |event, _, control_flow| {
             let next_frame_time =

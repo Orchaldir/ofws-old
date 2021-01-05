@@ -3,8 +3,10 @@ extern crate glium;
 extern crate ofws_core;
 
 mod builder;
+pub mod initialization;
 pub mod renderer;
 mod shader;
+mod texture;
 mod vertex;
 pub mod window;
 

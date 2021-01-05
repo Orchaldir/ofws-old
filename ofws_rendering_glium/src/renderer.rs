@@ -9,17 +9,26 @@ use ofws_core::interface::rendering::{ColorRenderer, Renderer};
 const INDICES: glium::index::NoIndices =
     glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
 
+struct TextureData {
+    texture: glium::texture::Texture2d,
+}
+
 pub struct GliumRenderer {
     size: Size2d,
     display: glium::Display,
     target: Option<glium::Frame>,
     color_builder: ColorBuilder,
     colored_program: Program,
+    texture_data: Vec<TextureData>,
     matrix: cgmath::Matrix4<f32>,
 }
 
 impl GliumRenderer {
-    pub fn new(display: glium::Display, size: Size2d) -> GliumRenderer {
+    pub fn new(
+        display: glium::Display,
+        textures: Vec<glium::texture::Texture2d>,
+        size: Size2d,
+    ) -> GliumRenderer {
         let colored_program = load_program(&display, "colored.vertex", "colored.fragment");
 
         let matrix: cgmath::Matrix4<f32> = ortho(
@@ -31,12 +40,18 @@ impl GliumRenderer {
             1.0,
         );
 
+        let texture_data = textures
+            .into_iter()
+            .map(|texture| TextureData { texture })
+            .collect();
+
         GliumRenderer {
             size,
             display,
             target: None,
             color_builder: ColorBuilder::default(),
             colored_program,
+            texture_data,
             matrix,
         }
     }
