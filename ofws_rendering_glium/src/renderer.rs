@@ -1,16 +1,18 @@
 use crate::builder::color::ColorBuilder;
+use crate::builder::texture::TextureBuilder;
 use crate::shader::load_program;
 use cgmath::ortho;
 use glium::{Program, Surface};
 use ofws_core::data::color::Color;
 use ofws_core::data::size2d::Size2d;
-use ofws_core::interface::rendering::{ColorRenderer, Renderer};
+use ofws_core::interface::rendering::{ColorRenderer, Renderer, TextureRenderer};
 
 const INDICES: glium::index::NoIndices =
     glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
 
 struct TextureData {
     texture: glium::texture::Texture2d,
+    builder: TextureBuilder,
 }
 
 pub struct GliumRenderer {
@@ -19,6 +21,7 @@ pub struct GliumRenderer {
     target: Option<glium::Frame>,
     color_builder: ColorBuilder,
     colored_program: Program,
+    textured_program: Program,
     texture_data: Vec<TextureData>,
     matrix: cgmath::Matrix4<f32>,
 }
@@ -30,6 +33,7 @@ impl GliumRenderer {
         size: Size2d,
     ) -> GliumRenderer {
         let colored_program = load_program(&display, "colored.vertex", "colored.fragment");
+        let textured_program = load_program(&display, "textured.vertex", "textured.fragment");
 
         let matrix: cgmath::Matrix4<f32> = ortho(
             0.0,
@@ -42,7 +46,10 @@ impl GliumRenderer {
 
         let texture_data = textures
             .into_iter()
-            .map(|texture| TextureData { texture })
+            .map(|texture| TextureData {
+                texture,
+                builder: TextureBuilder::default(),
+            })
             .collect();
 
         GliumRenderer {
@@ -51,6 +58,7 @@ impl GliumRenderer {
             target: None,
             color_builder: ColorBuilder::default(),
             colored_program,
+            textured_program,
             texture_data,
             matrix,
         }
@@ -75,6 +83,35 @@ impl GliumRenderer {
             )
             .unwrap();
     }
+
+    fn render_textured_triangles(&mut self) {
+        let target = self.target.as_mut().unwrap();
+
+        let draw_parameters = glium::draw_parameters::DrawParameters {
+            blend: glium::draw_parameters::Blend::alpha_blending(),
+            ..glium::draw_parameters::DrawParameters::default()
+        };
+
+        for data in &self.texture_data {
+            let vertex_buffer =
+                glium::VertexBuffer::new(&self.display, &data.builder.vertices).unwrap();
+
+            let uniforms = uniform! {
+                matrix: Into::<[[f32; 4]; 4]>::into(self.matrix),
+                tex: &data.texture,
+            };
+
+            target
+                .draw(
+                    &vertex_buffer,
+                    &INDICES,
+                    &self.textured_program,
+                    &uniforms,
+                    &draw_parameters,
+                )
+                .unwrap();
+        }
+    }
 }
 
 impl Renderer for GliumRenderer {
@@ -93,10 +130,14 @@ impl Renderer for GliumRenderer {
         self.target = Some(target);
 
         self.color_builder.vertices.clear();
+        self.texture_data
+            .iter_mut()
+            .for_each(|x| x.builder.vertices.clear());
     }
 
     fn finish(&mut self) {
         self.render_colored_triangles();
+        self.render_textured_triangles();
 
         if let Some(target) = self.target.take() {
             target.finish().unwrap();
@@ -105,6 +146,10 @@ impl Renderer for GliumRenderer {
 
     fn get_color_renderer(&mut self) -> &mut dyn ColorRenderer {
         &mut self.color_builder
+    }
+
+    fn get_texture_renderer(&mut self, id: usize) -> &mut dyn TextureRenderer {
+        &mut self.texture_data[id].builder
     }
 }
 

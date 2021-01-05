@@ -31,6 +31,9 @@ pub trait Renderer {
 
     /// Gets a renderer for colored polygons.
     fn get_color_renderer(&mut self) -> &mut dyn ColorRenderer;
+
+    /// Gets a renderer for textured polygons.
+    fn get_texture_renderer(&mut self, id: TextureId) -> &mut dyn TextureRenderer;
 }
 
 pub type Point = (f32, f32);
@@ -53,4 +56,21 @@ pub trait ColorRenderer {
 
     /// Renders an axis-aligned rectangle.
     fn render_rectangle(&mut self, position: Point, size: Point, color: Color);
+}
+
+pub type TextureCoordinate = (f32, f32);
+
+/// A trait that focuses on rendering textured polygons.
+pub trait TextureRenderer {
+    /// Renders an axis-aligned textured rectangle.
+    ///
+    /// The parameters tc & tc_size define an axis-aligned rectangle inside the texture.
+    fn render_rectangle(
+        &mut self,
+        position: Point,
+        size: Point,
+        tc: TextureCoordinate,
+        tc_size: TextureCoordinate,
+        color: Color,
+    );
 }
