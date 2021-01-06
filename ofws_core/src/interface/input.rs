@@ -40,6 +40,9 @@ pub enum KeyCode {
     Y,
     Z,
 
+    Comma,
+    Period,
+
     F1,
     F2,
     F3,
@@ -65,6 +68,11 @@ pub enum KeyCode {
     End,
     PageDown,
     PageUp,
+
+    Plus,
+    Minus,
+    Multiply,
+    Divide,
 
     Left,
     Up,

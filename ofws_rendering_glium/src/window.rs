@@ -75,6 +75,9 @@ impl Window for GliumWindow {
                                     let mut reference = app.borrow_mut();
                                     reference.on_key_released(key);
                                 }
+                                else {
+                                    println!("Ignore key {:?}", glutin_key);
+                                }
                             }
                         }
                     }
