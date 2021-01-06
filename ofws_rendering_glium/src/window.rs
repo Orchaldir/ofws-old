@@ -1,6 +1,9 @@
 use crate::initialization::GliumInitialization;
 use crate::input::{convert_key_code, convert_mouse_button};
 use core::cmp;
+use glium::glutin::dpi::PhysicalPosition;
+use glium::glutin::event::{ElementState, KeyboardInput, MouseButton};
+use glium::glutin::event_loop::ControlFlow;
 use glium::{glutin, Display};
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
@@ -58,9 +61,7 @@ impl Window for GliumWindow {
         let mut mouse_index = 0;
 
         event_loop.run(move |event, _, control_flow| {
-            let next_frame_time =
-                std::time::Instant::now() + std::time::Duration::from_nanos(16_666_667);
-            *control_flow = glutin::event_loop::ControlFlow::WaitUntil(next_frame_time);
+            run_with_60_hz(control_flow);
 
             match event {
                 glutin::event::Event::WindowEvent { event, .. } => match event {
@@ -69,33 +70,16 @@ impl Window for GliumWindow {
                         return;
                     }
                     glutin::event::WindowEvent::KeyboardInput { input, .. } => {
-                        if input.state == glutin::event::ElementState::Released {
-                            if let Some(glutin_key) = input.virtual_keycode {
-                                if let Some(key) = convert_key_code(glutin_key) {
-                                    let mut reference = app.borrow_mut();
-                                    reference.on_key_released(key);
-                                }
-                                else {
-                                    println!("Ignore key {:?}", glutin_key);
-                                }
-                            }
-                        }
+                        handle_keyboard_input(&app, input);
+                        return;
                     }
                     glutin::event::WindowEvent::CursorMoved { position, .. } => {
-                        let x = position.x as u32 / tile_size.width();
-                        let y =
-                            cmp::max(tiles.height() - position.y as u32 / tile_size.height(), 1)
-                                - 1;
-                        mouse_index = tiles.to_index(x, y);
+                        mouse_index = calculate_mouse_index(tiles, tile_size, position);
                         return;
                     }
                     glutin::event::WindowEvent::MouseInput { state, button, .. } => {
-                        if state == glutin::event::ElementState::Released {
-                            if let Some(button) = convert_mouse_button(button) {
-                                let mut reference = app.borrow_mut();
-                                reference.on_button_released(button, mouse_index);
-                            }
-                        }
+                        handle_mouse_input(&app, mouse_index, state, button);
+                        return;
                     }
                     _ => return,
                 },
@@ -107,4 +91,46 @@ impl Window for GliumWindow {
             reference.render(&mut renderer);
         });
     }
+}
+
+fn run_with_60_hz(control_flow: &mut ControlFlow) {
+    let next_frame_time = std::time::Instant::now() + std::time::Duration::from_nanos(16_666_667);
+    *control_flow = glutin::event_loop::ControlFlow::WaitUntil(next_frame_time);
+}
+
+fn handle_keyboard_input(app: &Rc<RefCell<dyn App>>, input: KeyboardInput) {
+    if input.state == glutin::event::ElementState::Released {
+        if let Some(glutin_key) = input.virtual_keycode {
+            if let Some(key) = convert_key_code(glutin_key) {
+                let mut reference = app.borrow_mut();
+                reference.on_key_released(key);
+            } else {
+                println!("Ignore key {:?}", glutin_key);
+            }
+        }
+    }
+}
+
+fn handle_mouse_input(
+    app: &Rc<RefCell<dyn App>>,
+    mouse_index: usize,
+    state: ElementState,
+    button: MouseButton,
+) {
+    if state == glutin::event::ElementState::Released {
+        if let Some(button) = convert_mouse_button(button) {
+            let mut reference = app.borrow_mut();
+            reference.on_button_released(button, mouse_index);
+        }
+    }
+}
+
+fn calculate_mouse_index(
+    tiles: Size2d,
+    tile_size: Size2d,
+    position: PhysicalPosition<f64>,
+) -> usize {
+    let x = position.x as u32 / tile_size.width();
+    let y = cmp::max(tiles.height() - position.y as u32 / tile_size.height(), 1) - 1;
+    tiles.to_index(x, y)
 }
