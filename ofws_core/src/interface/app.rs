@@ -1,4 +1,5 @@
 use super::rendering::{Initialization, Renderer};
+use crate::interface::input::{KeyCode, MouseButton};
 
 /// A trait to handle simple applications like the examples.
 pub trait App {
@@ -7,4 +8,10 @@ pub trait App {
 
     /// Renders the application.
     fn render(&mut self, renderer: &mut dyn Renderer);
+
+    /// Handles keyboard input
+    fn on_key_released(&mut self, _key: KeyCode) {}
+
+    /// Handles mouse input
+    fn on_button_released(&mut self, _button: MouseButton, _index: usize) {}
 }

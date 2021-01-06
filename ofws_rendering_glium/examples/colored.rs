@@ -15,10 +15,12 @@ pub struct ColoredExample {}
 impl App for ColoredExample {
     fn render(&mut self, renderer: &mut dyn Renderer) {
         renderer.start(BLUE);
+
         let color_renderer = renderer.get_color_renderer();
         color_renderer.render_triangle((20.0, 15.0), (30.0, 15.0), (25.0, 20.0), GREEN);
         color_renderer.render_triangle((5.0, 15.0), (15.0, 15.0), (10.0, 20.0), RED);
         color_renderer.render_rectangle((15.0, 2.0), (7.0, 2.5), YELLOW);
+
         renderer.finish();
     }
 }

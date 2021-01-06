@@ -4,6 +4,7 @@ extern crate ofws_core;
 
 mod builder;
 pub mod initialization;
+mod input;
 pub mod renderer;
 mod shader;
 mod texture;

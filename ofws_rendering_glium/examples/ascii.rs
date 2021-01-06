@@ -32,6 +32,7 @@ impl App for AsciiExample {
             "Non-Ascii Symbols are replaced with '🎉'!",
             YELLOW,
         );
+
         renderer.finish();
     }
 }

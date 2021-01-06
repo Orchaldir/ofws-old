@@ -1,4 +1,6 @@
 use crate::initialization::GliumInitialization;
+use crate::input::{convert_key_code, convert_mouse_button};
+use core::cmp;
 use glium::{glutin, Display};
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
@@ -51,6 +53,9 @@ impl Window for GliumWindow {
         }
 
         let mut renderer = initialization.finish(self.tiles);
+        let tiles = self.tiles;
+        let tile_size = self.tile_size;
+        let mut mouse_index = 0;
 
         event_loop.run(move |event, _, control_flow| {
             let next_frame_time =
@@ -62,6 +67,32 @@ impl Window for GliumWindow {
                     glutin::event::WindowEvent::CloseRequested => {
                         *control_flow = glutin::event_loop::ControlFlow::Exit;
                         return;
+                    }
+                    glutin::event::WindowEvent::KeyboardInput { input, .. } => {
+                        if input.state == glutin::event::ElementState::Released {
+                            if let Some(glutin_key) = input.virtual_keycode {
+                                if let Some(key) = convert_key_code(glutin_key) {
+                                    let mut reference = app.borrow_mut();
+                                    reference.on_key_released(key);
+                                }
+                            }
+                        }
+                    }
+                    glutin::event::WindowEvent::CursorMoved { position, .. } => {
+                        let x = position.x as u32 / tile_size.width();
+                        let y =
+                            cmp::max(tiles.height() - position.y as u32 / tile_size.height(), 1)
+                                - 1;
+                        mouse_index = tiles.to_index(x, y);
+                        return;
+                    }
+                    glutin::event::WindowEvent::MouseInput { state, button, .. } => {
+                        if state == glutin::event::ElementState::Released {
+                            if let Some(button) = convert_mouse_button(button) {
+                                let mut reference = app.borrow_mut();
+                                reference.on_button_released(button, mouse_index);
+                            }
+                        }
                     }
                     _ => return,
                 },
