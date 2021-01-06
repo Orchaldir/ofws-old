@@ -34,6 +34,9 @@ pub trait Renderer {
 
     /// Gets a renderer for textured polygons.
     fn get_texture_renderer(&mut self, id: TextureId) -> &mut dyn TextureRenderer;
+
+    /// Gets a renderer for text.
+    fn get_ascii_renderer(&mut self, id: TextureId) -> &mut dyn AsciiRenderer;
 }
 
 pub type Point = (f32, f32);
@@ -73,4 +76,16 @@ pub trait TextureRenderer {
         tc_size: TextureCoordinate,
         color: Color,
     );
+}
+
+/// A trait that focuses on rendering text.
+pub trait AsciiRenderer {
+    /// Renders a whole string.
+    fn render_text(&mut self, position: Point, size: Point, string: &str, color: Color);
+
+    /// Renders an unicode character, if it is ascii.
+    fn render_char(&mut self, position: Point, size: Point, character: char, color: Color);
+
+    /// Renders an ascii character.
+    fn render_u8(&mut self, position: Point, size: Point, ascii: u8, color: Color);
 }

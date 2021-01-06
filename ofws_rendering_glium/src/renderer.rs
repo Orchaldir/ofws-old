@@ -5,7 +5,7 @@ use cgmath::ortho;
 use glium::{Program, Surface};
 use ofws_core::data::color::Color;
 use ofws_core::data::size2d::Size2d;
-use ofws_core::interface::rendering::{ColorRenderer, Renderer, TextureRenderer};
+use ofws_core::interface::rendering::{AsciiRenderer, ColorRenderer, Renderer, TextureRenderer};
 
 const INDICES: glium::index::NoIndices =
     glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
@@ -48,7 +48,7 @@ impl GliumRenderer {
             .into_iter()
             .map(|texture| TextureData {
                 texture,
-                builder: TextureBuilder::default(),
+                builder: TextureBuilder::new(16),
             })
             .collect();
 
@@ -149,6 +149,10 @@ impl Renderer for GliumRenderer {
     }
 
     fn get_texture_renderer(&mut self, id: usize) -> &mut dyn TextureRenderer {
+        &mut self.texture_data[id].builder
+    }
+
+    fn get_ascii_renderer(&mut self, id: usize) -> &mut dyn AsciiRenderer {
         &mut self.texture_data[id].builder
     }
 }
