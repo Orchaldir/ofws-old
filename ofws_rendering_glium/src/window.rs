@@ -65,6 +65,11 @@ impl Window for GliumWindow {
             *control_flow = run_with_frequency(60);
 
             match event {
+                glutin::event::Event::NewEvents(event) => match event {
+                    glutin::event::StartCause::ResumeTimeReached { .. } => {}
+                    glutin::event::StartCause::WaitCancelled { .. } => {}
+                    _ => return,
+                },
                 glutin::event::Event::WindowEvent { event, .. } => match event {
                     glutin::event::WindowEvent::CloseRequested => {
                         *control_flow = glutin::event_loop::ControlFlow::Exit;
