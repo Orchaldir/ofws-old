@@ -61,7 +61,7 @@ impl Window for GliumWindow {
         let mut mouse_index = 0;
 
         event_loop.run(move |event, _, control_flow| {
-            run_with_60_hz(control_flow);
+            *control_flow = run_with_frequency(60);
 
             match event {
                 glutin::event::Event::WindowEvent { event, .. } => match event {
@@ -93,9 +93,10 @@ impl Window for GliumWindow {
     }
 }
 
-fn run_with_60_hz(control_flow: &mut ControlFlow) {
-    let next_frame_time = std::time::Instant::now() + std::time::Duration::from_nanos(16_666_667);
-    *control_flow = glutin::event_loop::ControlFlow::WaitUntil(next_frame_time);
+fn run_with_frequency(frequency: u32) -> glutin::event_loop::ControlFlow {
+    let next_frame_time =
+        std::time::Instant::now() + std::time::Duration::from_secs_f32(1.0 / frequency as f32);
+    glutin::event_loop::ControlFlow::WaitUntil(next_frame_time)
 }
 
 fn handle_keyboard_input(app: &Rc<RefCell<dyn App>>, input: KeyboardInput) {
