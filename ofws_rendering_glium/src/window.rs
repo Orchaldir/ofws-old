@@ -3,12 +3,12 @@ use crate::input::{convert_key_code, convert_mouse_button};
 use core::cmp;
 use glium::glutin::dpi::PhysicalPosition;
 use glium::glutin::event::{ElementState, KeyboardInput, MouseButton};
-use glium::glutin::event_loop::ControlFlow;
 use glium::{glutin, Display};
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::window::Window;
 use std::cell::RefCell;
+use std::ops::Sub;
 use std::rc::Rc;
 
 pub struct GliumWindow {
@@ -58,6 +58,7 @@ impl Window for GliumWindow {
         let mut renderer = initialization.finish(self.tiles);
         let tiles = self.tiles;
         let tile_size = self.tile_size;
+        let mut last_rendering = std::time::Instant::now();
         let mut mouse_index = 0;
 
         event_loop.run(move |event, _, control_flow| {
@@ -87,8 +88,12 @@ impl Window for GliumWindow {
                 _ => return,
             }
 
+            let start = std::time::Instant::now();
+
             let mut reference = app.borrow_mut();
             reference.render(&mut renderer);
+
+            analyze_performance(start, &mut last_rendering);
         });
     }
 }
@@ -134,4 +139,13 @@ fn calculate_mouse_index(
     let x = position.x as u32 / tile_size.width();
     let y = cmp::max(tiles.height() - position.y as u32 / tile_size.height(), 1) - 1;
     tiles.to_index(x, y)
+}
+
+fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {
+    let duration_since_last = start.sub(*last_rendering);
+    println!("{:?} since last rendering", duration_since_last);
+    let end = std::time::Instant::now();
+    let duration = end.sub(start);
+    println!("Finished after {:?}", duration);
+    *last_rendering = end;
 }

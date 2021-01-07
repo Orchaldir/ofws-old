@@ -22,7 +22,6 @@ impl App for AsciiExample {
     }
 
     fn render(&mut self, renderer: &mut dyn Renderer) {
-        println!("Render");
         renderer.start(BLUE);
 
         let ascii_renderer = renderer.get_ascii_renderer(self.texture_id);
