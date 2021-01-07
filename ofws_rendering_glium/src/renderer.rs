@@ -144,6 +144,15 @@ impl Renderer for GliumRenderer {
         }
     }
 
+    fn take_screenshot(&self, filename: &str) {
+        let image: glium::texture::RawImage2d<u8> = self.display.read_front_buffer().unwrap();
+        let image =
+            image::ImageBuffer::from_raw(image.width, image.height, image.data.into_owned())
+                .unwrap();
+        let image = image::DynamicImage::ImageRgba8(image).flipv();
+        image.save(filename).unwrap();
+    }
+
     fn get_color_renderer(&mut self) -> &mut dyn ColorRenderer {
         &mut self.color_builder
     }

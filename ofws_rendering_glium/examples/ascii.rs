@@ -3,6 +3,7 @@ extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{BLUE, GREEN, RED, WHITE, YELLOW};
 use ofws_core::interface::app::App;
+use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_rendering_glium::window::GliumWindow;
@@ -12,6 +13,7 @@ use std::rc::Rc;
 #[derive(Default)]
 pub struct AsciiExample {
     texture_id: TextureId,
+    take_screenshot: bool,
 }
 
 impl App for AsciiExample {
@@ -20,6 +22,7 @@ impl App for AsciiExample {
     }
 
     fn render(&mut self, renderer: &mut dyn Renderer) {
+        println!("Render");
         renderer.start(BLUE);
 
         let ascii_renderer = renderer.get_ascii_renderer(self.texture_id);
@@ -34,6 +37,18 @@ impl App for AsciiExample {
         );
 
         renderer.finish();
+
+        if self.take_screenshot {
+            println!("Take screenshot");
+            renderer.take_screenshot("ascii.png");
+            self.take_screenshot = false;
+        }
+    }
+
+    fn on_key_released(&mut self, key: KeyCode) {
+        if key == KeyCode::Snapshot {
+            self.take_screenshot = true;
+        }
     }
 }
 

@@ -29,6 +29,9 @@ pub trait Renderer {
     /// Finishes the rendering.
     fn finish(&mut self);
 
+    /// Takes a screenshot and saves it.
+    fn take_screenshot(&self, filename: &str);
+
     /// Gets a renderer for colored polygons.
     fn get_color_renderer(&mut self) -> &mut dyn ColorRenderer;
 
