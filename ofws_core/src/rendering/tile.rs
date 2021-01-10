@@ -1,7 +1,8 @@
 use crate::data::color::Color;
 use crate::data::size2d::Size2d;
-use crate::interface::rendering::AsciiRenderer;
+use crate::interface::rendering::{AsciiRenderer, Point};
 
+pub const FULL_TILE: u8 = 219;
 const SIZE: (f32, f32) = (1.0, 1.0);
 
 /// Simplifies rendering by focusing on a grid of tiles
@@ -16,15 +17,20 @@ impl<'a> TileRenderer<'a> {
         TileRenderer { size, renderer }
     }
 
-    /// Renders the tile at `index` with a uniform color.
-    pub fn render_full(&mut self, index: usize, color: Color) {
-        self.render_ascii(index, 219, color);
+    /// Renders a whole string starting at `index`.
+    pub fn render_text(&mut self, index: usize, string: &str, color: Color) {
+        let point = self.calculate_point(index);
+        self.renderer.render_text(point, SIZE, string, color);
     }
 
     /// Renders the tile at `index` as an ascii character.
     pub fn render_ascii(&mut self, index: usize, ascii: u8, color: Color) {
-        let point = self.size.to_x_and_y(index);
-        let point = (point[0] as f32, point[1] as f32);
+        let point = self.calculate_point(index);
         self.renderer.render_u8(point, SIZE, ascii, color);
+    }
+
+    fn calculate_point(&mut self, index: usize) -> Point {
+        let point0 = self.size.to_x_and_y(index);
+        (point0[0] as f32, point0[1] as f32)
     }
 }
