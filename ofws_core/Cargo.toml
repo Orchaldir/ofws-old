@@ -10,3 +10,4 @@ edition = "2018"
 svgbobdoc = "0.2"
 
 [dev-dependencies]
+ofws_rendering_glium = { path = "../ofws_rendering_glium" }

@@ -1,5 +1,6 @@
 use crate::data::color::Color;
 use crate::data::size2d::Size2d;
+use crate::rendering::tile::TileRenderer;
 
 pub type TextureId = usize;
 
@@ -40,6 +41,9 @@ pub trait Renderer {
 
     /// Gets a renderer for text.
     fn get_ascii_renderer(&mut self, id: TextureId) -> &mut dyn AsciiRenderer;
+
+    /// Gets a renderer for tiles.
+    fn get_tile_renderer(&mut self, id: TextureId) -> TileRenderer;
 }
 
 pub type Point = (f32, f32);
