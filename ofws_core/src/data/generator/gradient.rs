@@ -2,19 +2,15 @@ use crate::data::generator::Generator;
 
 /// Returns a linear gradient between a start and an end value along the x-axis.
 pub struct LinearGradientX {
-    value_start: u8,
-    value_end: u8,
+    gradient: Gradient,
     start: u32,
-    max_distance: u32,
 }
 
 impl LinearGradientX {
     pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientX {
         LinearGradientX {
-            value_start,
-            value_end,
+            gradient: Gradient::new(value_start, value_end, max_distance),
             start,
-            max_distance,
         }
     }
 }
@@ -39,10 +35,31 @@ impl Generator for LinearGradientX {
     /// ```
     fn generate(&self, x: u32, _y: u32) -> u8 {
         if x < self.start {
-            return self.value_start;
+            return self.gradient.value_start;
         }
 
-        let distance = x - self.start;
+        self.gradient.generate(x - self.start)
+    }
+}
+
+struct Gradient {
+    value_start: u8,
+    value_end: u8,
+    max_distance: u32,
+}
+
+impl Gradient {
+    pub fn new(value_start: u8, value_end: u8, max_distance: u32) -> Gradient {
+        Gradient {
+            value_start,
+            value_end,
+            max_distance,
+        }
+    }
+}
+
+impl Gradient {
+    pub fn generate(&self, distance: u32) -> u8 {
         let factor = distance as f32 / self.max_distance as f32;
 
         println!("distance={} factor={}", distance, factor);
