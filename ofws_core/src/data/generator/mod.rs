@@ -1,4 +1,5 @@
 pub mod composition;
+pub mod gradient;
 
 /// A trait to generate values for 2d points.
 /// Used for the procedural generation of 2d maps.
