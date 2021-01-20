@@ -42,6 +42,48 @@ impl Generator for LinearGradientX {
     }
 }
 
+/// Returns a linear gradient between a start and an end value along the y-axis.
+pub struct LinearGradientY {
+    gradient: Gradient,
+    start: u32,
+}
+
+impl LinearGradientY {
+    pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientY {
+        LinearGradientY {
+            gradient: Gradient::new(value_start, value_end, max_distance),
+            start,
+        }
+    }
+}
+
+impl Generator for LinearGradientY {
+    /// Returns a linear gradient between a start and an end value along the y-axis.
+    ///
+    /// ```
+    ///# use ofws_core::data::generator::Generator;
+    ///# use ofws_core::data::generator::gradient::LinearGradientY;
+    /// let generator = LinearGradientY::new(100, 200, 1000, 100);
+    ///
+    /// assert_eq!(generator.generate( 0,    0), 100);
+    /// assert_eq!(generator.generate( 0,  500), 100);
+    /// assert_eq!(generator.generate( 0, 1000), 100);
+    /// assert_eq!(generator.generate( 5, 1001), 101);
+    /// assert_eq!(generator.generate(10, 1050), 150);
+    /// assert_eq!(generator.generate(15, 1099), 199);
+    /// assert_eq!(generator.generate(20, 1100), 200);
+    /// assert_eq!(generator.generate(20, 1101), 200);
+    /// assert_eq!(generator.generate(20, 1200), 200);
+    /// ```
+    fn generate(&self, _x: u32, y: u32) -> u8 {
+        if y < self.start {
+            return self.gradient.value_start;
+        }
+
+        self.gradient.generate(y - self.start)
+    }
+}
+
 struct Gradient {
     value_start: u8,
     value_end: u8,
