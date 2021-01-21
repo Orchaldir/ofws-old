@@ -1,5 +1,5 @@
+use crate::data::generator::gradient::Gradient;
 use crate::data::generator::Generator;
-use crate::data::math::distance::calculate_distance;
 
 /// Returns a linear gradient between a start and an end value along the x-axis.
 pub struct LinearGradientX {
@@ -21,7 +21,7 @@ impl Generator for LinearGradientX {
     ///
     /// ```
     ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::LinearGradientX;
+    ///# use ofws_core::data::generator::gradient::linear::LinearGradientX;
     /// let generator = LinearGradientX::new(100, 200, 1000, 100);
     ///
     /// assert_eq!(generator.generate(   0,  0), 100);
@@ -63,7 +63,7 @@ impl Generator for LinearGradientY {
     ///
     /// ```
     ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::LinearGradientY;
+    ///# use ofws_core::data::generator::gradient::linear::LinearGradientY;
     /// let generator = LinearGradientY::new(100, 200, 1000, 100);
     ///
     /// assert_eq!(generator.generate( 0,    0), 100);
@@ -82,95 +82,6 @@ impl Generator for LinearGradientY {
         }
 
         self.gradient.generate(y - self.start)
-    }
-}
-
-/// Returns a circular gradient around a 2d point.
-pub struct CircularGradient {
-    gradient: Gradient,
-    x: u32,
-    y: u32,
-}
-
-impl CircularGradient {
-    pub fn new(
-        value_start: u8,
-        value_end: u8,
-        x: u32,
-        y: u32,
-        max_distance: u32,
-    ) -> CircularGradient {
-        CircularGradient {
-            gradient: Gradient::new(value_start, value_end, max_distance),
-            x,
-            y,
-        }
-    }
-}
-
-impl Generator for CircularGradient {
-    /// Returns a circular gradient around a 2d point.
-    ///
-    /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::CircularGradient;
-    /// let generator = CircularGradient::new(60, 10, 50, 50, 50);
-    ///
-    /// assert_eq!(generator.generate( 50,  0), 10);
-    /// assert_eq!(generator.generate( 50,  1), 11);
-    /// assert_eq!(generator.generate( 50, 49), 59);
-    /// assert_eq!(generator.generate( 50, 50), 60);
-    /// assert_eq!(generator.generate( 50, 51), 59);
-    /// assert_eq!(generator.generate( 50, 99), 11);
-    /// assert_eq!(generator.generate( 50,100), 10);
-    /// assert_eq!(generator.generate(  0, 50), 10);
-    /// assert_eq!(generator.generate(  1, 50), 11);
-    /// assert_eq!(generator.generate( 49, 50), 59);
-    /// assert_eq!(generator.generate( 50, 50), 60);
-    /// assert_eq!(generator.generate( 51, 50), 59);
-    /// assert_eq!(generator.generate( 99, 50), 11);
-    /// assert_eq!(generator.generate(100, 50), 10);
-    /// ```
-    fn generate(&self, x: u32, y: u32) -> u8 {
-        let distance = calculate_distance(self.x, self.y, x, y);
-        self.gradient.generate(distance)
-    }
-}
-
-struct Gradient {
-    value_start: u8,
-    value_end: u8,
-    max_distance: u32,
-}
-
-impl Gradient {
-    pub fn new(value_start: u8, value_end: u8, max_distance: u32) -> Gradient {
-        Gradient {
-            value_start,
-            value_end,
-            max_distance,
-        }
-    }
-}
-
-impl Gradient {
-    pub fn generate(&self, distance: u32) -> u8 {
-        let factor = distance as f32 / self.max_distance as f32;
-
-        println!("distance={} factor={}", distance, factor);
-
-        if factor > 1.0 {
-            return self.value_end;
-        }
-
-        if self.value_end >= self.value_start {
-            let diff = (self.value_end - self.value_start) as f32;
-            return self.value_start + (diff * factor) as u8;
-        }
-
-        let diff = (self.value_start - self.value_end) as f32;
-
-        self.value_start - (diff * factor) as u8
     }
 }
 
