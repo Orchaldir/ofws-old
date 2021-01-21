@@ -2,23 +2,47 @@ use crate::data::generator::gradient::Gradient;
 use crate::data::generator::Generator;
 use crate::data::math::distance::calculate_distance;
 
+#[svgbobdoc::transform]
 /// Returns a circular gradient around a 2d point.
+///
+/// # Diagram
+///
+/// ```svgbob
+///  y-axis
+///    ^
+///    |
+///    |       _____
+///    |     ,'     `.
+///    |    /         \
+///  y *   (     .     )
+///    |    \         /
+///    |     `._____.'
+///    |
+///    +---------*----> x-axis
+///              x
+/// ```
+///
+/// * Points on the circle & outside have the value of *value_end*.
+/// * The point (x,y) has the value of *value_center*.
+/// * Points inside the circle are a linear interpolation between those values.
 pub struct CircularGradient {
     gradient: Gradient,
     x: u32,
     y: u32,
 }
 
+
+
 impl CircularGradient {
     pub fn new(
-        value_start: u8,
+        value_center: u8,
         value_end: u8,
         x: u32,
         y: u32,
         max_distance: u32,
     ) -> CircularGradient {
         CircularGradient {
-            gradient: Gradient::new(value_start, value_end, max_distance),
+            gradient: Gradient::new(value_center, value_end, max_distance),
             x,
             y,
         }

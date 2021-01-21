@@ -1,7 +1,25 @@
 use crate::data::generator::gradient::Gradient;
 use crate::data::generator::Generator;
 
+#[svgbobdoc::transform]
 /// Returns a linear gradient between a start and an end value along the x-axis.
+///
+/// # Diagram
+///
+/// ```svgbob
+///     value
+///       ^
+///       |
+///       |
+///   end |        *------
+///       |       /
+///       |      /
+///       |     /
+/// start |----*
+///       |
+///       +----*---*------> x-axis
+///         start  end
+/// ```
 pub struct LinearGradientX {
     gradient: Gradient,
     start: u32,
@@ -44,6 +62,10 @@ impl Generator for LinearGradientX {
 }
 
 /// Returns a linear gradient between a start and an end value along the y-axis.
+///
+/// # Diagram
+///
+/// See [`LinearGradientX`].
 pub struct LinearGradientY {
     gradient: Gradient,
     start: u32,
