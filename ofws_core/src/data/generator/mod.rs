@@ -4,11 +4,11 @@ pub mod gradient;
 /// A trait to generate values for 2d points.
 /// Used for the procedural generation of 2d maps.
 pub trait Generator {
-    /// Generates a value for a 2d point.
+    /// Generates a value for a 2d point (x,y).
     fn generate(&self, x: u32, y: u32) -> u8;
 }
 
-/// Returns the same value for all 2d points.
+/// Generates the same value for all 2d points.
 pub struct ConstantValue {
     value: u8,
 }
@@ -20,7 +20,7 @@ impl ConstantValue {
 }
 
 impl Generator for ConstantValue {
-    /// Returns the same value for all 2d points.
+    /// Generates a value for a 2d point (x,y).
     ///
     /// ```
     ///# use ofws_core::data::generator::{ConstantValue, Generator};
@@ -35,7 +35,7 @@ impl Generator for ConstantValue {
     }
 }
 
-/// Returns a value for a specific 2d point.
+/// Generates a specific value for a specific 2d point and 0 otherwise.
 pub struct MockGenerator {
     x: u32,
     y: u32,
@@ -49,7 +49,7 @@ impl MockGenerator {
 }
 
 impl Generator for MockGenerator {
-    /// Returns a value for a specific 2d point.
+    /// Generates a value for a 2d point (x,y).
     ///
     /// ```
     ///# use ofws_core::data::generator::{Generator, MockGenerator};

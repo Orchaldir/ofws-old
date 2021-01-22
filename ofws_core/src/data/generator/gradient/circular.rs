@@ -3,7 +3,7 @@ use crate::data::generator::Generator;
 use crate::data::math::distance::calculate_distance;
 
 #[svgbobdoc::transform]
-/// Returns a circular gradient around a 2d point.
+/// Generates a circular gradient around a 2d point.
 ///
 /// # Diagram
 ///
@@ -31,8 +31,6 @@ pub struct CircularGradient {
     y: u32,
 }
 
-
-
 impl CircularGradient {
     pub fn new(
         value_center: u8,
@@ -50,7 +48,7 @@ impl CircularGradient {
 }
 
 impl Generator for CircularGradient {
-    /// Returns a circular gradient around a 2d point.
+    /// Generates a value for a 2d point (x,y).
     ///
     /// ```
     ///# use ofws_core::data::generator::Generator;

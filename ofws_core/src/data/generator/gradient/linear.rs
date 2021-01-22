@@ -2,7 +2,7 @@ use crate::data::generator::gradient::Gradient;
 use crate::data::generator::Generator;
 
 #[svgbobdoc::transform]
-/// Returns a linear gradient between a start and an end value along the x-axis.
+/// Generates a linear gradient between a start and an end value along the x-axis.
 ///
 /// # Diagram
 ///
@@ -35,7 +35,7 @@ impl LinearGradientX {
 }
 
 impl Generator for LinearGradientX {
-    /// Returns a linear gradient between a start and an end value along the x-axis.
+    /// Generates a value for a 2d point (x,y).
     ///
     /// ```
     ///# use ofws_core::data::generator::Generator;
@@ -61,7 +61,7 @@ impl Generator for LinearGradientX {
     }
 }
 
-/// Returns a linear gradient between a start and an end value along the y-axis.
+/// Generates a linear gradient between a start and an end value along the y-axis.
 ///
 /// # Diagram
 ///
@@ -81,7 +81,7 @@ impl LinearGradientY {
 }
 
 impl Generator for LinearGradientY {
-    /// Returns a linear gradient between a start and an end value along the y-axis.
+    /// Generates a value for a 2d point (x,y).
     ///
     /// ```
     ///# use ofws_core::data::generator::Generator;
