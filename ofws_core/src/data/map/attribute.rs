@@ -14,9 +14,13 @@ pub struct Attribute {
 
 impl Attribute {
     /// Returns a new attribute.
-    pub fn new(name: String, size: Size2d, default: u8) -> Attribute {
+    pub fn new<S: Into<String>>(name: S, size: Size2d, default: u8) -> Attribute {
         let values = vec![default; size.get_area()];
-        Attribute { name, size, values }
+        Attribute {
+            name: name.into(),
+            size,
+            values,
+        }
     }
 
     /// Returns the name of the attribute.
@@ -24,7 +28,7 @@ impl Attribute {
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let attribute = Attribute::new("elevation".to_string(), Size2d::new(2, 3), 42);
+    /// let attribute = Attribute::new("elevation", Size2d::new(2, 3), 42);
     ///
     /// assert_eq!(attribute.get_name(), "elevation");
     /// ```
@@ -38,7 +42,7 @@ impl Attribute {
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
-    /// let attribute = Attribute::new("elevation".to_string(), size, 42);
+    /// let attribute = Attribute::new("elevation", size, 42);
     ///
     /// assert_eq!(attribute.get_size(), &size);
     /// ```
@@ -51,7 +55,7 @@ impl Attribute {
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let attribute = Attribute::new("elevation".to_string(), Size2d::new(1, 2), 42);
+    /// let attribute = Attribute::new("elevation", Size2d::new(1, 2), 42);
     ///
     /// assert_eq!(attribute.get(0), 42);
     /// assert_eq!(attribute.get(1), 42);
@@ -64,7 +68,7 @@ impl Attribute {
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let attribute = Attribute::new("elevation".to_string(), Size2d::new(1, 2), 42);
+    /// let attribute = Attribute::new("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.get(2);
     /// ```
@@ -77,7 +81,7 @@ impl Attribute {
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let mut attribute = Attribute::new("elevation".to_string(), Size2d::new(1, 2), 42);
+    /// let mut attribute = Attribute::new("elevation", Size2d::new(1, 2), 42);
     ///
     /// *attribute.get_mut(0) += 4;
     ///
@@ -92,7 +96,7 @@ impl Attribute {
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let mut attribute = Attribute::new("elevation".to_string(), Size2d::new(1, 2), 42);
+    /// let mut attribute = Attribute::new("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.get_mut(2);
     /// ```
