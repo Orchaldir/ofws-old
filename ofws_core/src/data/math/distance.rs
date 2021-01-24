@@ -17,7 +17,7 @@ use num_integer::Roots;
 /// ```should_panic
 ///# use ofws_core::data::math::distance::calculate_distance;
 ///
-/// assert_eq!(calculate_distance(0, 0, u32::max_value(), u32::max_value()), 0);
+/// calculate_distance(0, 0, u32::max_value(), u32::max_value());
 /// ```
 pub fn calculate_distance(x0: u32, y0: u32, x1: u32, y1: u32) -> u32 {
     let diff_x = abs_diff(x0, x1);
