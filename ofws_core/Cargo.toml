@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 num-integer = "0.1"
 svgbobdoc = "0.2"
+unwrap = "1.2"
 
 [dev-dependencies]
 ofws_rendering_glium = { path = "../ofws_rendering_glium" }
