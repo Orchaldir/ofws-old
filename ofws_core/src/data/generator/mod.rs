@@ -1,3 +1,5 @@
+use crate::data::size2d::Size2d;
+
 pub mod composition;
 pub mod gradient;
 
@@ -66,5 +68,36 @@ impl Generator for MockGenerator {
         } else {
             0
         }
+    }
+}
+
+/// Generates the index of each 2d point.
+pub struct IndexGenerator {
+    size: Size2d,
+}
+
+impl IndexGenerator {
+    pub fn new(size: Size2d) -> IndexGenerator {
+        IndexGenerator { size }
+    }
+}
+
+impl Generator for IndexGenerator {
+    /// Generates a value for a 2d point (x,y).
+    ///
+    /// ```
+    ///# use ofws_core::data::generator::{Generator, IndexGenerator};
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let generator = IndexGenerator::new(Size2d::new(2, 3));
+    ///
+    /// assert_eq!(generator.generate(0, 0), 0);
+    /// assert_eq!(generator.generate(1, 0), 1);
+    /// assert_eq!(generator.generate(0, 1), 2);
+    /// assert_eq!(generator.generate(1, 1), 3);
+    /// assert_eq!(generator.generate(0, 2), 4);
+    /// assert_eq!(generator.generate(1, 2), 5);
+    /// ```
+    fn generate(&self, x: u32, y: u32) -> u8 {
+        self.size.to_index(x, y) as u8
     }
 }

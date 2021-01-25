@@ -3,6 +3,7 @@ use crate::data::size2d::Size2d;
 use std::collections::HashMap;
 
 pub mod attribute;
+pub mod generation;
 
 /// Represents a 2d region or world map.
 pub struct Map2d {
