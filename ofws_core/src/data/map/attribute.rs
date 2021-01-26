@@ -6,6 +6,7 @@ use crate::data::size2d::Size2d;
 /// * elevation
 /// * rainfall
 /// * temperature
+#[derive(Debug)]
 pub struct Attribute {
     name: String,
     size: Size2d,
