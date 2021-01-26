@@ -51,6 +51,12 @@ impl From<Color> for [u8; 3] {
     }
 }
 
+impl From<Color> for [f32; 3] {
+    fn from(color: Color) -> Self {
+        [color.r() as f32 / 255.0, color.g() as f32 / 255.0, color.b() as f32 / 255.0]
+    }
+}
+
 pub const BLACK: Color = Color::new(0, 0, 0);
 pub const BLUE: Color = Color::new(0, 0, 255);
 pub const CYAN: Color = Color::new(0, 255, 255);
