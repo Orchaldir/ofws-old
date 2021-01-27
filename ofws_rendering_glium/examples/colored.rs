@@ -1,7 +1,7 @@
 extern crate glium;
 extern crate ofws_rendering_glium;
 
-use ofws_core::data::color::{BLUE, GREEN, RED, YELLOW, Color};
+use ofws_core::data::color::{Color, BLUE, GREEN, RED, YELLOW};
 use ofws_core::interface::app::App;
 use ofws_core::interface::rendering::Renderer;
 use ofws_core::interface::window::Window;

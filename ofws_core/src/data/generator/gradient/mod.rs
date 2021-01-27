@@ -1,3 +1,5 @@
+use crate::data::math::interpolation::lerp;
+
 pub mod absolute;
 pub mod circular;
 pub mod linear;
@@ -22,17 +24,6 @@ impl Gradient {
     pub fn generate(&self, distance: u32) -> u8 {
         let factor = distance as f32 / self.max_distance as f32;
 
-        if factor > 1.0 {
-            return self.value_end;
-        }
-
-        if self.value_end >= self.value_start {
-            let diff = (self.value_end - self.value_start) as f32;
-            return self.value_start + (diff * factor) as u8;
-        }
-
-        let diff = (self.value_start - self.value_end) as f32;
-
-        self.value_start - (diff * factor) as u8
+        lerp(self.value_start, self.value_end, factor)
     }
 }
