@@ -1,6 +1,6 @@
 extern crate ofws_rendering_glium;
 
-use ofws_core::data::color::{Color, BLACK, GREEN};
+use ofws_core::data::color::{BLACK, GREEN};
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
@@ -22,19 +22,38 @@ pub struct AttributeExample {
 
 impl AttributeExample {
     pub fn new(size: Size2d) -> AttributeExample {
-        let mut map = Map2d::new(size);
-        let attribute_id = map.create_attribute("elevation", 0).unwrap();
-        let gradient = CircularGradient::new(255, 0, 20, 15, 20);
-        let generator = Box::new(gradient);
-        let step = AddGeneratorStep::new(attribute_id, generator);
-
-        step.execute(&mut map);
+        let map = AttributeExample::create_map(size);
 
         AttributeExample {
             map,
-            attribute_id,
+            attribute_id: 0,
             texture_id: 0,
         }
+    }
+
+    fn create_map(size: Size2d) -> Map2d {
+        let mut map = Map2d::new(size);
+
+        AttributeExample::create_attributes(&mut map);
+
+        AttributeExample::create_generation_steps(&map)
+            .iter()
+            .for_each(|step| step.execute(&mut map));
+
+        map
+    }
+
+    fn create_attributes(map: &mut Map2d) {
+        map.create_attribute("elevation", 0).unwrap();
+    }
+
+    fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
+        let elevation_id = map.get_attribute_id("elevation").unwrap();
+        let gradient = CircularGradient::new(255, 0, 20, 15, 20);
+        let generator = Box::new(gradient);
+        let step = Box::new(AddGeneratorStep::new(elevation_id, generator));
+
+        vec![step]
     }
 }
 
