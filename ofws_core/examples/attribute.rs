@@ -1,6 +1,6 @@
 extern crate ofws_rendering_glium;
 
-use ofws_core::data::color::{Color, BLACK};
+use ofws_core::data::color::{Color, BLACK, GREEN};
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
@@ -9,6 +9,7 @@ use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
+use ofws_core::rendering::tile::FULL_TILE;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -51,8 +52,9 @@ impl App for AttributeExample {
 
         for index in 0..tiles {
             let value = attribute.get(index);
-            let color = Color::new(value, value, value);
-            tile_renderer.render_ascii(index, 219, color);
+            let factor = value as f32 / 255.0;
+            let color = BLACK.lerp(GREEN, factor);
+            tile_renderer.render_ascii(index, FULL_TILE, color);
         }
 
         renderer.finish();
