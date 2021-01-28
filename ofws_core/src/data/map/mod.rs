@@ -22,6 +22,10 @@ impl Map2d {
         }
     }
 
+    pub fn get_size(&self) -> Size2d {
+        self.size
+    }
+
     /// Adds a new [`Attribute`] to the map and resturns its id.
     ///
     /// ```

@@ -49,7 +49,10 @@ impl AttributeExample {
 
     fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
         let elevation_id = map.get_attribute_id("elevation").unwrap();
-        let gradient = CircularGradient::new(255, 0, 20, 15, 20);
+        let half_x = map.get_size().width() / 2;
+        let half_y = map.get_size().height() / 2;
+
+        let gradient = CircularGradient::new(255, 0, half_x, half_y, half_x);
         let generator = Box::new(gradient);
         let step = Box::new(AddGeneratorStep::new(elevation_id, generator));
 
@@ -81,8 +84,9 @@ impl App for AttributeExample {
 }
 
 fn main() {
-    let mut window = GliumWindow::default_size("Example with map attributes");
-    let app = Rc::new(RefCell::new(AttributeExample::new(Size2d::new(40, 30))));
+    let tiles = Size2d::new(400, 300);
+    let mut window = GliumWindow::new("Example with map attributes", tiles, Size2d::new(2, 2));
+    let app = Rc::new(RefCell::new(AttributeExample::new(tiles)));
 
     window.run(app.clone());
 }
