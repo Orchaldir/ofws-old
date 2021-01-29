@@ -1,3 +1,9 @@
+/// Define how to interpolate between elements of the same type.
+pub trait Interpolate {
+    /// Linear interpolation between 2 elements of the same type.
+    fn lerp(&self, other: Self, factor: f32) -> Self;
+}
+
 /// Interpolates between 2 u8 linearly.
 ///
 /// ```

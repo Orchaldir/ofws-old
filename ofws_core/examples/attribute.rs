@@ -5,6 +5,7 @@ use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
+use ofws_core::data::math::interpolation::Interpolate;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};

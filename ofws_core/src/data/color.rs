@@ -1,4 +1,4 @@
-use crate::data::math::interpolation::lerp;
+use crate::data::math::interpolation::{lerp, Interpolate};
 
 /// Represents a color with the RGB color model.
 ///
@@ -45,18 +45,21 @@ impl Color {
     pub fn b(&self) -> u8 {
         self.b
     }
+}
 
+impl Interpolate for Color {
     /// Interpolates linearly with another color.
     ///
     /// ```
     ///# use ofws_core::data::color::Color;
+    ///# use ofws_core::data::math::interpolation::Interpolate;
     /// let color0 = Color::new(  0, 25, 120);
     /// let color1 = Color::new(200, 75, 220);
     /// let result = Color::new(100, 50, 170);
     ///
     /// assert_eq!(color0.lerp(color1, 0.5), result);
     /// ```
-    pub fn lerp(&self, other: Color, factor: f32) -> Color {
+    fn lerp(&self, other: Color, factor: f32) -> Color {
         Color {
             r: lerp(self.r, other.r, factor),
             g: lerp(self.g, other.g, factor),
