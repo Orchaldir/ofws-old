@@ -113,10 +113,11 @@ fn handle_keyboard_input(app: &Rc<RefCell<dyn App>>, input: KeyboardInput) {
     if input.state == glutin::event::ElementState::Released {
         if let Some(glutin_key) = input.virtual_keycode {
             if let Some(key) = convert_key_code(glutin_key) {
+                info!("Pressed key {:?}", key);
                 let mut reference = app.borrow_mut();
                 reference.on_key_released(key);
             } else {
-                println!("Ignore key {:?}", glutin_key);
+                warn!("Unsupported key {:?}", glutin_key);
             }
         }
     }
@@ -130,6 +131,7 @@ fn handle_mouse_input(
 ) {
     if state == glutin::event::ElementState::Released {
         if let Some(button) = convert_mouse_button(button) {
+            info!("{:?} mouse click at {}", button, mouse_index);
             let mut reference = app.borrow_mut();
             reference.on_button_released(button, mouse_index);
         }
@@ -148,9 +150,9 @@ fn calculate_mouse_index(
 
 fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {
     let duration_since_last = start.sub(*last_rendering);
-    debug!("{:?} since last rendering", duration_since_last);
+    trace!("{:?} since last rendering", duration_since_last);
     let end = std::time::Instant::now();
     let duration = end.sub(start);
-    debug!("Finished after {:?}", duration);
+    trace!("Finished after {:?}", duration);
     *last_rendering = end;
 }

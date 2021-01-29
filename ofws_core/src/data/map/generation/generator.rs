@@ -43,6 +43,12 @@ impl GenerationStep for AddGeneratorStep {
     /// assert_eq!(attribute.get(5), 45);
     /// ```
     fn execute(&self, map: &mut Map2d) {
+        info!(
+            "Add generator to attribute '{}' of map '{}'",
+            map.get_attribute(self.attribute_id).get_name(),
+            map.get_name()
+        );
+
         let size = map.size;
         let attribute = map.get_attribute_mut(self.attribute_id);
         let mut index = 0;

@@ -35,13 +35,17 @@ impl AttributeExample {
     }
 
     fn create_map(size: Size2d) -> Map2d {
-        let mut map = Map2d::new(size);
+        info!("Start map creation with {:?}", size);
+
+        let mut map = Map2d::with_name("attribute-map", size);
 
         AttributeExample::create_attributes(&mut map);
 
         AttributeExample::create_generation_steps(&map)
             .iter()
             .for_each(|step| step.execute(&mut map));
+
+        info!("Finish map creation");
 
         map
     }
@@ -87,8 +91,6 @@ impl App for AttributeExample {
 
 fn main() {
     env_logger::init();
-
-    info!("Start AttributeExample");
 
     let tiles = Size2d::new(400, 300);
     let mut window = GliumWindow::new("Example with map attributes", tiles, Size2d::new(2, 2));

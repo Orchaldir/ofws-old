@@ -7,6 +7,7 @@ pub mod generation;
 
 /// Represents a 2d region or world map.
 pub struct Map2d {
+    name: String,
     size: Size2d,
     attribute_lookup: HashMap<String, usize>,
     attributes: Vec<Attribute>,
@@ -15,11 +16,29 @@ pub struct Map2d {
 impl Map2d {
     /// Returns a new map.
     pub fn new(size: Size2d) -> Map2d {
+        Map2d::with_name("test", size)
+    }
+
+    /// Returns a map with a name.
+    ///
+    /// ```
+    ///# use ofws_core::data::map::Map2d;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let mut map = Map2d::with_name("world", Size2d::new(2, 3));
+    ///
+    /// assert_eq!(map.get_name(), "world");
+    /// ```
+    pub fn with_name<S: Into<String>>(name: S, size: Size2d) -> Map2d {
         Map2d {
+            name: name.into(),
             size,
             attribute_lookup: HashMap::new(),
             attributes: Vec::new(),
         }
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
     }
 
     pub fn get_size(&self) -> Size2d {
