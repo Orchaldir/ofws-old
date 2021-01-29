@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate log;
 extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{BLACK, GREEN};
@@ -84,6 +86,10 @@ impl App for AttributeExample {
 }
 
 fn main() {
+    env_logger::init();
+
+    info!("Start AttributeExample");
+
     let tiles = Size2d::new(400, 300);
     let mut window = GliumWindow::new("Example with map attributes", tiles, Size2d::new(2, 2));
     let app = Rc::new(RefCell::new(AttributeExample::new(tiles)));

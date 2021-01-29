@@ -148,9 +148,9 @@ fn calculate_mouse_index(
 
 fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {
     let duration_since_last = start.sub(*last_rendering);
-    println!("{:?} since last rendering", duration_since_last);
+    debug!("{:?} since last rendering", duration_since_last);
     let end = std::time::Instant::now();
     let duration = end.sub(start);
-    println!("Finished after {:?}", duration);
+    debug!("Finished after {:?}", duration);
     *last_rendering = end;
 }
