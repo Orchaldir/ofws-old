@@ -83,16 +83,24 @@ impl AttributeExample {
 
     fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
         let elevation_id = map.get_attribute_id("elevation").unwrap();
+
+        let mountain_step = AttributeExample::create_mountain_step(map, elevation_id);
+        let noise_step = AttributeExample::create_noise_step(elevation_id);
+
+        vec![noise_step, mountain_step]
+    }
+
+    fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
         let half_x = map.get_size().width() / 2;
         let half_y = map.get_size().height() / 2;
 
         let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
-        let mountain_step = Box::new(AddGeneratorStep::new(elevation_id, mountain));
+        Box::new(AddGeneratorStep::new(elevation_id, mountain))
+    }
 
+    fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
         let noise = Box::new(NoiseGenerator::new(100.0, 125));
-        let noise_step = Box::new(AddGeneratorStep::new(elevation_id, noise));
-
-        vec![noise_step, mountain_step]
+        Box::new(AddGeneratorStep::new(elevation_id, noise))
     }
 }
 
