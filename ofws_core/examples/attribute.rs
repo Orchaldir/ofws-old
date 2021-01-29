@@ -2,8 +2,10 @@
 extern crate log;
 extern crate ofws_rendering_glium;
 
+use noise::{NoiseFn, SuperSimplex};
 use ofws_core::data::color::{BLACK, GREEN};
 use ofws_core::data::generator::gradient::circular::CircularGradient;
+use ofws_core::data::generator::Generator;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
@@ -16,6 +18,31 @@ use ofws_core::rendering::cell::{AttributeRenderer, CellRenderer};
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+pub struct NoiseGenerator {
+    algo: SuperSimplex,
+    scale: f64,
+    max_value: f64,
+}
+
+impl NoiseGenerator {
+    pub fn new(scale: f64, max_value: u8) -> NoiseGenerator {
+        NoiseGenerator {
+            algo: SuperSimplex::new(),
+            scale,
+            max_value: max_value as f64 / 2.0,
+        }
+    }
+}
+
+impl Generator for NoiseGenerator {
+    fn generate(&self, x: u32, y: u32) -> u8 {
+        let x1 = x as f64 / self.scale;
+        let x2 = y as f64 / self.scale;
+        let positive_value = self.algo.get([x1, x2]) + 1.0;
+        (positive_value * self.max_value) as u8
+    }
+}
 
 pub struct AttributeExample {
     map: Map2d,
@@ -59,11 +86,13 @@ impl AttributeExample {
         let half_x = map.get_size().width() / 2;
         let half_y = map.get_size().height() / 2;
 
-        let gradient = CircularGradient::new(255, 0, half_x, half_y, half_x);
-        let generator = Box::new(gradient);
-        let step = Box::new(AddGeneratorStep::new(elevation_id, generator));
+        let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
+        let mountain_step = Box::new(AddGeneratorStep::new(elevation_id, mountain));
 
-        vec![step]
+        let noise = Box::new(NoiseGenerator::new(100.0, 125));
+        let noise_step = Box::new(AddGeneratorStep::new(elevation_id, noise));
+
+        vec![noise_step, mountain_step]
     }
 }
 
