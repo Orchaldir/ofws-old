@@ -70,7 +70,7 @@ impl Generator for AbsoluteGradientX {
 ///
 /// # Diagram
 ///
-/// See ['AbsoluteGradientX'].
+/// See [`AbsoluteGradientX`].
 ///
 pub struct AbsoluteGradientY {
     gradient: Gradient,

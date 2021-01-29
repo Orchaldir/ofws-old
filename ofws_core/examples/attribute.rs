@@ -6,12 +6,11 @@ use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
 use ofws_core::data::math::interpolation::pair::PairInterpolator;
-use ofws_core::data::math::interpolation::Interpolator;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
-use ofws_core::rendering::tile::FULL_TILE;
+use ofws_core::rendering::cell::{AttributeRenderer, CellRenderer};
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -70,16 +69,14 @@ impl App for AttributeExample {
     fn render(&mut self, renderer: &mut dyn Renderer) {
         renderer.start(BLACK);
 
-        let attribute = self.map.get_attribute(self.attribute_id);
         let tiles = renderer.get_size().get_area();
         let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
         let interpolator = PairInterpolator::new(BLACK, GREEN);
+        let attribute_renderer = AttributeRenderer::new(self.attribute_id, Box::new(interpolator));
 
         for index in 0..tiles {
-            let value = attribute.get(index);
-            let factor = value as f32 / 255.0;
-            let color = interpolator.interpolate(factor);
-            tile_renderer.render_ascii(index, FULL_TILE, color);
+            let (ascii, color) = attribute_renderer.get(&self.map, index);
+            tile_renderer.render_ascii(index, ascii, color);
         }
 
         renderer.finish();
