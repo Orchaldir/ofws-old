@@ -1,4 +1,5 @@
 pub mod pair;
+pub mod vector;
 
 /// Define how to interpolate between elements of the same type.
 pub trait Interpolate {
