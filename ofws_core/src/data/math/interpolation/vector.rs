@@ -37,6 +37,7 @@ impl<T: Clone + Interpolate> VectorInterpolator<T> {
     /// ```
     pub fn new(vector: Vec<(f32, T)>) -> Option<VectorInterpolator<T>> {
         if vector.len() < 2 {
+            warn!("The vector needs at least 2 elements!");
             return None;
         }
 
@@ -44,12 +45,14 @@ impl<T: Clone + Interpolate> VectorInterpolator<T> {
 
         for (value, _) in &vector {
             if *value < last_value {
+                warn!("The elements of vector are not ordered!");
                 return None;
             }
             last_value = *value;
         }
 
         if last_value > 1.0 {
+            warn!("The position of the last element is bigger than 1.0!");
             return None;
         }
 

@@ -2,5 +2,6 @@
 
 members = [
     "ofws_core",
-    "ofws_rendering_glium"
+    "ofws_noise",
+    "ofws_rendering_glium",
 ]

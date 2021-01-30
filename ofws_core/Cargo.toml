@@ -14,5 +14,5 @@ svgbobdoc = "0.2"
 unwrap = "1.2"
 
 [dev-dependencies]
-noise = "0.7"
+ofws_noise = { path = "../ofws_noise" }
 ofws_rendering_glium = { path = "../ofws_rendering_glium" }
