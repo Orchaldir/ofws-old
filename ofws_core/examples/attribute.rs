@@ -3,13 +3,14 @@ extern crate log;
 extern crate ofws_rendering_glium;
 
 use noise::{NoiseFn, SuperSimplex};
-use ofws_core::data::color::{BLACK, GREEN};
+use ofws_core::data::color::{Color, BLACK, CYAN, WHITE};
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::generator::Generator;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
-use ofws_core::data::math::interpolation::pair::PairInterpolator;
+use ofws_core::data::math::interpolation::vector::VectorInterpolator;
+use ofws_core::data::math::interpolation::Interpolator;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
@@ -102,6 +103,26 @@ impl AttributeExample {
         let noise = Box::new(NoiseGenerator::new(100.0, 125));
         Box::new(AddGeneratorStep::new(elevation_id, noise))
     }
+
+    fn create_elevation_color_interpolator(&self) -> Box<dyn Interpolator<Color>> {
+        let dark_blue = Color::new(0, 0, 128);
+        let light_green = Color::new(100, 255, 100);
+        let dark_green = Color::new(0, 80, 0);
+        let light_grey = Color::new(200, 200, 200);
+        let dark_grey = Color::new(50, 50, 50);
+
+        let vector = vec![
+            (0.0, dark_blue),
+            (0.3, CYAN),
+            (0.31, light_green),
+            (0.6, dark_green),
+            (0.61, dark_grey),
+            (0.8, light_grey),
+            (0.95, WHITE),
+        ];
+
+        Box::new(VectorInterpolator::new(vector).unwrap())
+    }
 }
 
 impl App for AttributeExample {
@@ -114,8 +135,8 @@ impl App for AttributeExample {
 
         let tiles = renderer.get_size().get_area();
         let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
-        let interpolator = PairInterpolator::new(BLACK, GREEN);
-        let attribute_renderer = AttributeRenderer::new(self.attribute_id, Box::new(interpolator));
+        let interpolator = self.create_elevation_color_interpolator();
+        let attribute_renderer = AttributeRenderer::new(self.attribute_id, interpolator);
 
         for index in 0..tiles {
             let (ascii, color) = attribute_renderer.get(&self.map, index);
