@@ -2,7 +2,7 @@
 extern crate log;
 extern crate ofws_rendering_glium;
 
-use ofws_core::data::color::{Color, BLACK, CYAN, WHITE};
+use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, RED, WHITE, YELLOW};
 use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
@@ -12,6 +12,7 @@ use ofws_core::data::math::interpolation::vector::VectorInterpolator;
 use ofws_core::data::math::interpolation::Interpolator;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
+use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::{AttributeRenderer, CellRenderer};
@@ -22,7 +23,7 @@ use std::rc::Rc;
 
 pub struct AttributeExample {
     map: Map2d,
-    attribute_id: usize,
+    attribute_renderer: AttributeRenderer,
     texture_id: TextureId,
 }
 
@@ -32,7 +33,7 @@ impl AttributeExample {
 
         AttributeExample {
             map,
-            attribute_id: 0,
+            attribute_renderer: create_elevation_renderer(),
             texture_id: 0,
         }
     }
@@ -108,6 +109,27 @@ fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
     Box::new(VectorInterpolator::new(vector).unwrap())
 }
 
+fn create_temperature_color_interpolator() -> Box<dyn Interpolator<Color>> {
+    let vector = vec![
+        (0.0, WHITE),
+        (0.2, CYAN),
+        (0.4, BLUE),
+        (0.6, GREEN),
+        (0.8, YELLOW),
+        (1.0, RED),
+    ];
+
+    Box::new(VectorInterpolator::new(vector).unwrap())
+}
+
+fn create_elevation_renderer() -> AttributeRenderer {
+    AttributeRenderer::new(0, create_elevation_color_interpolator())
+}
+
+fn create_temperature_renderer() -> AttributeRenderer {
+    AttributeRenderer::new(1, create_temperature_color_interpolator())
+}
+
 impl App for AttributeExample {
     fn init(&mut self, initialization: &mut dyn Initialization) {
         self.texture_id = initialization.load_texture("ascii.png");
@@ -118,15 +140,21 @@ impl App for AttributeExample {
 
         let tiles = renderer.get_size().get_area();
         let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
-        let interpolator = create_elevation_color_interpolator();
-        let attribute_renderer = AttributeRenderer::new(self.attribute_id, interpolator);
 
         for index in 0..tiles {
-            let (ascii, color) = attribute_renderer.get(&self.map, index);
+            let (ascii, color) = self.attribute_renderer.get(&self.map, index);
             tile_renderer.render_ascii(index, ascii, color);
         }
 
         renderer.finish();
+    }
+
+    fn on_key_released(&mut self, key: KeyCode) {
+        if key == KeyCode::Key1 {
+            self.attribute_renderer = create_elevation_renderer();
+        } else if key == KeyCode::Key2 {
+            self.attribute_renderer = create_temperature_renderer();
+        }
     }
 }
 
