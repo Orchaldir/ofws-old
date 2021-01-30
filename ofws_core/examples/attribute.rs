@@ -3,6 +3,7 @@ extern crate log;
 extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, CYAN, WHITE};
+use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
@@ -27,7 +28,7 @@ pub struct AttributeExample {
 
 impl AttributeExample {
     pub fn new(size: Size2d) -> AttributeExample {
-        let map = AttributeExample::create_map(size);
+        let map = create_map(size);
 
         AttributeExample {
             map,
@@ -35,68 +36,76 @@ impl AttributeExample {
             texture_id: 0,
         }
     }
+}
 
-    fn create_map(size: Size2d) -> Map2d {
-        info!("Start map creation with {:?}", size);
+fn create_map(size: Size2d) -> Map2d {
+    info!("Start map creation with {:?}", size);
 
-        let mut map = Map2d::with_name("attribute-map", size);
+    let mut map = Map2d::with_name("attribute-map", size);
 
-        AttributeExample::create_attributes(&mut map);
+    create_attributes(&mut map);
 
-        AttributeExample::create_generation_steps(&map)
-            .iter()
-            .for_each(|step| step.execute(&mut map));
+    create_generation_steps(&map)
+        .iter()
+        .for_each(|step| step.execute(&mut map));
 
-        info!("Finish map creation");
+    info!("Finish map creation");
 
-        map
-    }
+    map
+}
 
-    fn create_attributes(map: &mut Map2d) {
-        map.create_attribute("elevation", 0).unwrap();
-    }
+fn create_attributes(map: &mut Map2d) {
+    map.create_attribute("elevation", 0).unwrap();
+    map.create_attribute("temperature", 0).unwrap();
+}
 
-    fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
-        let elevation_id = map.get_attribute_id("elevation").unwrap();
+fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
+    let elevation_id = map.get_attribute_id("elevation").unwrap();
 
-        let mountain_step = AttributeExample::create_mountain_step(map, elevation_id);
-        let noise_step = AttributeExample::create_noise_step(elevation_id);
+    let mountain_step = create_mountain_step(map, elevation_id);
+    let noise_step = create_noise_step(elevation_id);
+    let temperature_gradient = create_temperature_gradient(map);
 
-        vec![noise_step, mountain_step]
-    }
+    vec![noise_step, mountain_step, temperature_gradient]
+}
 
-    fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
-        let half_x = map.get_size().width() / 2;
-        let half_y = map.get_size().height() / 2;
+fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
+    let half_x = map.get_size().width() / 2;
+    let half_y = map.get_size().height() / 2;
 
-        let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
-        Box::new(AddGeneratorStep::new(elevation_id, mountain))
-    }
+    let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
+    Box::new(AddGeneratorStep::new(elevation_id, mountain))
+}
 
-    fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
-        let noise = Box::new(NoiseGenerator::new(20.0, 125));
-        Box::new(AddGeneratorStep::new(elevation_id, noise))
-    }
+fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
+    let noise = Box::new(NoiseGenerator::new(20.0, 125));
+    Box::new(AddGeneratorStep::new(elevation_id, noise))
+}
 
-    fn create_elevation_color_interpolator(&self) -> Box<dyn Interpolator<Color>> {
-        let dark_blue = Color::new(0, 0, 128);
-        let light_green = Color::new(100, 255, 100);
-        let dark_green = Color::new(0, 80, 0);
-        let light_gray = Color::gray(200);
-        let dark_gray = Color::gray(50);
+fn create_temperature_gradient(map: &Map2d) -> Box<dyn GenerationStep> {
+    let half_y = map.get_size().height() / 2;
+    let generator = Box::new(AbsoluteGradientY::new(255, 0, half_y, half_y));
+    Box::new(AddGeneratorStep::new(1, generator))
+}
 
-        let vector = vec![
-            (0.0, dark_blue),
-            (0.3, CYAN),
-            (0.31, light_green),
-            (0.6, dark_green),
-            (0.61, dark_gray),
-            (0.8, light_gray),
-            (0.95, WHITE),
-        ];
+fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
+    let dark_blue = Color::new(0, 0, 128);
+    let light_green = Color::new(100, 255, 100);
+    let dark_green = Color::new(0, 80, 0);
+    let light_gray = Color::gray(200);
+    let dark_gray = Color::gray(50);
 
-        Box::new(VectorInterpolator::new(vector).unwrap())
-    }
+    let vector = vec![
+        (0.0, dark_blue),
+        (0.3, CYAN),
+        (0.31, light_green),
+        (0.6, dark_green),
+        (0.61, dark_gray),
+        (0.8, light_gray),
+        (0.95, WHITE),
+    ];
+
+    Box::new(VectorInterpolator::new(vector).unwrap())
 }
 
 impl App for AttributeExample {
@@ -109,7 +118,7 @@ impl App for AttributeExample {
 
         let tiles = renderer.get_size().get_area();
         let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
-        let interpolator = self.create_elevation_color_interpolator();
+        let interpolator = create_elevation_color_interpolator();
         let attribute_renderer = AttributeRenderer::new(self.attribute_id, interpolator);
 
         for index in 0..tiles {
