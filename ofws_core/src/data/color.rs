@@ -16,6 +16,11 @@ impl Color {
         Color { r, g, b }
     }
 
+    /// Returns a new gray color
+    pub const fn gray(value: u8) -> Color {
+        Color { r: value, g: value, b: value }
+    }
+
     /// Returns the red component
     ///
     /// ```

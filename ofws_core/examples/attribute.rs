@@ -108,16 +108,16 @@ impl AttributeExample {
         let dark_blue = Color::new(0, 0, 128);
         let light_green = Color::new(100, 255, 100);
         let dark_green = Color::new(0, 80, 0);
-        let light_grey = Color::new(200, 200, 200);
-        let dark_grey = Color::new(50, 50, 50);
+        let light_gray = Color::gray(200);
+        let dark_gray = Color::gray(50);
 
         let vector = vec![
             (0.0, dark_blue),
             (0.3, CYAN),
             (0.31, light_green),
             (0.6, dark_green),
-            (0.61, dark_grey),
-            (0.8, light_grey),
+            (0.61, dark_gray),
+            (0.8, light_gray),
             (0.95, WHITE),
         ];
 
