@@ -74,7 +74,7 @@ impl AttributeExample {
     }
 
     fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
-        let noise = Box::new(NoiseGenerator::new(100.0, 125));
+        let noise = Box::new(NoiseGenerator::new(20.0, 125));
         Box::new(AddGeneratorStep::new(elevation_id, noise))
     }
 
