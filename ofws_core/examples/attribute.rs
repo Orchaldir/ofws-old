@@ -58,16 +58,20 @@ fn create_map(size: Size2d) -> Map2d {
 fn create_attributes(map: &mut Map2d) {
     map.create_attribute("elevation", 0).unwrap();
     map.create_attribute("temperature", 0).unwrap();
+    map.create_attribute("rainfall", 0).unwrap();
 }
 
 fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
     let elevation_id = map.get_attribute_id("elevation").unwrap();
+    let temperature_id = map.get_attribute_id("temperature").unwrap();
+    let rainfall_id = map.get_attribute_id("rainfall").unwrap();
 
-    let mountain_step = create_mountain_step(map, elevation_id);
-    let noise_step = create_noise_step(elevation_id);
-    let temperature_gradient = create_temperature_gradient(map);
-
-    vec![noise_step, mountain_step, temperature_gradient]
+    vec![
+        create_mountain_step(map, elevation_id),
+        create_noise_step(elevation_id),
+        create_temperature_gradient(map, temperature_id),
+        create_rainfall_gradient(rainfall_id),
+    ]
 }
 
 fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
@@ -83,10 +87,15 @@ fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
     Box::new(AddGeneratorStep::new(elevation_id, noise))
 }
 
-fn create_temperature_gradient(map: &Map2d) -> Box<dyn GenerationStep> {
+fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn GenerationStep> {
     let half_y = map.get_size().height() / 2;
     let generator = Box::new(AbsoluteGradientY::new(255, 0, half_y, half_y));
-    Box::new(AddGeneratorStep::new(1, generator))
+    Box::new(AddGeneratorStep::new(temperature_id, generator))
+}
+
+fn create_rainfall_gradient(rainfall_id: usize) -> Box<dyn GenerationStep> {
+    let generator = Box::new(NoiseGenerator::new(100.0, 255));
+    Box::new(AddGeneratorStep::new(rainfall_id, generator))
 }
 
 fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
@@ -122,12 +131,32 @@ fn create_temperature_color_interpolator() -> Box<dyn Interpolator<Color>> {
     Box::new(VectorInterpolator::new(vector).unwrap())
 }
 
+fn create_rainfall_color_interpolator() -> Box<dyn Interpolator<Color>> {
+    let light_blue = Color::new(100, 200, 255);
+    let light_golden_rod = Color::new(250, 250, 220);
+    let golden_rod = Color::new(250, 200, 40);
+
+    let vector = vec![
+        (0.0, BLUE),
+        (0.2, light_blue),
+        (0.5, GREEN),
+        (0.8, light_golden_rod),
+        (1.0, golden_rod),
+    ];
+
+    Box::new(VectorInterpolator::new(vector).unwrap())
+}
+
 fn create_elevation_renderer() -> AttributeRenderer {
     AttributeRenderer::new(0, create_elevation_color_interpolator())
 }
 
 fn create_temperature_renderer() -> AttributeRenderer {
     AttributeRenderer::new(1, create_temperature_color_interpolator())
+}
+
+fn create_rainfall_renderer() -> AttributeRenderer {
+    AttributeRenderer::new(2, create_rainfall_color_interpolator())
 }
 
 impl App for AttributeExample {
@@ -154,6 +183,8 @@ impl App for AttributeExample {
             self.attribute_renderer = create_elevation_renderer();
         } else if key == KeyCode::Key2 {
             self.attribute_renderer = create_temperature_renderer();
+        } else if key == KeyCode::Key3 {
+            self.attribute_renderer = create_rainfall_renderer();
         }
     }
 }
