@@ -79,23 +79,27 @@ fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationS
     let half_y = map.get_size().height() / 2;
 
     let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
-    Box::new(AddGeneratorStep::new(elevation_id, mountain))
+    Box::new(AddGeneratorStep::new("continent", elevation_id, mountain))
 }
 
 fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
     let noise = Box::new(NoiseGenerator::new(20.0, 125));
-    Box::new(AddGeneratorStep::new(elevation_id, noise))
+    Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
 
 fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn GenerationStep> {
     let half_y = map.get_size().height() / 2;
     let generator = Box::new(AbsoluteGradientY::new(255, 0, half_y, half_y));
-    Box::new(AddGeneratorStep::new(temperature_id, generator))
+    Box::new(AddGeneratorStep::new(
+        "gradient y",
+        temperature_id,
+        generator,
+    ))
 }
 
 fn create_rainfall_gradient(rainfall_id: usize) -> Box<dyn GenerationStep> {
     let generator = Box::new(NoiseGenerator::new(100.0, 255));
-    Box::new(AddGeneratorStep::new(rainfall_id, generator))
+    Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
 }
 
 fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
