@@ -67,8 +67,19 @@ impl Map2d {
     /// assert_eq!(map.create_attribute("elevation", 100), None);
     /// ```
     pub fn create_attribute<S: Into<String>>(&mut self, name: S, default: u8) -> Option<usize> {
+        self.add_attribute(Attribute::default(name, self.size, default))
+    }
+
+    pub fn create_attribute_from<S: Into<String>>(
+        &mut self,
+        name: S,
+        values: Vec<u8>,
+    ) -> Option<usize> {
+        self.add_attribute(Attribute::new(name, self.size, values))
+    }
+
+    fn add_attribute(&mut self, attribute: Attribute) -> Option<usize> {
         let id = self.attributes.len();
-        let attribute = Attribute::new(name, self.size, default);
 
         if self.attribute_lookup.contains_key(attribute.get_name()) {
             return None;
