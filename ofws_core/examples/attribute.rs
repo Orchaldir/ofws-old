@@ -2,9 +2,10 @@
 extern crate log;
 extern crate ofws_rendering_glium;
 
-use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, RED, WHITE, YELLOW};
+use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
+use ofws_core::data::map::generation::biome::BiomeSelector;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
@@ -15,7 +16,7 @@ use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
-use ofws_core::rendering::cell::{AttributeRenderer, CellRenderer};
+use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
 use ofws_noise::NoiseGenerator;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
@@ -23,7 +24,7 @@ use std::rc::Rc;
 
 pub struct AttributeExample {
     map: Map2d,
-    attribute_renderer: AttributeRenderer,
+    attribute_renderer: Box<dyn CellRenderer>,
     texture_id: TextureId,
 }
 
@@ -59,18 +60,21 @@ fn create_attributes(map: &mut Map2d) {
     map.create_attribute("elevation", 0).unwrap();
     map.create_attribute("temperature", 0).unwrap();
     map.create_attribute("rainfall", 0).unwrap();
+    map.create_attribute("biome", 0).unwrap();
 }
 
 fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
     let elevation_id = map.get_attribute_id("elevation").unwrap();
     let temperature_id = map.get_attribute_id("temperature").unwrap();
     let rainfall_id = map.get_attribute_id("rainfall").unwrap();
+    let biome_id = map.get_attribute_id("biome").unwrap();
 
     vec![
         create_mountain_step(map, elevation_id),
         create_noise_step(elevation_id),
         create_temperature_gradient(map, temperature_id),
         create_rainfall_gradient(rainfall_id),
+        create_biome_selector(temperature_id, rainfall_id, biome_id),
     ]
 }
 
@@ -100,6 +104,20 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
 fn create_rainfall_gradient(rainfall_id: usize) -> Box<dyn GenerationStep> {
     let generator = Box::new(NoiseGenerator::new(100.0, 255));
     Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
+}
+
+fn create_biome_selector(
+    temperature_id: usize,
+    rainfall_id: usize,
+    biome_id: usize,
+) -> Box<dyn GenerationStep> {
+    Box::new(BiomeSelector::new(
+        rainfall_id,
+        temperature_id,
+        biome_id,
+        Size2d::new(3, 3),
+        vec![0, 1, 2, 3, 4, 5, 6, 7, 8],
+    ))
 }
 
 fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
@@ -151,16 +169,46 @@ fn create_rainfall_color_interpolator() -> Box<dyn Interpolator<Color>> {
     Box::new(VectorInterpolator::new(vector).unwrap())
 }
 
-fn create_elevation_renderer() -> AttributeRenderer {
-    AttributeRenderer::new(0, create_elevation_color_interpolator())
+fn create_elevation_renderer() -> Box<AttributeRenderer> {
+    Box::new(AttributeRenderer::new(
+        0,
+        create_elevation_color_interpolator(),
+    ))
 }
 
-fn create_temperature_renderer() -> AttributeRenderer {
-    AttributeRenderer::new(1, create_temperature_color_interpolator())
+fn create_temperature_renderer() -> Box<AttributeRenderer> {
+    Box::new(AttributeRenderer::new(
+        1,
+        create_temperature_color_interpolator(),
+    ))
 }
 
-fn create_rainfall_renderer() -> AttributeRenderer {
-    AttributeRenderer::new(2, create_rainfall_color_interpolator())
+fn create_rainfall_renderer() -> Box<AttributeRenderer> {
+    Box::new(AttributeRenderer::new(
+        2,
+        create_rainfall_color_interpolator(),
+    ))
+}
+
+fn create_biome_renderer() -> Box<AttributeLookUp> {
+    let light_green = Color::new(100, 255, 100);
+    let dark_green = Color::new(0, 80, 0);
+
+    let colors = vec![
+        (0, WHITE),
+        (1, WHITE),
+        (2, WHITE),
+        (3, YELLOW),      // temperate desert
+        (4, light_green), // temperate grassland
+        (5, dark_green),  // temperate forest
+        (6, RED),         //desert
+        (7, ORANGE),      // savanna
+        (8, GREEN),       // rainforest
+    ]
+    .into_iter()
+    .collect();
+
+    Box::new(AttributeLookUp::new(3, colors))
 }
 
 impl App for AttributeExample {
@@ -189,6 +237,8 @@ impl App for AttributeExample {
             self.attribute_renderer = create_temperature_renderer();
         } else if key == KeyCode::Key3 {
             self.attribute_renderer = create_rainfall_renderer();
+        } else if key == KeyCode::Key4 {
+            self.attribute_renderer = create_biome_renderer();
         }
     }
 }

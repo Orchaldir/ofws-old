@@ -98,6 +98,7 @@ pub const BLUE: Color = Color::new(0, 0, 255);
 pub const CYAN: Color = Color::new(0, 255, 255);
 pub const GREEN: Color = Color::new(0, 255, 0);
 pub const MAGENTA: Color = Color::new(255, 0, 255);
+pub const ORANGE: Color = Color::new(255, 165, 0);
 pub const RED: Color = Color::new(255, 0, 0);
 pub const PINK: Color = Color::new(255, 0, 128);
 pub const WHITE: Color = Color::new(255, 255, 255);
