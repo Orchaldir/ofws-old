@@ -2,6 +2,63 @@ use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
 use crate::data::size2d::Size2d;
 
+/// Overwrite the target attribute with a specific value, if it is below a threshold.
+pub struct SetValueIfBelowThreshold {
+    input_id: usize,
+    target_id: usize,
+    value: u8,
+    threshold: u8,
+}
+
+impl SetValueIfBelowThreshold {
+    pub fn new(
+        input_id: usize,
+        target_id: usize,
+        value: u8,
+        threshold: u8,
+    ) -> SetValueIfBelowThreshold {
+        SetValueIfBelowThreshold {
+            input_id,
+            target_id,
+            value,
+            threshold,
+        }
+    }
+
+    fn calculate_indices_to_overwrite(&self, map: &mut Map2d) -> Vec<usize> {
+        let input_attribute = map.get_attribute(self.input_id);
+        let mut indices = Vec::with_capacity(map.size.get_area());
+
+        for index in 0..map.size.get_area() {
+            if input_attribute.get(index) < self.threshold {
+                indices.push(index);
+            }
+        }
+
+        indices
+    }
+}
+
+impl GenerationStep for SetValueIfBelowThreshold {
+    // Executes the step.
+    fn execute(&self, map: &mut Map2d) {
+        info!(
+            "Overwrite '{}' with '{}' based on attribute '{}' of map '{}'",
+            map.get_attribute(self.target_id).get_name(),
+            self.value,
+            map.get_attribute(self.input_id).get_name(),
+            map.get_name()
+        );
+
+        let indices = self.calculate_indices_to_overwrite(map);
+        let target = map.get_attribute_mut(self.target_id);
+
+        for index in indices.iter() {
+            *target.get_mut(*index) = self.value;
+        }
+    }
+}
+
 /// Selects a biome for the target attribute based on 2 input attributes.
 pub struct BiomeSelector {
     input_id0: usize,

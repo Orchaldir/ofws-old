@@ -7,7 +7,7 @@ use env_logger::Builder;
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
-use ofws_core::data::map::generation::biome::BiomeSelector;
+use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
@@ -24,6 +24,9 @@ use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::io::Write;
 use std::rc::Rc;
+
+const OCEAN_ID: u8 = 9;
+const OCEAN_THRESHOLD: f32 = 0.3;
 
 pub struct AttributeExample {
     map: Map2d,
@@ -78,6 +81,7 @@ fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
         create_temperature_gradient(map, temperature_id),
         create_rainfall_gradient(rainfall_id),
         create_biome_selector(temperature_id, rainfall_id, biome_id),
+        overwrite_water(elevation_id, biome_id),
     ]
 }
 
@@ -123,6 +127,15 @@ fn create_biome_selector(
     ))
 }
 
+fn overwrite_water(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationStep> {
+    Box::new(SetValueIfBelowThreshold::new(
+        elevation_id,
+        biome_id,
+        OCEAN_ID,
+        (255.0 * OCEAN_THRESHOLD) as u8,
+    ))
+}
+
 fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
     let dark_blue = Color::new(0, 0, 128);
     let light_green = Color::new(100, 255, 100);
@@ -132,7 +145,7 @@ fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
 
     let vector = vec![
         (0.0, dark_blue),
-        (0.3, CYAN),
+        (OCEAN_THRESHOLD, CYAN),
         (0.31, light_green),
         (0.6, dark_green),
         (0.61, dark_gray),
@@ -207,6 +220,7 @@ fn create_biome_renderer() -> Box<AttributeLookUp> {
         (6, RED),         //desert
         (7, ORANGE),      // savanna
         (8, GREEN),       // rainforest
+        (OCEAN_ID, BLUE), // ocean
     ]
     .into_iter()
     .collect();
