@@ -2,6 +2,8 @@
 extern crate log;
 extern crate ofws_rendering_glium;
 
+use chrono::Local;
+use env_logger::Builder;
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
@@ -20,6 +22,7 @@ use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRendere
 use ofws_noise::NoiseGenerator;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
+use std::io::Write;
 use std::rc::Rc;
 
 pub struct AttributeExample {
@@ -244,7 +247,17 @@ impl App for AttributeExample {
 }
 
 fn main() {
-    env_logger::init();
+    Builder::from_env("RUST_LOG")
+        .format(|buf, record| {
+            writeln!(
+                buf,
+                "{} [{}]: {}",
+                Local::now().format("%H:%M:%S.%3f"),
+                record.level(),
+                record.args()
+            )
+        })
+        .init();
 
     let tiles = Size2d::new(400, 300);
     let mut window = GliumWindow::new("Example with map attributes", tiles, Size2d::new(2, 2));
