@@ -7,9 +7,13 @@ pub struct BiomeSelector {
     input_id0: usize,
     input_id1: usize,
     target_id: usize,
-    table_size: Size2d,
-    category_size: Size2d,
-    biome_ids: Vec<u8>,
+    lookup_table_size: Size2d,
+    cell_size: Size2d,
+    lookup_table: Vec<u8>,
+}
+
+fn convert_size(value: u32) -> u32 {
+    (256.0 / value as f32).ceil() as u32
 }
 
 impl BiomeSelector {
@@ -20,21 +24,31 @@ impl BiomeSelector {
         size: Size2d,
         biome_ids: Vec<u8>,
     ) -> BiomeSelector {
+        let category_width = convert_size(size.width());
+        let category_height = convert_size(size.height());
+
         BiomeSelector {
             input_id0,
             input_id1,
             target_id,
-            table_size: size,
-            category_size: Size2d::new(256 / size.width(), 256 / size.height()),
-            biome_ids,
+            lookup_table_size: size,
+            cell_size: Size2d::new(category_width, category_height),
+            lookup_table: biome_ids,
         }
     }
 
     fn calculate_biome(&self, input0: u8, input1: u8) -> u8 {
-        let x = input0 as u32 / self.category_size.width();
-        let y = input1 as u32 / self.category_size.height();
-        let index = self.table_size.to_index(x, y);
-        *self.biome_ids.get(index).unwrap()
+        let x = input0 as u32 / self.cell_size.width();
+        let y = input1 as u32 / self.cell_size.height();
+        let index = self.lookup_table_size.to_index(x, y);
+
+        *self.lookup_table.get(index).unwrap_or_else(|| {
+            panic!(
+                "Index {} is to large for {} biomes!",
+                index,
+                self.lookup_table.len()
+            )
+        })
     }
 
     fn calculate_biomes(&self, map: &mut Map2d) -> Vec<u8> {
@@ -62,20 +76,22 @@ impl GenerationStep for BiomeSelector {
     ///# use ofws_core::data::map::generation::biome::BiomeSelector;
     ///# use ofws_core::data::map::generation::GenerationStep;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let size = Size2d::new(2, 2);
+    /// let size = Size2d::new(3, 2);
     /// let mut map = Map2d::new(size);
-    /// map.create_attribute_from("input0", vec![0, 100, 200, 255]);
-    /// map.create_attribute_from("input1", vec![0, 200, 100, 255]);
+    /// map.create_attribute_from("input0", vec![0, 100, 200, 60, 170, 255]);
+    /// map.create_attribute_from("input1", vec![0, 60, 100, 170, 200, 255]);
     /// map.create_attribute("target", 255);
-    /// let step = BiomeSelector::new(0, 1, 2, size, vec![10, 20, 30, 40]);
+    /// let step = BiomeSelector::new(0, 1, 2, size, vec![10, 20, 30, 40, 50, 60]);
     ///
     /// step.execute(&mut map);
     ///
     /// let attribute = map.get_attribute(2);
     /// assert_eq!(attribute.get(0), 10);
-    /// assert_eq!(attribute.get(1), 30);
-    /// assert_eq!(attribute.get(2), 20);
+    /// assert_eq!(attribute.get(1), 20);
+    /// assert_eq!(attribute.get(2), 30);
     /// assert_eq!(attribute.get(3), 40);
+    /// assert_eq!(attribute.get(4), 50);
+    /// assert_eq!(attribute.get(5), 60);
     /// ```
     fn execute(&self, map: &mut Map2d) {
         info!(
