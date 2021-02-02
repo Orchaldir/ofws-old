@@ -26,7 +26,7 @@ use std::cell::RefCell;
 use std::io::Write;
 use std::rc::Rc;
 
-const OCEAN_ID: u8 = 9;
+const OCEAN_ID: u8 = 12;
 const OCEAN_THRESHOLD: f32 = 0.3;
 const OCEAN_VALUE: u8 = (255.0 * OCEAN_THRESHOLD) as u8;
 
@@ -78,17 +78,17 @@ fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
     let biome_id = map.get_attribute_id("biome").unwrap();
 
     vec![
-        create_mountain_step(map, elevation_id),
-        create_noise_step(elevation_id),
+        add_continent(map, elevation_id),
+        add_islands(elevation_id),
         create_temperature_gradient(map, temperature_id),
         subtract_elevation_from_temperature(elevation_id, temperature_id),
-        create_rainfall_gradient(rainfall_id),
-        create_biome_selector(temperature_id, rainfall_id, biome_id),
-        overwrite_water(elevation_id, biome_id),
+        create_rainfall(rainfall_id),
+        select_biome(temperature_id, rainfall_id, biome_id),
+        overwrite_ocean(elevation_id, biome_id),
     ]
 }
 
-fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
+fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
     let half_x = map.get_size().width() / 2;
     let half_y = map.get_size().height() / 2;
 
@@ -96,7 +96,7 @@ fn create_mountain_step(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationS
     Box::new(AddGeneratorStep::new("continent", elevation_id, mountain))
 }
 
-fn create_noise_step(elevation_id: usize) -> Box<dyn GenerationStep> {
+fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
     let noise = Box::new(NoiseGenerator::new(20.0, 125));
     Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
@@ -123,12 +123,12 @@ fn subtract_elevation_from_temperature(
     ))
 }
 
-fn create_rainfall_gradient(rainfall_id: usize) -> Box<dyn GenerationStep> {
+fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
     let generator = Box::new(NoiseGenerator::new(100.0, 255));
     Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
 }
 
-fn create_biome_selector(
+fn select_biome(
     temperature_id: usize,
     rainfall_id: usize,
     biome_id: usize,
@@ -137,12 +137,12 @@ fn create_biome_selector(
         rainfall_id,
         temperature_id,
         biome_id,
-        Size2d::new(3, 3),
-        vec![0, 1, 2, 3, 4, 5, 6, 7, 8],
+        Size2d::new(3, 4),
+        vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     ))
 }
 
-fn overwrite_water(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationStep> {
+fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationStep> {
     Box::new(SetValueIfBelowThreshold::new(
         elevation_id,
         biome_id,
@@ -224,17 +224,21 @@ fn create_rainfall_renderer() -> Box<AttributeRenderer> {
 fn create_biome_renderer() -> Box<AttributeLookUp> {
     let light_green = Color::new(100, 255, 100);
     let dark_green = Color::new(0, 80, 0);
+    let darker_green = Color::new(0, 40, 0);
 
     let colors = vec![
-        (0, WHITE),
+        (0, WHITE), // ice
         (1, WHITE),
         (2, WHITE),
-        (3, YELLOW),      // temperate desert
-        (4, light_green), // temperate grassland
-        (5, dark_green),  // temperate forest
-        (6, RED),         //desert
-        (7, ORANGE),      // savanna
-        (8, GREEN),       // rainforest
+        (3, darker_green), // cold forest
+        (4, darker_green),
+        (5, darker_green),
+        (6, light_green), // temperate desert or grassland
+        (7, dark_green),  // temperate forest
+        (8, dark_green),  // temperate forest
+        (9, YELLOW),      //desert
+        (10, ORANGE),     // savanna
+        (11, GREEN),      // rainforest
         (OCEAN_ID, BLUE), // ocean
     ]
     .into_iter()

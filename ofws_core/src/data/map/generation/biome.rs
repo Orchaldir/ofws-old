@@ -4,7 +4,7 @@ use crate::data::size2d::Size2d;
 
 /// Overwrite the target attribute with a specific value, if it is below a threshold.
 pub struct SetValueIfBelowThreshold {
-    input_id: usize,
+    source_id: usize,
     target_id: usize,
     value: u8,
     threshold: u8,
@@ -12,13 +12,13 @@ pub struct SetValueIfBelowThreshold {
 
 impl SetValueIfBelowThreshold {
     pub fn new(
-        input_id: usize,
+        source_id: usize,
         target_id: usize,
         value: u8,
         threshold: u8,
     ) -> SetValueIfBelowThreshold {
         SetValueIfBelowThreshold {
-            input_id,
+            source_id,
             target_id,
             value,
             threshold,
@@ -26,11 +26,11 @@ impl SetValueIfBelowThreshold {
     }
 
     fn calculate_indices_to_overwrite(&self, map: &mut Map2d) -> Vec<usize> {
-        let input_attribute = map.get_attribute(self.input_id);
+        let source_attribute = map.get_attribute(self.source_id);
         let mut indices = Vec::with_capacity(map.size.get_area());
 
         for index in 0..map.size.get_area() {
-            if input_attribute.get(index) < self.threshold {
+            if source_attribute.get(index) < self.threshold {
                 indices.push(index);
             }
         }
@@ -46,23 +46,23 @@ impl GenerationStep for SetValueIfBelowThreshold {
             "Overwrite '{}' with '{}' based on attribute '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),
             self.value,
-            map.get_attribute(self.input_id).get_name(),
+            map.get_attribute(self.source_id).get_name(),
             map.get_name()
         );
 
         let indices = self.calculate_indices_to_overwrite(map);
-        let target = map.get_attribute_mut(self.target_id);
+        let attribute = map.get_attribute_mut(self.target_id);
 
         for index in indices.iter() {
-            *target.get_mut(*index) = self.value;
+            *attribute.get_mut(*index) = self.value;
         }
     }
 }
 
 /// Selects a biome for the target attribute based on 2 input attributes.
 pub struct BiomeSelector {
-    input_id0: usize,
-    input_id1: usize,
+    source_id0: usize,
+    source_id1: usize,
     target_id: usize,
     lookup_table_size: Size2d,
     cell_size: Size2d,
@@ -75,8 +75,8 @@ fn convert_size(value: u32) -> u32 {
 
 impl BiomeSelector {
     pub fn new(
-        input_id0: usize,
-        input_id1: usize,
+        source_id0: usize,
+        source_id1: usize,
         target_id: usize,
         size: Size2d,
         biome_ids: Vec<u8>,
@@ -85,8 +85,8 @@ impl BiomeSelector {
         let category_height = convert_size(size.height());
 
         BiomeSelector {
-            input_id0,
-            input_id1,
+            source_id0,
+            source_id1,
             target_id,
             lookup_table_size: size,
             cell_size: Size2d::new(category_width, category_height),
@@ -110,13 +110,13 @@ impl BiomeSelector {
 
     fn calculate_biomes(&self, map: &mut Map2d) -> Vec<u8> {
         let size = map.size;
-        let input0 = map.get_attribute(self.input_id0);
-        let input1 = map.get_attribute(self.input_id1);
+        let source_attribute0 = map.get_attribute(self.source_id0);
+        let source_attribute1 = map.get_attribute(self.source_id1);
         let mut biomes = Vec::with_capacity(size.get_area());
 
         for index in 0..size.get_area() {
-            let value0 = input0.get(index);
-            let value1 = input1.get(index);
+            let value0 = source_attribute0.get(index);
+            let value1 = source_attribute1.get(index);
             biomes.push(self.calculate_biome(value0, value1));
         }
 
@@ -154,16 +154,16 @@ impl GenerationStep for BiomeSelector {
         info!(
             "Set '{}' based on attributes '{}' & '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),
-            map.get_attribute(self.input_id0).get_name(),
-            map.get_attribute(self.input_id1).get_name(),
+            map.get_attribute(self.source_id0).get_name(),
+            map.get_attribute(self.source_id1).get_name(),
             map.get_name()
         );
 
         let biomes = self.calculate_biomes(map);
-        let target = map.get_attribute_mut(self.target_id);
+        let attribute = map.get_attribute_mut(self.target_id);
 
         for (index, biome) in biomes.iter().enumerate() {
-            *target.get_mut(index) = *biome;
+            *attribute.get_mut(index) = *biome;
         }
     }
 }
