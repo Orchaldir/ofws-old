@@ -9,6 +9,7 @@ use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
+use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
 use ofws_core::data::math::interpolation::vector::VectorInterpolator;
@@ -27,6 +28,7 @@ use std::rc::Rc;
 
 const OCEAN_ID: u8 = 9;
 const OCEAN_THRESHOLD: f32 = 0.3;
+const OCEAN_VALUE: u8 = (255.0 * OCEAN_THRESHOLD) as u8;
 
 pub struct AttributeExample {
     map: Map2d,
@@ -79,6 +81,7 @@ fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
         create_mountain_step(map, elevation_id),
         create_noise_step(elevation_id),
         create_temperature_gradient(map, temperature_id),
+        subtract_elevation_from_temperature(elevation_id, temperature_id),
         create_rainfall_gradient(rainfall_id),
         create_biome_selector(temperature_id, rainfall_id, biome_id),
         overwrite_water(elevation_id, biome_id),
@@ -108,6 +111,18 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
     ))
 }
 
+fn subtract_elevation_from_temperature(
+    elevation_id: usize,
+    temperature_id: usize,
+) -> Box<dyn GenerationStep> {
+    Box::new(ModifyWithAttribute::new(
+        elevation_id,
+        temperature_id,
+        -0.8,
+        OCEAN_VALUE,
+    ))
+}
+
 fn create_rainfall_gradient(rainfall_id: usize) -> Box<dyn GenerationStep> {
     let generator = Box::new(NoiseGenerator::new(100.0, 255));
     Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
@@ -132,7 +147,7 @@ fn overwrite_water(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationSt
         elevation_id,
         biome_id,
         OCEAN_ID,
-        (255.0 * OCEAN_THRESHOLD) as u8,
+        OCEAN_VALUE,
     ))
 }
 
