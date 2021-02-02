@@ -30,17 +30,17 @@ const OCEAN_ID: u8 = 12;
 const OCEAN_THRESHOLD: f32 = 0.3;
 const OCEAN_VALUE: u8 = (255.0 * OCEAN_THRESHOLD) as u8;
 
-pub struct AttributeExample {
+pub struct BiomeExample {
     map: Map2d,
     attribute_renderer: Box<dyn CellRenderer>,
     texture_id: TextureId,
 }
 
-impl AttributeExample {
-    pub fn new(size: Size2d) -> AttributeExample {
+impl BiomeExample {
+    pub fn new(size: Size2d) -> BiomeExample {
         let map = create_map(size);
 
-        AttributeExample {
+        BiomeExample {
             map,
             attribute_renderer: create_elevation_renderer(),
             texture_id: 0,
@@ -51,7 +51,7 @@ impl AttributeExample {
 fn create_map(size: Size2d) -> Map2d {
     info!("Start map creation with {:?}", size);
 
-    let mut map = Map2d::with_name("attribute-map", size);
+    let mut map = Map2d::with_name("biome example", size);
 
     create_attributes(&mut map);
 
@@ -247,7 +247,7 @@ fn create_biome_renderer() -> Box<AttributeLookUp> {
     Box::new(AttributeLookUp::new(3, colors))
 }
 
-impl App for AttributeExample {
+impl App for BiomeExample {
     fn init(&mut self, initialization: &mut dyn Initialization) {
         self.texture_id = initialization.load_texture("ascii.png");
     }
@@ -293,8 +293,8 @@ fn main() {
         .init();
 
     let tiles = Size2d::new(400, 300);
-    let mut window = GliumWindow::new("Example with map attributes", tiles, Size2d::new(2, 2));
-    let app = Rc::new(RefCell::new(AttributeExample::new(tiles)));
+    let mut window = GliumWindow::new("Example with biomes", tiles, Size2d::new(2, 2));
+    let app = Rc::new(RefCell::new(BiomeExample::new(tiles)));
 
     window.run(app.clone());
 }
