@@ -59,7 +59,7 @@ impl Window for GliumWindow {
         let tiles = self.tiles;
         let tile_size = self.tile_size;
         let mut last_rendering = std::time::Instant::now();
-        let mut mouse_index = 0;
+        let mut mouse_index = None;
 
         event_loop.run(move |event, _, control_flow| {
             *control_flow = run_with_frequency(60);
@@ -84,7 +84,9 @@ impl Window for GliumWindow {
                         return;
                     }
                     glutin::event::WindowEvent::MouseInput { state, button, .. } => {
-                        handle_mouse_input(&app, mouse_index, state, button);
+                        if let Some(i) = mouse_index {
+                            handle_mouse_input(&app, i, state, button);
+                        }
                         return;
                     }
                     _ => return,
@@ -142,10 +144,16 @@ fn calculate_mouse_index(
     tiles: Size2d,
     tile_size: Size2d,
     position: PhysicalPosition<f64>,
-) -> usize {
+) -> Option<usize> {
     let x = position.x as u32 / tile_size.width();
-    let y = cmp::max(tiles.height() - position.y as u32 / tile_size.height(), 1) - 1;
-    tiles.to_index(x, y)
+    let y = position.y as u32 / tile_size.height();
+
+    if x > tiles.width() || y > tiles.height() {
+        return None;
+    }
+
+    let y = cmp::max(tiles.height() - y, 1) - 1;
+    Some(tiles.to_index(x, y))
 }
 
 fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {
