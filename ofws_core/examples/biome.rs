@@ -31,24 +31,24 @@ const OCEAN_THRESHOLD: f32 = 0.3;
 const OCEAN_VALUE: u8 = (255.0 * OCEAN_THRESHOLD) as u8;
 
 pub struct BiomeExample {
-    map: Map2d,
+    size: Size2d,
+    map: Option<Map2d>,
     attribute_renderer: Box<dyn CellRenderer>,
     texture_id: TextureId,
 }
 
 impl BiomeExample {
     pub fn new(size: Size2d) -> BiomeExample {
-        let map = create_map(size);
-
         BiomeExample {
-            map,
+            size,
+            map: None,
             attribute_renderer: create_elevation_renderer(),
             texture_id: 0,
         }
     }
 }
 
-fn create_map(size: Size2d) -> Map2d {
+fn create_map(size: Size2d) -> Option<Map2d> {
     info!("Start map creation with {:?}", size);
 
     let mut map = Map2d::with_name("biome example", size);
@@ -61,7 +61,7 @@ fn create_map(size: Size2d) -> Map2d {
 
     info!("Finish map creation");
 
-    map
+    Some(map)
 }
 
 fn create_attributes(map: &mut Map2d) {
@@ -250,17 +250,20 @@ fn create_biome_renderer() -> Box<AttributeLookUp> {
 impl App for BiomeExample {
     fn init(&mut self, initialization: &mut dyn Initialization) {
         self.texture_id = initialization.load_texture("ascii.png");
+        self.map = create_map(self.size);
     }
 
     fn render(&mut self, renderer: &mut dyn Renderer) {
         renderer.start(BLACK);
 
-        let tiles = renderer.get_size().get_area();
-        let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
+        if let Some(map) = &self.map {
+            let tiles = renderer.get_size().get_area();
+            let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
 
-        for index in 0..tiles {
-            let (ascii, color) = self.attribute_renderer.get(&self.map, index);
-            tile_renderer.render_ascii(index, ascii, color);
+            for index in 0..tiles {
+                let (ascii, color) = self.attribute_renderer.get(map, index);
+                tile_renderer.render_ascii(index, ascii, color);
+            }
         }
 
         renderer.finish();
