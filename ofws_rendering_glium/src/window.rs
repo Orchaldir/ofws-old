@@ -7,6 +7,7 @@ use glium::{glutin, Display};
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::window::Window;
+use ofws_core::logging::init_logging;
 use std::cell::RefCell;
 use std::ops::Sub;
 use std::rc::Rc;
@@ -46,6 +47,8 @@ impl GliumWindow {
 
 impl Window for GliumWindow {
     fn run(&mut self, app: Rc<RefCell<dyn App>>) -> ! {
+        init_logging();
+
         let event_loop = glutin::event_loop::EventLoop::new();
         let display = self.create_display(&event_loop);
         let mut initialization = GliumInitialization::new(display);

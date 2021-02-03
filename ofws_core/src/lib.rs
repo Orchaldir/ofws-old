@@ -5,4 +5,5 @@ extern crate unwrap;
 
 pub mod data;
 pub mod interface;
+pub mod logging;
 pub mod rendering;
