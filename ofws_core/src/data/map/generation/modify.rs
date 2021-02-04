@@ -57,8 +57,6 @@ impl GenerationStep for ModifyWithAttribute {
         let values = self.calculate_values(map);
         let attribute = map.get_attribute_mut(self.target_id);
 
-        for (index, value) in values.iter().enumerate() {
-            *attribute.get_mut(index) = *value;
-        }
+        attribute.replace_values(values);
     }
 }

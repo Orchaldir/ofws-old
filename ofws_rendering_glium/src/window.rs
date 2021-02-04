@@ -64,6 +64,8 @@ impl Window for GliumWindow {
         let mut last_rendering = std::time::Instant::now();
         let mut mouse_index = None;
 
+        info!("Initialization finished");
+
         event_loop.run(move |event, _, control_flow| {
             *control_flow = run_with_frequency(60);
 

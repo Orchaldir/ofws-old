@@ -162,8 +162,6 @@ impl GenerationStep for BiomeSelector {
         let biomes = self.calculate_biomes(map);
         let attribute = map.get_attribute_mut(self.target_id);
 
-        for (index, biome) in biomes.iter().enumerate() {
-            *attribute.get_mut(index) = *biome;
-        }
+        attribute.replace_values(biomes);
     }
 }

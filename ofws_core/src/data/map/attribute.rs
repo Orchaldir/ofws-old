@@ -114,4 +114,37 @@ impl Attribute {
     pub fn get_mut(&mut self, index: usize) -> &mut u8 {
         self.values.get_mut(index).expect("Index is outside map!")
     }
+
+    /// Replaces the attribute's values.
+    ///
+    /// ```
+    ///# use ofws_core::data::map::attribute::Attribute;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let mut attribute = Attribute::default("elevation", Size2d::new(1, 2), 42);
+    ///
+    /// attribute.replace_values(vec![3, 4]);
+    ///
+    /// assert_eq!(attribute.get(0), 3);
+    /// assert_eq!(attribute.get(1), 4);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if the number of new values is wrong.
+    ///
+    /// ```should_panic
+    ///# use ofws_core::data::map::attribute::Attribute;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let mut attribute = Attribute::default("elevation", Size2d::new(1, 2), 42);
+    ///
+    /// attribute.replace_values(vec![3, 4, 5]);
+    /// ```
+    pub fn replace_values(&mut self, values: Vec<u8>) {
+        assert_eq!(
+            values.len(),
+            self.values.len(),
+            "Wrong number of new values!"
+        );
+        self.values = values;
+    }
 }
