@@ -98,6 +98,6 @@ impl Generator2d for IndexGenerator {
     /// assert_eq!(generator.generate(1, 2), 5);
     /// ```
     fn generate(&self, x: u32, y: u32) -> u8 {
-        self.size.to_index(x, y) as u8
+        self.size.saturating_to_index(x, y) as u8
     }
 }

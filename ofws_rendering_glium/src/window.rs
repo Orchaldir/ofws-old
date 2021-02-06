@@ -158,7 +158,7 @@ fn calculate_mouse_index(
     }
 
     let y = cmp::max(tiles.height() - y, 1) - 1;
-    Some(tiles.to_index(x, y))
+    Some(tiles.saturating_to_index(x, y))
 }
 
 fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {

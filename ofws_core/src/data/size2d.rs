@@ -110,6 +110,31 @@ impl Size2d {
     pub fn to_index(&self, x: u32, y: u32) -> usize {
         (y * self.width + x) as usize
     }
+
+    /// Converts a point to the equivalent index.
+    ///
+    /// ```
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let size = Size2d::new(2, 3);
+    /// assert_eq!(size.saturating_to_index(1, 2), 5);
+    /// ```
+    ///
+    /// Coordinates outside the map are limited to width & height.
+    ///
+    /// ```
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let size = Size2d::new(2, 3);
+    ///
+    /// assert_eq!(size.saturating_to_index(2, 2), 5);
+    /// assert_eq!(size.saturating_to_index(3, 2), 5);
+    /// assert_eq!(size.saturating_to_index(0, 3), 4);
+    /// assert_eq!(size.saturating_to_index(0, 4), 4);
+    /// ```
+    pub fn saturating_to_index(&self, x: u32, y: u32) -> usize {
+        let x = x.min(self.width - 1);
+        let y = y.min(self.height - 1);
+        (y * self.width + x) as usize
+    }
 }
 
 // Adds 2 sizes
