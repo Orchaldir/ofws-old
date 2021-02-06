@@ -1,0 +1,29 @@
+= Functions
+
+* add_*
+* calculate_*
+* default
+* execute
+* generate
+* get_?
+* finish
+* from
+** the From trait
+* init
+* interpolate
+* lerp = linear interpolation
+* load_*
+* new = constructor
+* on_*
+* render_*
+* run
+* start
+* to_*
+* with_*
+** an alternate constructor with more data?
+
+== Issues
+
+* default VS with_*
+* get VS load
+* execute VS run

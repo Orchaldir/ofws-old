@@ -1,6 +1,7 @@
 use crate::data::map::Map2d;
 
 pub mod biome;
+pub mod distortion;
 pub mod generator;
 pub mod modify;
 
