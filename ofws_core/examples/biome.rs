@@ -6,6 +6,7 @@ use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE
 use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator2d::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
+use ofws_core::data::map::generation::distortion::DistortAlongY;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
@@ -18,7 +19,7 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
-use ofws_noise::NoiseGenerator2d;
+use ofws_noise::{NoiseGenerator1d, NoiseGenerator2d};
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -78,6 +79,7 @@ fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
         add_continent(map, elevation_id),
         add_islands(elevation_id),
         create_temperature_gradient(map, temperature_id),
+        distort_temperature(temperature_id),
         subtract_elevation_from_temperature(elevation_id, temperature_id),
         create_rainfall(rainfall_id),
         select_biome(temperature_id, rainfall_id, biome_id),
@@ -106,6 +108,11 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
         temperature_id,
         generator,
     ))
+}
+
+fn distort_temperature(temperature_id: usize) -> Box<dyn GenerationStep> {
+    let noise = Box::new(NoiseGenerator1d::new(60.0, 20));
+    Box::new(DistortAlongY::new(temperature_id, noise))
 }
 
 fn subtract_elevation_from_temperature(
