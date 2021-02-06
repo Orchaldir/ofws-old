@@ -18,7 +18,7 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
-use ofws_noise::NoiseGenerator;
+use ofws_noise::NoiseGenerator2d;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -94,7 +94,7 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
 }
 
 fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Box::new(NoiseGenerator::new(20.0, 125));
+    let noise = Box::new(NoiseGenerator2d::new(20.0, 125));
     Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
 
@@ -121,7 +121,7 @@ fn subtract_elevation_from_temperature(
 }
 
 fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
-    let generator = Box::new(NoiseGenerator::new(100.0, 255));
+    let generator = Box::new(NoiseGenerator2d::new(100.0, 255));
     Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
 }
 
