@@ -143,12 +143,7 @@ impl GenerationStep for BiomeSelector {
     /// step.execute(&mut map);
     ///
     /// let attribute = map.get_attribute(2);
-    /// assert_eq!(attribute.get(0), 10);
-    /// assert_eq!(attribute.get(1), 20);
-    /// assert_eq!(attribute.get(2), 30);
-    /// assert_eq!(attribute.get(3), 40);
-    /// assert_eq!(attribute.get(4), 50);
-    /// assert_eq!(attribute.get(5), 60);
+    /// assert_eq!(attribute.get_all(), &vec![10u8, 20, 30, 40, 50, 60]);
     /// ```
     fn execute(&self, map: &mut Map2d) {
         info!(

@@ -115,6 +115,19 @@ impl Attribute {
         self.values.get_mut(index).expect("Index is outside map!")
     }
 
+    /// Returns a reference to the values.
+    ///
+    /// ```
+    ///# use ofws_core::data::map::attribute::Attribute;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let attribute = Attribute::new("elevation", Size2d::new(1, 2), vec![10, 15]);
+    ///
+    ///  assert_eq!(attribute.get_all(), &vec![10u8, 15u8]);
+    /// ```
+    pub fn get_all(&self) -> &Vec<u8> {
+        &self.values
+    }
+
     /// Replaces the attribute's values.
     ///
     /// ```

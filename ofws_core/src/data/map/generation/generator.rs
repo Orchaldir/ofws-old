@@ -41,12 +41,7 @@ impl GenerationStep for AddGeneratorStep {
     /// step.execute(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
-    /// assert_eq!(attribute.get(0), 40);
-    /// assert_eq!(attribute.get(1), 41);
-    /// assert_eq!(attribute.get(2), 42);
-    /// assert_eq!(attribute.get(3), 43);
-    /// assert_eq!(attribute.get(4), 44);
-    /// assert_eq!(attribute.get(5), 45);
+    /// assert_eq!(attribute.get_all(), &vec![40u8, 41, 42, 43, 44, 45]);
     /// ```
     fn execute(&self, map: &mut Map2d) {
         info!(
