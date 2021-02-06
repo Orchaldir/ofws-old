@@ -1,4 +1,4 @@
-use noise::{NoiseFn, SuperSimplex};
+use noise::{NoiseFn, Seedable, SuperSimplex};
 use ofws_core::data::generator1d::Generator1d;
 use ofws_core::data::generator2d::Generator2d;
 
@@ -9,9 +9,9 @@ pub struct NoiseGenerator1d {
 }
 
 impl NoiseGenerator1d {
-    pub fn new(scale: f64, max_value: u8) -> NoiseGenerator1d {
+    pub fn new(seed: u32, scale: f64, max_value: u8) -> NoiseGenerator1d {
         NoiseGenerator1d {
-            algo: SuperSimplex::new(),
+            algo: SuperSimplex::new().set_seed(seed),
             scale,
             factor: max_value as f64 / 2.0,
         }
@@ -33,9 +33,9 @@ pub struct NoiseGenerator2d {
 }
 
 impl NoiseGenerator2d {
-    pub fn new(scale: f64, max_value: u8) -> NoiseGenerator2d {
+    pub fn new(seed: u32, scale: f64, max_value: u8) -> NoiseGenerator2d {
         NoiseGenerator2d {
-            algo: SuperSimplex::new(),
+            algo: SuperSimplex::new().set_seed(seed),
             scale,
             factor: max_value as f64 / 2.0,
         }

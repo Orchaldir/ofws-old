@@ -96,7 +96,7 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
 }
 
 fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Box::new(NoiseGenerator2d::new(20.0, 125));
+    let noise = Box::new(NoiseGenerator2d::new(0, 20.0, 125));
     Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
 
@@ -111,7 +111,7 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
 }
 
 fn distort_temperature(temperature_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Box::new(NoiseGenerator1d::new(60.0, 20));
+    let noise = Box::new(NoiseGenerator1d::new(0, 60.0, 20));
     Box::new(DistortAlongY::new(temperature_id, noise))
 }
 
@@ -128,7 +128,7 @@ fn subtract_elevation_from_temperature(
 }
 
 fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
-    let generator = Box::new(NoiseGenerator2d::new(100.0, 255));
+    let generator = Box::new(NoiseGenerator2d::new(0, 100.0, 255));
     Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
 }
 
