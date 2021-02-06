@@ -1,5 +1,5 @@
-use crate::data::generator::gradient::Gradient;
-use crate::data::generator::Generator;
+use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator2d::Generator2d;
 use crate::data::math::distance::abs_diff;
 
 #[svgbobdoc::transform]
@@ -41,12 +41,12 @@ impl AbsoluteGradientX {
     }
 }
 
-impl Generator for AbsoluteGradientX {
+impl Generator2d for AbsoluteGradientX {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::absolute::AbsoluteGradientX;
+    ///# use ofws_core::data::generator2d::Generator2d;
+    ///# use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientX;
     /// let generator = AbsoluteGradientX::new(100, 0, 80, 100);
     ///
     /// assert_eq!(generator.generate(  0,  0),  20);
@@ -91,12 +91,12 @@ impl AbsoluteGradientY {
     }
 }
 
-impl Generator for AbsoluteGradientY {
+impl Generator2d for AbsoluteGradientY {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
+    ///# use ofws_core::data::generator2d::Generator2d;
+    ///# use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientY;
     /// let generator = AbsoluteGradientY::new(100, 0, 80, 100);
     ///
     /// assert_eq!(generator.generate(  0,   0),  20);

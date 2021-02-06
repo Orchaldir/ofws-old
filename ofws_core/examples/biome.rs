@@ -3,8 +3,8 @@ extern crate log;
 extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
-use ofws_core::data::generator::gradient::absolute::AbsoluteGradientY;
-use ofws_core::data::generator::gradient::circular::CircularGradient;
+use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientY;
+use ofws_core::data::generator2d::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;

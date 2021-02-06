@@ -5,7 +5,7 @@ pub mod gradient;
 
 /// A trait to generate values for 2d points.
 /// Used for the procedural generation of 2d maps.
-pub trait Generator {
+pub trait Generator2d {
     /// Generates a value for a 2d point (x,y).
     fn generate(&self, x: u32, y: u32) -> u8;
 }
@@ -21,11 +21,11 @@ impl ConstantValue {
     }
 }
 
-impl Generator for ConstantValue {
+impl Generator2d for ConstantValue {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::{ConstantValue, Generator};
+    ///# use ofws_core::data::generator2d::{ConstantValue, Generator2d};
     /// let generator = ConstantValue::new(42);
     /// assert_eq!(generator.generate(0, 0), 42);
     /// assert_eq!(generator.generate(10, 0), 42);
@@ -50,11 +50,11 @@ impl MockGenerator {
     }
 }
 
-impl Generator for MockGenerator {
+impl Generator2d for MockGenerator {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::{Generator, MockGenerator};
+    ///# use ofws_core::data::generator2d::{Generator2d, MockGenerator};
     /// let generator = MockGenerator::new(3, 4, 42);
     /// assert_eq!(generator.generate(0, 0), 0);
     /// assert_eq!(generator.generate(10, 0), 0);
@@ -82,11 +82,11 @@ impl IndexGenerator {
     }
 }
 
-impl Generator for IndexGenerator {
+impl Generator2d for IndexGenerator {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::{Generator, IndexGenerator};
+    ///# use ofws_core::data::generator2d::{Generator2d, IndexGenerator};
     ///# use ofws_core::data::size2d::Size2d;
     /// let generator = IndexGenerator::new(Size2d::new(2, 3));
     ///

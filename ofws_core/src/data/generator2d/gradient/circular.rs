@@ -1,5 +1,5 @@
-use crate::data::generator::gradient::Gradient;
-use crate::data::generator::Generator;
+use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator2d::Generator2d;
 use crate::data::math::distance::calculate_distance;
 
 #[svgbobdoc::transform]
@@ -47,12 +47,12 @@ impl CircularGradient {
     }
 }
 
-impl Generator for CircularGradient {
+impl Generator2d for CircularGradient {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::circular::CircularGradient;
+    ///# use ofws_core::data::generator2d::Generator2d;
+    ///# use ofws_core::data::generator2d::gradient::circular::CircularGradient;
     /// let generator = CircularGradient::new(60, 10, 50, 50, 50);
     ///
     /// assert_eq!(generator.generate( 50,  0), 10);

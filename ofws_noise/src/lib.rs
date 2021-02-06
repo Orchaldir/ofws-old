@@ -1,5 +1,5 @@
 use noise::{NoiseFn, SuperSimplex};
-use ofws_core::data::generator::Generator;
+use ofws_core::data::generator2d::Generator2d;
 
 pub struct NoiseGenerator {
     algo: SuperSimplex,
@@ -17,7 +17,7 @@ impl NoiseGenerator {
     }
 }
 
-impl Generator for NoiseGenerator {
+impl Generator2d for NoiseGenerator {
     fn generate(&self, x: u32, y: u32) -> u8 {
         let x = x as f64 / self.scale;
         let y = y as f64 / self.scale;

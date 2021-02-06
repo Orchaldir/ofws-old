@@ -128,7 +128,7 @@ impl GenerationStep for BiomeSelector {
     // Executes the step.
     ///
     /// ```
-    ///# use ofws_core::data::generator::IndexGenerator;
+    ///# use ofws_core::data::generator2d::IndexGenerator;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::biome::BiomeSelector;
     ///# use ofws_core::data::map::generation::GenerationStep;

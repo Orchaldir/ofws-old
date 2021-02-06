@@ -1,5 +1,5 @@
-use crate::data::generator::gradient::Gradient;
-use crate::data::generator::Generator;
+use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator2d::Generator2d;
 
 #[svgbobdoc::transform]
 /// Generates a linear gradient between a start and an end value along the x-axis.
@@ -34,12 +34,12 @@ impl LinearGradientX {
     }
 }
 
-impl Generator for LinearGradientX {
+impl Generator2d for LinearGradientX {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::linear::LinearGradientX;
+    ///# use ofws_core::data::generator2d::Generator2d;
+    ///# use ofws_core::data::generator2d::gradient::linear::LinearGradientX;
     /// let generator = LinearGradientX::new(100, 200, 1000, 100);
     ///
     /// assert_eq!(generator.generate(   0,  0), 100);
@@ -80,12 +80,12 @@ impl LinearGradientY {
     }
 }
 
-impl Generator for LinearGradientY {
+impl Generator2d for LinearGradientY {
     /// Generates a value for a 2d point (x,y).
     ///
     /// ```
-    ///# use ofws_core::data::generator::Generator;
-    ///# use ofws_core::data::generator::gradient::linear::LinearGradientY;
+    ///# use ofws_core::data::generator2d::Generator2d;
+    ///# use ofws_core::data::generator2d::gradient::linear::LinearGradientY;
     /// let generator = LinearGradientY::new(100, 200, 1000, 100);
     ///
     /// assert_eq!(generator.generate( 0,    0), 100);
