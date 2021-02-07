@@ -54,7 +54,7 @@ fn create_map(size: Size2d) -> Option<Map2d> {
 
     create_generation_steps(&map)
         .iter()
-        .for_each(|step| step.execute(&mut map));
+        .for_each(|step| step.run(&mut map));
 
     info!("Finish map creation");
 

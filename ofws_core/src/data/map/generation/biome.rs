@@ -40,8 +40,8 @@ impl SetValueIfBelowThreshold {
 }
 
 impl GenerationStep for SetValueIfBelowThreshold {
-    // Executes the step.
-    fn execute(&self, map: &mut Map2d) {
+    // Runs the step.
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Overwrite '{}' with '{}' based on attribute '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),
@@ -125,7 +125,7 @@ impl BiomeSelector {
 }
 
 impl GenerationStep for BiomeSelector {
-    // Executes the step.
+    // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator2d::IndexGenerator;
@@ -140,12 +140,12 @@ impl GenerationStep for BiomeSelector {
     /// map.create_attribute("target", 255);
     /// let step = BiomeSelector::new(0, 1, 2, size, vec![10, 20, 30, 40, 50, 60]);
     ///
-    /// step.execute(&mut map);
+    /// step.run(&mut map);
     ///
     /// let attribute = map.get_attribute(2);
     /// assert_eq!(attribute.get_all(), &vec![10u8, 20, 30, 40, 50, 60]);
     /// ```
-    fn execute(&self, map: &mut Map2d) {
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Set '{}' based on attributes '{}' & '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),

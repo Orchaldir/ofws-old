@@ -49,7 +49,7 @@ impl DistortAlongX {
 }
 
 impl GenerationStep for DistortAlongX {
-    // Executes the step.
+    // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator1d::InputToOutput;
@@ -64,12 +64,12 @@ impl GenerationStep for DistortAlongX {
     /// let generator = Box::new(InputToOutput);
     /// let step = DistortAlongX::new(attribute_id, generator);
     ///
-    /// step.execute(&mut map);
+    /// step.run(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
     /// assert_eq!(attribute.get_all(), &vec![1u8, 2, 3, 4, 4, 5, 7, 7, 7]);
     /// ```
-    fn execute(&self, map: &mut Map2d) {
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' along the x-axis.",
             map.get_attribute(self.attribute_id).get_name(),
@@ -134,7 +134,7 @@ impl DistortAlongY {
 }
 
 impl GenerationStep for DistortAlongY {
-    // Executes the step.
+    // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator1d::InputToOutput;
@@ -149,12 +149,12 @@ impl GenerationStep for DistortAlongY {
     /// let generator = Box::new(InputToOutput);
     /// let step = DistortAlongY::new(attribute_id, generator);
     ///
-    /// step.execute(&mut map);
+    /// step.run(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
     /// assert_eq!(attribute.get_all(), &vec![1u8, 2, 3, 4, 2, 3, 7, 5, 3]);
     /// ```
-    fn execute(&self, map: &mut Map2d) {
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' along the y-axis.",
             map.get_attribute(self.attribute_id).get_name(),
@@ -209,8 +209,8 @@ impl Distortion2d {
 }
 
 impl GenerationStep for Distortion2d {
-    // Executes the step.
-    fn execute(&self, map: &mut Map2d) {
+    // Runs the step.
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' in 2 dimensions.",
             map.get_attribute(self.attribute_id).get_name(),

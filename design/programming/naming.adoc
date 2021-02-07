@@ -3,9 +3,9 @@
 * add_*
 * calculate_*
 * default
-* execute
 * generate
-* get_?
+* get_*
+** access a field
 * finish
 * from
 ** the From trait
@@ -15,6 +15,7 @@
 * load_*
 * new = constructor
 * on_*
+** react to an event
 * render_*
 * run
 * start
@@ -24,6 +25,4 @@
 
 == Issues
 
-* default VS with_*
-* get VS load
-* execute VS run
+* calculate VS generate

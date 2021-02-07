@@ -24,7 +24,7 @@ impl AddGeneratorStep {
 }
 
 impl GenerationStep for AddGeneratorStep {
-    // Executes the step.
+    // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator2d::IndexGenerator;
@@ -38,12 +38,12 @@ impl GenerationStep for AddGeneratorStep {
     /// let generator = Box::new(IndexGenerator::new(size));
     /// let step = AddGeneratorStep::new("test", attribute_id, generator);
     ///
-    /// step.execute(&mut map);
+    /// step.run(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
     /// assert_eq!(attribute.get_all(), &vec![40u8, 41, 42, 43, 44, 45]);
     /// ```
-    fn execute(&self, map: &mut Map2d) {
+    fn run(&self, map: &mut Map2d) {
         info!(
             "Add '{}' to attribute '{}' of map '{}'",
             self.name,

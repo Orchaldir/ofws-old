@@ -67,7 +67,7 @@ impl Map2d {
     /// assert_eq!(map.create_attribute("elevation", 100), None);
     /// ```
     pub fn create_attribute<S: Into<String>>(&mut self, name: S, default: u8) -> Option<usize> {
-        self.add_attribute(Attribute::default(name, self.size, default))
+        self.add_attribute(Attribute::default_value(name, self.size, default))
     }
 
     pub fn create_attribute_from<S: Into<String>>(

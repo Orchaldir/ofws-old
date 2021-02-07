@@ -7,6 +7,6 @@ pub mod modify;
 
 /// A trait to handle a step of the map generation.
 pub trait GenerationStep {
-    // Executes the step.
-    fn execute(&self, map: &mut Map2d);
+    // Runs the step.
+    fn run(&self, map: &mut Map2d);
 }
