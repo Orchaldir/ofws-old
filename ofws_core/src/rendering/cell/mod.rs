@@ -11,16 +11,13 @@ pub trait CellRenderer {
 }
 
 /// Renders a cell of a [`Map2d`] based on a specific attribute.
-pub struct AttributeRenderer {
+pub struct AttributeRenderer<T: Interpolator<Color>> {
     attribute_id: usize,
-    interpolator: Box<dyn Interpolator<Color>>,
+    interpolator: T,
 }
 
-impl AttributeRenderer {
-    pub fn new(
-        attribute_id: usize,
-        interpolator: Box<dyn Interpolator<Color>>,
-    ) -> AttributeRenderer {
+impl<T: Interpolator<Color>> AttributeRenderer<T> {
+    pub fn new(attribute_id: usize, interpolator: T) -> AttributeRenderer<T> {
         AttributeRenderer {
             attribute_id,
             interpolator,
@@ -28,7 +25,7 @@ impl AttributeRenderer {
     }
 }
 
-impl CellRenderer for AttributeRenderer {
+impl<T: Interpolator<Color>> CellRenderer for AttributeRenderer<T> {
     /// Returns the ascii code & color of the cell based on the attribute.
     fn get(&self, map: &Map2d, index: usize) -> (u8, Color) {
         let attribute = map.get_attribute(self.attribute_id);

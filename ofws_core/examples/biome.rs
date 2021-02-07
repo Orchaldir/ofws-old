@@ -12,7 +12,6 @@ use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
 use ofws_core::data::math::interpolation::vector::VectorInterpolator;
-use ofws_core::data::math::interpolation::Interpolator;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
@@ -155,7 +154,7 @@ fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationSt
     ))
 }
 
-fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
+fn create_elevation_color_interpolator() -> VectorInterpolator<Color> {
     let dark_blue = Color::new(0, 0, 128);
     let light_green = Color::new(100, 255, 100);
     let dark_green = Color::new(0, 80, 0);
@@ -172,10 +171,10 @@ fn create_elevation_color_interpolator() -> Box<dyn Interpolator<Color>> {
         (0.95, WHITE),
     ];
 
-    Box::new(VectorInterpolator::new(vector).unwrap())
+    VectorInterpolator::new(vector).unwrap()
 }
 
-fn create_temperature_color_interpolator() -> Box<dyn Interpolator<Color>> {
+fn create_temperature_color_interpolator() -> VectorInterpolator<Color> {
     let vector = vec![
         (0.0, WHITE),
         (0.2, CYAN),
@@ -185,10 +184,10 @@ fn create_temperature_color_interpolator() -> Box<dyn Interpolator<Color>> {
         (1.0, RED),
     ];
 
-    Box::new(VectorInterpolator::new(vector).unwrap())
+    VectorInterpolator::new(vector).unwrap()
 }
 
-fn create_rainfall_color_interpolator() -> Box<dyn Interpolator<Color>> {
+fn create_rainfall_color_interpolator() -> VectorInterpolator<Color> {
     let light_blue = Color::new(100, 200, 255);
     let light_golden_rod = Color::new(250, 250, 220);
     let golden_rod = Color::new(250, 200, 40);
@@ -201,31 +200,31 @@ fn create_rainfall_color_interpolator() -> Box<dyn Interpolator<Color>> {
         (1.0, golden_rod),
     ];
 
-    Box::new(VectorInterpolator::new(vector).unwrap())
+    VectorInterpolator::new(vector).unwrap()
 }
 
-fn create_elevation_renderer() -> Box<AttributeRenderer> {
+fn create_elevation_renderer() -> Box<dyn CellRenderer> {
     Box::new(AttributeRenderer::new(
         0,
         create_elevation_color_interpolator(),
     ))
 }
 
-fn create_temperature_renderer() -> Box<AttributeRenderer> {
+fn create_temperature_renderer() -> Box<dyn CellRenderer> {
     Box::new(AttributeRenderer::new(
         1,
         create_temperature_color_interpolator(),
     ))
 }
 
-fn create_rainfall_renderer() -> Box<AttributeRenderer> {
+fn create_rainfall_renderer() -> Box<dyn CellRenderer> {
     Box::new(AttributeRenderer::new(
         2,
         create_rainfall_color_interpolator(),
     ))
 }
 
-fn create_biome_renderer() -> Box<AttributeLookUp> {
+fn create_biome_renderer() -> Box<dyn CellRenderer> {
     let light_green = Color::new(100, 255, 100);
     let dark_green = Color::new(0, 80, 0);
     let darker_green = Color::new(0, 40, 0);
