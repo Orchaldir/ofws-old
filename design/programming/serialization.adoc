@@ -1,0 +1,16 @@
+= Serialization
+
+== Issues
+
+* how to handle 'dyn Traits'?
+** convert to enums?
+** what about new implementations in other crates?
+* how to validate data?
+* how to handle migrating to new versions?
+** e.g. the new version requires data for a new feature.
+* How to handle mods?
+
+== Serde
+
+* It can't be hidden behind an interface.
+** It touches the real code.
