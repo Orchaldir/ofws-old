@@ -1,4 +1,4 @@
-use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator2d::Generator2d;
 use crate::data::math::distance::abs_diff;
 
@@ -23,7 +23,7 @@ use crate::data::math::distance::abs_diff;
 /// ```
 ///
 pub struct AbsoluteGradientX {
-    gradient: Gradient,
+    gradient: Generator1d,
     center: u32,
 }
 
@@ -35,7 +35,7 @@ impl AbsoluteGradientX {
         max_distance: u32,
     ) -> AbsoluteGradientX {
         AbsoluteGradientX {
-            gradient: Gradient::new(value_center, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
             center,
         }
     }
@@ -73,7 +73,7 @@ impl Generator2d for AbsoluteGradientX {
 /// See [`AbsoluteGradientX`].
 ///
 pub struct AbsoluteGradientY {
-    gradient: Gradient,
+    gradient: Generator1d,
     center: u32,
 }
 
@@ -85,7 +85,7 @@ impl AbsoluteGradientY {
         max_distance: u32,
     ) -> AbsoluteGradientY {
         AbsoluteGradientY {
-            gradient: Gradient::new(value_center, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
             center,
         }
     }

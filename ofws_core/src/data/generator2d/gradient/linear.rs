@@ -1,4 +1,4 @@
-use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator2d::Generator2d;
 
 #[svgbobdoc::transform]
@@ -21,14 +21,14 @@ use crate::data::generator2d::Generator2d;
 ///         start  end
 /// ```
 pub struct LinearGradientX {
-    gradient: Gradient,
+    gradient: Generator1d,
     start: u32,
 }
 
 impl LinearGradientX {
     pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientX {
         LinearGradientX {
-            gradient: Gradient::new(value_start, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_start, value_end, max_distance),
             start,
         }
     }
@@ -53,11 +53,8 @@ impl Generator2d for LinearGradientX {
     /// assert_eq!(generator.generate(1200, 20), 200);
     /// ```
     fn generate(&self, x: u32, _y: u32) -> u8 {
-        if x < self.start {
-            return self.gradient.value_start;
-        }
-
-        self.gradient.generate(x - self.start)
+        let distance = x.saturating_sub(self.start);
+        self.gradient.generate(distance)
     }
 }
 
@@ -67,14 +64,14 @@ impl Generator2d for LinearGradientX {
 ///
 /// See [`LinearGradientX`].
 pub struct LinearGradientY {
-    gradient: Gradient,
+    gradient: Generator1d,
     start: u32,
 }
 
 impl LinearGradientY {
     pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientY {
         LinearGradientY {
-            gradient: Gradient::new(value_start, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_start, value_end, max_distance),
             start,
         }
     }
@@ -99,11 +96,8 @@ impl Generator2d for LinearGradientY {
     /// assert_eq!(generator.generate(20, 1200), 200);
     /// ```
     fn generate(&self, _x: u32, y: u32) -> u8 {
-        if y < self.start {
-            return self.gradient.value_start;
-        }
-
-        self.gradient.generate(y - self.start)
+        let distance = y.saturating_sub(self.start);
+        self.gradient.generate(distance)
     }
 }
 

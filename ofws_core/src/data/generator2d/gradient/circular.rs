@@ -1,4 +1,4 @@
-use crate::data::generator2d::gradient::Gradient;
+use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator2d::Generator2d;
 use crate::data::math::distance::calculate_distance;
 
@@ -26,7 +26,7 @@ use crate::data::math::distance::calculate_distance;
 /// * The point (x,y) has the value of *value_center*.
 /// * Points inside the circle are a linear interpolation between those values.
 pub struct CircularGradient {
-    gradient: Gradient,
+    gradient: Generator1d,
     x: u32,
     y: u32,
 }
@@ -40,7 +40,7 @@ impl CircularGradient {
         max_distance: u32,
     ) -> CircularGradient {
         CircularGradient {
-            gradient: Gradient::new(value_center, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
             x,
             y,
         }
