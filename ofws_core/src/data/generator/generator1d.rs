@@ -7,31 +7,30 @@ pub enum Generator1d {
     Gradient1d {
         value_start: u8,
         value_end: u8,
-        max_distance: u32,
+        length: u32,
     },
     /// Returns the input as output.
     InputAsOutput,
     /// Generates values with Super Simplex noise.
     Noise1d {
         algo: Box<SuperSimplex>,
-        seed: u32,
         scale: f64,
         factor: f64,
     },
 }
 
 impl Generator1d {
-    pub fn new_gradient(value_start: u8, value_end: u8, max_distance: u32) -> Generator1d {
+    pub fn new_gradient(value_start: u8, value_end: u8, length: u32) -> Generator1d {
         Generator1d::Gradient1d {
             value_start,
             value_end,
-            max_distance,
+            length,
         }
     }
+
     pub fn new_noise(seed: u32, scale: f64, max_value: u8) -> Generator1d {
         Generator1d::Noise1d {
             algo: Box::new(SuperSimplex::new().set_seed(seed)),
-            seed,
             scale,
             factor: max_value as f64 / 2.0,
         }
@@ -43,15 +42,14 @@ impl Generator1d {
             Generator1d::Gradient1d {
                 value_start,
                 value_end,
-                max_distance,
+                length,
             } => {
-                let factor = input as f32 / *max_distance as f32;
+                let factor = input as f32 / *length as f32;
                 lerp(*value_start, *value_end, factor)
             }
             Generator1d::InputAsOutput => input as u8,
             Generator1d::Noise1d {
                 algo,
-                seed: _,
                 scale,
                 factor,
             } => {
