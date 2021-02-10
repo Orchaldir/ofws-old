@@ -1,4 +1,4 @@
-use crate::data::generator1d::Generator1d;
+use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator2d::Generator2d;
 use crate::data::map::attribute::Attribute;
 use crate::data::map::generation::GenerationStep;
@@ -7,11 +7,11 @@ use crate::data::map::Map2d;
 /// Shifts each row of an [`Attribute`] along the x-axis based on a [`Generator1d`].
 pub struct DistortAlongX {
     attribute_id: usize,
-    generator: Box<dyn Generator1d>,
+    generator: Generator1d,
 }
 
 impl DistortAlongX {
-    pub fn new(attribute_id: usize, generator: Box<dyn Generator1d>) -> DistortAlongX {
+    pub fn new(attribute_id: usize, generator: Generator1d) -> DistortAlongX {
         DistortAlongX {
             attribute_id,
             generator,
@@ -52,7 +52,7 @@ impl GenerationStep for DistortAlongX {
     // Runs the step.
     ///
     /// ```
-    ///# use ofws_core::data::generator1d::InputToOutput;
+    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::DistortAlongX;
     ///# use ofws_core::data::map::generation::GenerationStep;
@@ -61,8 +61,7 @@ impl GenerationStep for DistortAlongX {
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let generator = Box::new(InputToOutput);
-    /// let step = DistortAlongX::new(attribute_id, generator);
+    /// let step = DistortAlongX::new(attribute_id, InputAsOutput);
     ///
     /// step.run(&mut map);
     ///
@@ -86,11 +85,11 @@ impl GenerationStep for DistortAlongX {
 /// Shifts each column of an [`Attribute`] along the y-axis based on a [`Generator1d`].
 pub struct DistortAlongY {
     attribute_id: usize,
-    generator: Box<dyn Generator1d>,
+    generator: Generator1d,
 }
 
 impl DistortAlongY {
-    pub fn new(attribute_id: usize, generator: Box<dyn Generator1d>) -> DistortAlongY {
+    pub fn new(attribute_id: usize, generator: Generator1d) -> DistortAlongY {
         DistortAlongY {
             attribute_id,
             generator,
@@ -137,7 +136,7 @@ impl GenerationStep for DistortAlongY {
     // Runs the step.
     ///
     /// ```
-    ///# use ofws_core::data::generator1d::InputToOutput;
+    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::DistortAlongY;
     ///# use ofws_core::data::map::generation::GenerationStep;
@@ -146,8 +145,7 @@ impl GenerationStep for DistortAlongY {
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let generator = Box::new(InputToOutput);
-    /// let step = DistortAlongY::new(attribute_id, generator);
+    /// let step = DistortAlongY::new(attribute_id, InputAsOutput);
     ///
     /// step.run(&mut map);
     ///
