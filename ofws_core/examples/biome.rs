@@ -3,6 +3,7 @@ extern crate log;
 extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
+use ofws_core::data::generator::generator1d::Generator1d;
 use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientY;
 use ofws_core::data::generator2d::gradient::circular::CircularGradient;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
@@ -18,7 +19,7 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
-use ofws_noise::{NoiseGenerator1d, NoiseGenerator2d};
+use ofws_noise::NoiseGenerator2d;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -114,7 +115,7 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
 }
 
 fn distort_temperature(temperature_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Box::new(NoiseGenerator1d::new(0, 60.0, 20));
+    let noise = Generator1d::new_noise(0, 60.0, 20);
     Box::new(DistortAlongY::new(temperature_id, noise))
 }
 
