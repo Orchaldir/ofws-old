@@ -3,12 +3,13 @@
 == Issues
 
 * how to handle 'dyn Traits'?
-** convert to enums?
-** what about new implementations in other crates?
+** Convert to enums.
 * how to validate data?
 * how to handle migrating to new versions?
 ** e.g. the new version requires data for a new feature.
+** With a migration app that works with a parser and not our structs.
 * How to handle mods?
+** With a mod manager that combines the data from all mods.
 
 == Serde
 
