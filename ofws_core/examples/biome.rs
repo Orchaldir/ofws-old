@@ -46,7 +46,11 @@ impl BiomeExample {
 }
 
 fn create_map(size: Size2d) -> Option<Map2d> {
-    info!("Start map creation with {:?}", size);
+    info!(
+        "Start map creation with {:?} & {} cells",
+        size,
+        size.get_area(),
+    );
 
     let mut map = Map2d::with_name("biome example", size);
 
