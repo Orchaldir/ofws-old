@@ -22,14 +22,12 @@ use crate::data::generator2d::Generator2d;
 /// ```
 pub struct LinearGradientX {
     gradient: Generator1d,
-    start: u32,
 }
 
 impl LinearGradientX {
     pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientX {
         LinearGradientX {
-            gradient: Generator1d::new_gradient(value_start, value_end, max_distance),
-            start,
+            gradient: Generator1d::new_gradient(value_start, value_end, start, max_distance),
         }
     }
 }
@@ -53,8 +51,7 @@ impl Generator2d for LinearGradientX {
     /// assert_eq!(generator.generate(1200, 20), 200);
     /// ```
     fn generate(&self, x: u32, _y: u32) -> u8 {
-        let distance = x.saturating_sub(self.start);
-        self.gradient.generate(distance)
+        self.gradient.generate(x)
     }
 }
 
@@ -65,14 +62,12 @@ impl Generator2d for LinearGradientX {
 /// See [`LinearGradientX`].
 pub struct LinearGradientY {
     gradient: Generator1d,
-    start: u32,
 }
 
 impl LinearGradientY {
     pub fn new(value_start: u8, value_end: u8, start: u32, max_distance: u32) -> LinearGradientY {
         LinearGradientY {
-            gradient: Generator1d::new_gradient(value_start, value_end, max_distance),
-            start,
+            gradient: Generator1d::new_gradient(value_start, value_end, start, max_distance),
         }
     }
 }
@@ -96,8 +91,7 @@ impl Generator2d for LinearGradientY {
     /// assert_eq!(generator.generate(20, 1200), 200);
     /// ```
     fn generate(&self, _x: u32, y: u32) -> u8 {
-        let distance = y.saturating_sub(self.start);
-        self.gradient.generate(distance)
+        self.gradient.generate(y)
     }
 }
 

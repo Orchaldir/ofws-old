@@ -1,12 +1,56 @@
+use crate::data::math::distance::abs_diff;
 use crate::data::math::interpolation::lerp;
 use noise::{NoiseFn, Seedable, SuperSimplex};
 
+#[svgbobdoc::transform]
 /// Generates values for a 1d input.
 pub enum Generator1d {
+    /// Generates a linear gradient between a center and both sides.
+    ///
+    /// # Diagram
+    ///
+    /// ```svgbob
+    ///      value
+    ///        ^
+    ///        |
+    ///        |        center
+    /// center |        *
+    ///        |       / \
+    ///        |      /   \
+    ///        |     /     \
+    ///    end |----*       *----
+    ///        |
+    ///        +----*-------*---> input
+    ///          center +- length
+    /// ```
+    AbsoluteGradient1d {
+        value_center: u8,
+        value_end: u8,
+        center: u32,
+        length: u32,
+    },
     /// Generates a linear gradient between a start and an end value.
+    ///
+    /// # Diagram
+    ///
+    /// ```svgbob
+    ///     value
+    ///       ^
+    ///       |
+    ///       |
+    ///   end |        *------
+    ///       |       /
+    ///       |      /
+    ///       |     /
+    /// start |----*
+    ///       |
+    ///       +----*---*------> input
+    ///         start  end
+    /// ```
     Gradient1d {
         value_start: u8,
         value_end: u8,
+        start: u32,
         length: u32,
     },
     /// Returns the input as output.
@@ -20,10 +64,25 @@ pub enum Generator1d {
 }
 
 impl Generator1d {
-    pub fn new_gradient(value_start: u8, value_end: u8, length: u32) -> Generator1d {
+    pub fn new_absolute_gradient(
+        value_center: u8,
+        value_end: u8,
+        center: u32,
+        length: u32,
+    ) -> Generator1d {
+        Generator1d::AbsoluteGradient1d {
+            value_center,
+            value_end,
+            center,
+            length,
+        }
+    }
+
+    pub fn new_gradient(value_start: u8, value_end: u8, start: u32, length: u32) -> Generator1d {
         Generator1d::Gradient1d {
             value_start,
             value_end,
+            start,
             length,
         }
     }
@@ -39,12 +98,27 @@ impl Generator1d {
     /// Generates an output for an input.
     pub fn generate(&self, input: u32) -> u8 {
         match self {
+            Generator1d::AbsoluteGradient1d {
+                value_center,
+                value_end,
+                center,
+                length,
+            } => {
+                let distance = abs_diff(*center, input) as f32;
+                let factor = distance / *length as f32;
+                lerp(*value_center, *value_end, factor)
+            }
             Generator1d::Gradient1d {
                 value_start,
                 value_end,
+                start,
                 length,
             } => {
-                let factor = input as f32 / *length as f32;
+                if input <= *start {
+                    return *value_start;
+                }
+                let distance = (input - start) as f32;
+                let factor = distance / *length as f32;
                 lerp(*value_start, *value_end, factor)
             }
             Generator1d::InputAsOutput => input as u8,

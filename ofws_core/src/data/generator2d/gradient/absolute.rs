@@ -1,6 +1,5 @@
 use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator2d::Generator2d;
-use crate::data::math::distance::abs_diff;
 
 #[svgbobdoc::transform]
 /// Generates a linear gradient between a center and 2 equidistant end points along the x-axis.
@@ -24,7 +23,6 @@ use crate::data::math::distance::abs_diff;
 ///
 pub struct AbsoluteGradientX {
     gradient: Generator1d,
-    center: u32,
 }
 
 impl AbsoluteGradientX {
@@ -35,8 +33,12 @@ impl AbsoluteGradientX {
         max_distance: u32,
     ) -> AbsoluteGradientX {
         AbsoluteGradientX {
-            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
-            center,
+            gradient: Generator1d::new_absolute_gradient(
+                value_center,
+                value_end,
+                center,
+                max_distance,
+            ),
         }
     }
 }
@@ -61,8 +63,7 @@ impl Generator2d for AbsoluteGradientX {
     /// assert_eq!(generator.generate(200,  0),  0);
     /// ```
     fn generate(&self, x: u32, _y: u32) -> u8 {
-        let distance = abs_diff(self.center, x);
-        self.gradient.generate(distance)
+        self.gradient.generate(x)
     }
 }
 
@@ -74,7 +75,6 @@ impl Generator2d for AbsoluteGradientX {
 ///
 pub struct AbsoluteGradientY {
     gradient: Generator1d,
-    center: u32,
 }
 
 impl AbsoluteGradientY {
@@ -85,8 +85,12 @@ impl AbsoluteGradientY {
         max_distance: u32,
     ) -> AbsoluteGradientY {
         AbsoluteGradientY {
-            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
-            center,
+            gradient: Generator1d::new_absolute_gradient(
+                value_center,
+                value_end,
+                center,
+                max_distance,
+            ),
         }
     }
 }
@@ -111,7 +115,6 @@ impl Generator2d for AbsoluteGradientY {
     /// assert_eq!(generator.generate(  0, 200),  0);
     /// ```
     fn generate(&self, _x: u32, y: u32) -> u8 {
-        let distance = abs_diff(self.center, y);
-        self.gradient.generate(distance)
+        self.gradient.generate(y)
     }
 }
