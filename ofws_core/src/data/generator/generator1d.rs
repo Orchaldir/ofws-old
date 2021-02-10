@@ -6,7 +6,7 @@ pub enum Generator1d {
     InputAsOutput,
     /// Generates values with Super Simplex noise.
     Noise1d {
-        algo: SuperSimplex,
+        algo: Box<SuperSimplex>,
         seed: u32,
         scale: f64,
         factor: f64,
@@ -16,7 +16,7 @@ pub enum Generator1d {
 impl Generator1d {
     pub fn new_noise(seed: u32, scale: f64, max_value: u8) -> Generator1d {
         Generator1d::Noise1d {
-            algo: SuperSimplex::new().set_seed(seed),
+            algo: Box::new(SuperSimplex::new().set_seed(seed)),
             seed,
             scale,
             factor: max_value as f64 / 2.0,
