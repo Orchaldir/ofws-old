@@ -40,7 +40,7 @@ impl CircularGradient {
         max_distance: u32,
     ) -> CircularGradient {
         CircularGradient {
-            gradient: Generator1d::new_gradient(value_center, value_end, max_distance),
+            gradient: Generator1d::new_gradient(value_center, value_end, 0, max_distance),
             x,
             y,
         }
