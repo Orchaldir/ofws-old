@@ -1,7 +1,14 @@
+use crate::data::math::interpolation::lerp;
 use noise::{NoiseFn, Seedable, SuperSimplex};
 
 /// Generates values for a 1d input.
 pub enum Generator1d {
+    /// Generates a linear gradient between a start and an end value.
+    Gradient1d {
+        value_start: u8,
+        value_end: u8,
+        max_distance: u32,
+    },
     /// Returns the input as output.
     InputAsOutput,
     /// Generates values with Super Simplex noise.
@@ -14,6 +21,13 @@ pub enum Generator1d {
 }
 
 impl Generator1d {
+    pub fn new_gradient(value_start: u8, value_end: u8, max_distance: u32) -> Generator1d {
+        Generator1d::Gradient1d {
+            value_start,
+            value_end,
+            max_distance,
+        }
+    }
     pub fn new_noise(seed: u32, scale: f64, max_value: u8) -> Generator1d {
         Generator1d::Noise1d {
             algo: Box::new(SuperSimplex::new().set_seed(seed)),
@@ -26,6 +40,14 @@ impl Generator1d {
     /// Generates an output for an input.
     pub fn generate(&self, input: u32) -> u8 {
         match self {
+            Generator1d::Gradient1d {
+                value_start,
+                value_end,
+                max_distance,
+            } => {
+                let factor = input as f32 / *max_distance as f32;
+                lerp(*value_start, *value_end, factor)
+            }
             Generator1d::InputAsOutput => input as u8,
             Generator1d::Noise1d {
                 algo,
