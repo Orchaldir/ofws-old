@@ -23,6 +23,24 @@ pub enum Generator1d {
     ///        +----*-------*---> input
     ///          center +- length
     /// ```
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///# use ofws_core::data::generator::generator1d::Generator1d;
+    /// let generator = Generator1d::new_absolute_gradient(100, 0, 80, 100);
+    ///
+    /// assert_eq!(generator.generate(  0),  20);
+    /// assert_eq!(generator.generate(  1),  21);
+    /// assert_eq!(generator.generate( 79),  99);
+    /// assert_eq!(generator.generate( 80), 100);
+    /// assert_eq!(generator.generate( 81),  99);
+    /// assert_eq!(generator.generate(130),  50);
+    /// assert_eq!(generator.generate(179),   1);
+    /// assert_eq!(generator.generate(180),   0);
+    /// assert_eq!(generator.generate(181),   0);
+    /// assert_eq!(generator.generate(200),   0);
+    /// ```
     AbsoluteGradient1d {
         value_center: u8,
         value_end: u8,
@@ -47,6 +65,23 @@ pub enum Generator1d {
     ///       +----*---*------> input
     ///         start  end
     /// ```
+    ///
+    /// # Example
+    ///
+    ///```
+    ///# use ofws_core::data::generator::generator1d::Generator1d;
+    /// let generator = Generator1d::new_gradient(100, 200, 1000, 100);
+    ///
+    /// assert_eq!(generator.generate(   0), 100);
+    /// assert_eq!(generator.generate( 500), 100);
+    /// assert_eq!(generator.generate(1000), 100);
+    /// assert_eq!(generator.generate(1001), 101);
+    /// assert_eq!(generator.generate(1050), 150);
+    /// assert_eq!(generator.generate(1099), 199);
+    /// assert_eq!(generator.generate(1100), 200);
+    /// assert_eq!(generator.generate(1101), 200);
+    /// assert_eq!(generator.generate(1200), 200);
+    ///```
     Gradient1d {
         value_start: u8,
         value_end: u8,
@@ -54,6 +89,16 @@ pub enum Generator1d {
         length: u32,
     },
     /// Returns the input as output.
+    ///
+    /// # Example
+    ///
+    ///```
+    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
+    ///
+    /// assert_eq!(InputAsOutput.generate(0), 0);
+    /// assert_eq!(InputAsOutput.generate(1), 1);
+    /// assert_eq!(InputAsOutput.generate(2), 2);
+    ///```
     InputAsOutput,
     /// Generates values with Super Simplex noise.
     Noise1d {
