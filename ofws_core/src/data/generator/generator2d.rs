@@ -1,7 +1,9 @@
-use crate::data::generator::generator1d::Generator1d;
-use crate::data::generator::noise::Noise;
+use crate::data::generator::generator1d::{Generator1d, Generator1dData};
+use crate::data::generator::noise::{Noise, NoiseData};
 use crate::data::math::distance::calculate_distance;
 use crate::data::size2d::Size2d;
+use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 
 #[svgbobdoc::transform]
 /// Generate values for 2d points.
@@ -117,4 +119,91 @@ impl Generator2d {
             Generator2d::Noise2d(noise) => noise.generate2d(x, y),
         }
     }
+}
+
+/// For serializing, deserializing & validating [`Generator2d`].
+///
+///```
+///# use ofws_core::data::generator::generator1d::Generator1dData::InputAsOutput;
+///# use ofws_core::data::generator::generator2d::{Generator2dData, assert_eq};
+///# use ofws_core::data::generator::gradient::Gradient;
+///# use ofws_core::data::generator::noise::NoiseData;
+///# use ofws_core::data::size2d::Size2d;
+/// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
+///
+/// assert_eq(Generator2dData::ApplyToX(InputAsOutput));
+/// assert_eq(Generator2dData::ApplyToY(InputAsOutput));
+/// assert_eq(Generator2dData::ApplyToDistance { generator: InputAsOutput, center_x: 10, center_y: 20});
+/// assert_eq(Generator2dData::IndexGenerator(Size2d::new(3, 5)));
+/// assert_eq(Generator2dData::Noise2d(noise_data));
+///```
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+pub enum Generator2dData {
+    ApplyToX(Generator1dData),
+    ApplyToY(Generator1dData),
+    ApplyToDistance {
+        generator: Generator1dData,
+        center_x: u32,
+        center_y: u32,
+    },
+    IndexGenerator(Size2d),
+    Noise2d(NoiseData),
+}
+
+impl TryFrom<Generator2dData> for Generator2d {
+    type Error = &'static str;
+
+    fn try_from(data: Generator2dData) -> Result<Self, Self::Error> {
+        match data {
+            Generator2dData::ApplyToX(data) => {
+                let generator: Generator1d = data.try_into()?;
+                Ok(Generator2d::ApplyToX(generator))
+            }
+            Generator2dData::ApplyToY(data) => {
+                let generator: Generator1d = data.try_into()?;
+                Ok(Generator2d::ApplyToY(generator))
+            }
+            Generator2dData::ApplyToDistance {
+                generator,
+                center_x,
+                center_y,
+            } => {
+                let generator: Generator1d = generator.try_into()?;
+                Ok(Generator2d::new_apply_to_distance(
+                    generator, center_x, center_y,
+                ))
+            }
+            Generator2dData::IndexGenerator(size) => Ok(Generator2d::IndexGenerator(size)),
+            Generator2dData::Noise2d(data) => {
+                let noise: Noise = data.try_into()?;
+                Ok(Generator2d::Noise2d(noise))
+            }
+        }
+    }
+}
+
+impl From<Generator2d> for Generator2dData {
+    fn from(generator: Generator2d) -> Self {
+        match generator {
+            Generator2d::ApplyToX(generator) => Generator2dData::ApplyToX(generator.into()),
+            Generator2d::ApplyToY(generator) => Generator2dData::ApplyToY(generator.into()),
+            Generator2d::ApplyToDistance {
+                generator,
+                center_x,
+                center_y,
+            } => Generator2dData::ApplyToDistance {
+                generator: generator.into(),
+                center_x,
+                center_y,
+            },
+            Generator2d::IndexGenerator(size) => Generator2dData::IndexGenerator(size),
+            Generator2d::Noise2d(noise) => Generator2dData::Noise2d(noise.into()),
+        }
+    }
+}
+
+pub fn assert_eq(data: Generator2dData) {
+    let generator: Generator2d = data.try_into().unwrap();
+    let result: Generator2dData = generator.into();
+    assert_eq!(result, data)
 }

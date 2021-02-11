@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::ops::{Add, Mul};
 
 #[svgbobdoc::transform]
@@ -22,7 +23,7 @@ use std::ops::{Add, Mul};
 ///
 /// A size with width 2 & height 3.
 /// The numbers are indices of each cell.
-#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Size2d {
     width: u32,
     height: u32,
