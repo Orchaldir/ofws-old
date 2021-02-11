@@ -5,6 +5,7 @@ extern crate ofws_rendering_glium;
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::generator1d::Generator1d;
 use ofws_core::data::generator::generator2d::Generator2d;
+use ofws_core::data::generator::gradient::Gradient;
 use ofws_core::data::generator::noise::Noise;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::distortion::DistortAlongY;
@@ -94,7 +95,8 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
     let half_x = map.get_size().width() / 2;
     let half_y = map.get_size().height() / 2;
 
-    let gradient = Generator1d::new_gradient(125, 0, 0, half_x / 2);
+    let gradient = Gradient::new(125, 0, 0, half_x / 2);
+    let gradient = Generator1d::Gradient1d(gradient);
     let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
     Box::new(AddGeneratorStep::new("continent", elevation_id, mountain))
 }
@@ -107,7 +109,8 @@ fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
 
 fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn GenerationStep> {
     let half_y = map.get_size().height() / 2;
-    let gradient = Generator1d::new_absolute_gradient(255, 0, half_y, half_y);
+    let gradient = Gradient::new(255, 0, half_y, half_y);
+    let gradient = Generator1d::AbsoluteGradient1d(gradient);
     let generator = Generator2d::new_apply_to_y(gradient);
     Box::new(AddGeneratorStep::new(
         "gradient y",
