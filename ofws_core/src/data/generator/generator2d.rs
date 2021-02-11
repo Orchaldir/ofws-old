@@ -24,7 +24,7 @@ pub enum Generator2d {
     /// assert_eq!(generator.generate(1, 2), 1);
     /// assert_eq!(generator.generate(2, 2), 2);
     /// ```
-    ApplyToX { generator: Generator1d },
+    ApplyToX(Generator1d),
     /// Feeds the y values to a [`Generator1d`].
     ///
     /// ```
@@ -42,7 +42,7 @@ pub enum Generator2d {
     /// assert_eq!(generator.generate(1, 2), 2);
     /// assert_eq!(generator.generate(2, 2), 2);
     /// ```
-    ApplyToY { generator: Generator1d },
+    ApplyToY(Generator1d),
     /// Feeds the distance from a point to a [`Generator1d`].
     ///
     /// ```
@@ -74,18 +74,18 @@ pub enum Generator2d {
     /// assert_eq!(generator.generate(0, 2), 4);
     /// assert_eq!(generator.generate(1, 2), 5);
     /// ```
-    IndexGenerator { size: Size2d },
+    IndexGenerator(Size2d),
     /// Generates noise for each 2d point.
     Noise2d(Noise),
 }
 
 impl Generator2d {
     pub fn new_apply_to_x(generator: Generator1d) -> Generator2d {
-        Generator2d::ApplyToX { generator }
+        Generator2d::ApplyToX(generator)
     }
 
     pub fn new_apply_to_y(generator: Generator1d) -> Generator2d {
-        Generator2d::ApplyToY { generator }
+        Generator2d::ApplyToY(generator)
     }
 
     pub fn new_apply_to_distance(generator: Generator1d, x: u32, y: u32) -> Generator2d {
@@ -97,16 +97,14 @@ impl Generator2d {
     }
 
     pub fn new_index(width: u32, height: u32) -> Generator2d {
-        Generator2d::IndexGenerator {
-            size: Size2d::new(width, height),
-        }
+        Generator2d::IndexGenerator(Size2d::new(width, height))
     }
 
     /// Generates a value for a 2d point (x,y).
     pub fn generate(&self, x: u32, y: u32) -> u8 {
         match self {
-            Generator2d::ApplyToX { generator } => generator.generate(x),
-            Generator2d::ApplyToY { generator } => generator.generate(y),
+            Generator2d::ApplyToX(generator) => generator.generate(x),
+            Generator2d::ApplyToY(generator) => generator.generate(y),
             Generator2d::ApplyToDistance {
                 generator,
                 center_x,
@@ -115,7 +113,7 @@ impl Generator2d {
                 let distance = calculate_distance(*center_x, *center_y, x, y);
                 generator.generate(distance)
             }
-            Generator2d::IndexGenerator { size } => size.saturating_to_index(x, y) as u8,
+            Generator2d::IndexGenerator(size) => size.saturating_to_index(x, y) as u8,
             Generator2d::Noise2d(noise) => noise.generate2d(x, y),
         }
     }
