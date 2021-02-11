@@ -4,8 +4,7 @@ extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::generator1d::Generator1d;
-use ofws_core::data::generator2d::gradient::absolute::AbsoluteGradientY;
-use ofws_core::data::generator2d::gradient::circular::CircularGradient;
+use ofws_core::data::generator::generator2d::Generator2d;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::distortion::DistortAlongY;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
@@ -19,7 +18,6 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
-use ofws_noise::NoiseGenerator2d;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -95,18 +93,20 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
     let half_x = map.get_size().width() / 2;
     let half_y = map.get_size().height() / 2;
 
-    let mountain = Box::new(CircularGradient::new(125, 0, half_x, half_y, half_x / 2));
+    let gradient = Generator1d::new_gradient(125, 0, 0, half_x / 2);
+    let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
     Box::new(AddGeneratorStep::new("continent", elevation_id, mountain))
 }
 
 fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Box::new(NoiseGenerator2d::new(0, 20.0, 125));
+    let noise = Generator2d::new_noise(0, 20.0, 125);
     Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
 
 fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn GenerationStep> {
     let half_y = map.get_size().height() / 2;
-    let generator = Box::new(AbsoluteGradientY::new(255, 0, half_y, half_y));
+    let gradient = Generator1d::new_absolute_gradient(255, 0, half_y, half_y);
+    let generator = Generator2d::new_apply_to_y(gradient);
     Box::new(AddGeneratorStep::new(
         "gradient y",
         temperature_id,
@@ -132,8 +132,8 @@ fn subtract_elevation_from_temperature(
 }
 
 fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
-    let generator = Box::new(NoiseGenerator2d::new(0, 100.0, 255));
-    Box::new(AddGeneratorStep::new("noise", rainfall_id, generator))
+    let noise = Generator2d::new_noise(0, 100.0, 255);
+    Box::new(AddGeneratorStep::new("noise", rainfall_id, noise))
 }
 
 fn select_biome(

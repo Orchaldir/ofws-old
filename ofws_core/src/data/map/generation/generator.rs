@@ -1,4 +1,4 @@
-use crate::data::generator2d::Generator2d;
+use crate::data::generator::generator2d::Generator2d;
 use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
 
@@ -6,14 +6,14 @@ use crate::data::map::Map2d;
 pub struct AddGeneratorStep {
     name: String,
     attribute_id: usize,
-    generator: Box<dyn Generator2d>,
+    generator: Generator2d,
 }
 
 impl AddGeneratorStep {
     pub fn new<S: Into<String>>(
         name: S,
         attribute_id: usize,
-        generator: Box<dyn Generator2d>,
+        generator: Generator2d,
     ) -> AddGeneratorStep {
         AddGeneratorStep {
             name: name.into(),
@@ -27,7 +27,7 @@ impl GenerationStep for AddGeneratorStep {
     // Runs the step.
     ///
     /// ```
-    ///# use ofws_core::data::generator2d::IndexGenerator;
+    ///# use ofws_core::data::generator::generator2d::Generator2d::IndexGenerator;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::generator::AddGeneratorStep;
     ///# use ofws_core::data::map::generation::GenerationStep;
@@ -35,7 +35,7 @@ impl GenerationStep for AddGeneratorStep {
     /// let size = Size2d::new(2, 3);
     /// let mut map = Map2d::new(size);
     /// let attribute_id = map.create_attribute("elevation", 40).unwrap();
-    /// let generator = Box::new(IndexGenerator::new(size));
+    /// let generator = IndexGenerator { size };
     /// let step = AddGeneratorStep::new("test", attribute_id, generator);
     ///
     /// step.run(&mut map);
