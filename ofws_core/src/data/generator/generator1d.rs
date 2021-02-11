@@ -1,6 +1,5 @@
+use crate::data::generator::gradient::Gradient;
 use crate::data::generator::noise::Noise;
-use crate::data::math::distance::abs_diff;
-use crate::data::math::interpolation::lerp;
 
 #[svgbobdoc::transform]
 /// Generates values for a 1d input.
@@ -28,7 +27,9 @@ pub enum Generator1d {
     ///
     /// ```
     ///# use ofws_core::data::generator::generator1d::Generator1d;
-    /// let generator = Generator1d::new_absolute_gradient(100, 0, 80, 100);
+    ///# use ofws_core::data::generator::gradient::Gradient;
+    /// let gradient = Gradient::new(100, 0, 80, 100);
+    /// let generator = Generator1d::AbsoluteGradient1d(gradient);
     ///
     /// assert_eq!(generator.generate(  0),  20);
     /// assert_eq!(generator.generate(  1),  21);
@@ -41,12 +42,7 @@ pub enum Generator1d {
     /// assert_eq!(generator.generate(181),   0);
     /// assert_eq!(generator.generate(200),   0);
     /// ```
-    AbsoluteGradient1d {
-        value_center: u8,
-        value_end: u8,
-        center: u32,
-        length: u32,
-    },
+    AbsoluteGradient1d(Gradient),
     /// Generates a linear gradient between a start and an end value.
     ///
     /// # Diagram
@@ -70,7 +66,9 @@ pub enum Generator1d {
     ///
     ///```
     ///# use ofws_core::data::generator::generator1d::Generator1d;
-    /// let generator = Generator1d::new_gradient(100, 200, 1000, 100);
+    ///# use ofws_core::data::generator::gradient::Gradient;
+    /// let gradient = Gradient::new(100, 200, 1000, 100);
+    /// let generator = Generator1d::Gradient1d(gradient);
     ///
     /// assert_eq!(generator.generate(   0), 100);
     /// assert_eq!(generator.generate( 500), 100);
@@ -82,12 +80,7 @@ pub enum Generator1d {
     /// assert_eq!(generator.generate(1101), 200);
     /// assert_eq!(generator.generate(1200), 200);
     ///```
-    Gradient1d {
-        value_start: u8,
-        value_end: u8,
-        start: u32,
-        length: u32,
-    },
+    Gradient1d(Gradient),
     /// Returns the input as output.
     ///
     /// # Example
@@ -105,55 +98,11 @@ pub enum Generator1d {
 }
 
 impl Generator1d {
-    pub fn new_absolute_gradient(
-        value_center: u8,
-        value_end: u8,
-        center: u32,
-        length: u32,
-    ) -> Generator1d {
-        Generator1d::AbsoluteGradient1d {
-            value_center,
-            value_end,
-            center,
-            length,
-        }
-    }
-
-    pub fn new_gradient(value_start: u8, value_end: u8, start: u32, length: u32) -> Generator1d {
-        Generator1d::Gradient1d {
-            value_start,
-            value_end,
-            start,
-            length,
-        }
-    }
-
     /// Generates an output for an input.
     pub fn generate(&self, input: u32) -> u8 {
         match self {
-            Generator1d::AbsoluteGradient1d {
-                value_center,
-                value_end,
-                center,
-                length,
-            } => {
-                let distance = abs_diff(*center, input) as f32;
-                let factor = distance / *length as f32;
-                lerp(*value_center, *value_end, factor)
-            }
-            Generator1d::Gradient1d {
-                value_start,
-                value_end,
-                start,
-                length,
-            } => {
-                if input <= *start {
-                    return *value_start;
-                }
-                let distance = (input - start) as f32;
-                let factor = distance / *length as f32;
-                lerp(*value_start, *value_end, factor)
-            }
+            Generator1d::AbsoluteGradient1d(gradient) => gradient.generate_absolute(input),
+            Generator1d::Gradient1d(gradient) => gradient.generate(input),
             Generator1d::InputAsOutput => input as u8,
             Generator1d::Noise1d(noise) => noise.generate1d(input),
         }
