@@ -5,6 +5,7 @@ extern crate ofws_rendering_glium;
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::generator::generator1d::Generator1d;
 use ofws_core::data::generator::generator2d::Generator2d;
+use ofws_core::data::generator::noise::Noise;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::distortion::DistortAlongY;
 use ofws_core::data::map::generation::generator::AddGeneratorStep;
@@ -99,7 +100,8 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
 }
 
 fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Generator2d::new_noise(0, 20.0, 125);
+    let noise = Noise::new(0, 20.0, 125);
+    let noise = Generator2d::Noise2d(noise);
     Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
 }
 
@@ -115,7 +117,8 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn Ge
 }
 
 fn distort_temperature(temperature_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Generator1d::new_noise(0, 60.0, 20);
+    let noise = Noise::new(0, 60.0, 20);
+    let noise = Generator1d::Noise1d(noise);
     Box::new(DistortAlongY::new(temperature_id, noise))
 }
 
@@ -132,7 +135,8 @@ fn subtract_elevation_from_temperature(
 }
 
 fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
-    let noise = Generator2d::new_noise(0, 100.0, 255);
+    let noise = Noise::new(0, 100.0, 255);
+    let noise = Generator2d::Noise2d(noise);
     Box::new(AddGeneratorStep::new("noise", rainfall_id, noise))
 }
 
