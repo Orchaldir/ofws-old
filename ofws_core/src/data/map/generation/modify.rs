@@ -1,4 +1,3 @@
-use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
 
 /// Modifies one [`Attribute`] with another transformed one.
@@ -42,11 +41,9 @@ impl ModifyWithAttribute {
 
         values
     }
-}
 
-impl GenerationStep for ModifyWithAttribute {
     // Runs the step.
-    fn run(&self, map: &mut Map2d) {
+    pub fn run(&self, map: &mut Map2d) {
         info!(
             "Modify attribute '{}' with attribute '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),
