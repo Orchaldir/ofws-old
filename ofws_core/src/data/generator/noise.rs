@@ -1,4 +1,5 @@
 use noise::{NoiseFn, Seedable, SuperSimplex};
+use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
 /// Hide the noise functions from [`noise`].
@@ -65,7 +66,7 @@ impl Noise {
 /// let result: NoiseData = noise.into();
 /// assert_eq!(data, result)
 ///```
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct NoiseData {
     pub seed: u32,
     pub scale: u32,
