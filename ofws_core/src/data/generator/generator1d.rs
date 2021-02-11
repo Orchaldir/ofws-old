@@ -1,5 +1,6 @@
 use crate::data::generator::gradient::Gradient;
 use crate::data::generator::noise::{Noise, NoiseData};
+use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
 #[svgbobdoc::transform]
@@ -124,7 +125,7 @@ impl Generator1d {
 /// assert_eq(Generator1dData::InputAsOutput);
 /// assert_eq(Generator1dData::Noise1d(noise_data));
 ///```
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Generator1dData {
     AbsoluteGradient1d(Gradient),
     Gradient1d(Gradient),
