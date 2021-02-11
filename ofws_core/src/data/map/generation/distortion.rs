@@ -1,5 +1,5 @@
 use crate::data::generator::generator1d::Generator1d;
-use crate::data::generator2d::Generator2d;
+use crate::data::generator::generator2d::Generator2d;
 use crate::data::map::attribute::Attribute;
 use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
@@ -169,15 +169,15 @@ impl GenerationStep for DistortAlongY {
 /// Distorts an [`Attribute`] along 2 dimensions.
 pub struct Distortion2d {
     attribute_id: usize,
-    generator_x: Box<dyn Generator2d>,
-    generator_y: Box<dyn Generator2d>,
+    generator_x: Generator2d,
+    generator_y: Generator2d,
 }
 
 impl Distortion2d {
     pub fn new(
         attribute_id: usize,
-        generator_x: Box<dyn Generator2d>,
-        generator_y: Box<dyn Generator2d>,
+        generator_x: Generator2d,
+        generator_y: Generator2d,
     ) -> Distortion2d {
         Distortion2d {
             attribute_id,
