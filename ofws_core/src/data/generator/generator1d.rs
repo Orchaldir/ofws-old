@@ -1,6 +1,6 @@
+use crate::data::generator::noise::Noise;
 use crate::data::math::distance::abs_diff;
 use crate::data::math::interpolation::lerp;
-use noise::{NoiseFn, Seedable, SuperSimplex};
 
 #[svgbobdoc::transform]
 /// Generates values for a 1d input.
@@ -101,11 +101,7 @@ pub enum Generator1d {
     ///```
     InputAsOutput,
     /// Generates values with Super Simplex noise.
-    Noise1d {
-        algo: Box<SuperSimplex>,
-        scale: f64,
-        factor: f64,
-    },
+    Noise1d(Noise),
 }
 
 impl Generator1d {
@@ -129,14 +125,6 @@ impl Generator1d {
             value_end,
             start,
             length,
-        }
-    }
-
-    pub fn new_noise(seed: u32, scale: f64, max_value: u8) -> Generator1d {
-        Generator1d::Noise1d {
-            algo: Box::new(SuperSimplex::new().set_seed(seed)),
-            scale,
-            factor: max_value as f64 / 2.0,
         }
     }
 
@@ -167,15 +155,7 @@ impl Generator1d {
                 lerp(*value_start, *value_end, factor)
             }
             Generator1d::InputAsOutput => input as u8,
-            Generator1d::Noise1d {
-                algo,
-                scale,
-                factor,
-            } => {
-                let input = input as f64 / scale;
-                let positive_value = algo.get([input, 0.0]) + 1.0;
-                (positive_value * factor) as u8
-            }
+            Generator1d::Noise1d(noise) => noise.generate1d(input),
         }
     }
 }

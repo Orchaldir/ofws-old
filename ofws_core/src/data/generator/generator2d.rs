@@ -1,7 +1,7 @@
 use crate::data::generator::generator1d::Generator1d;
+use crate::data::generator::noise::Noise;
 use crate::data::math::distance::calculate_distance;
 use crate::data::size2d::Size2d;
-use noise::{NoiseFn, Seedable, SuperSimplex};
 
 #[svgbobdoc::transform]
 /// Generate values for 2d points.
@@ -75,12 +75,8 @@ pub enum Generator2d {
     /// assert_eq!(generator.generate(1, 2), 5);
     /// ```
     IndexGenerator { size: Size2d },
-    /// Generates values with Super Simplex noise.
-    Noise1d {
-        algo: Box<SuperSimplex>,
-        scale: f64,
-        factor: f64,
-    },
+    /// Generates noise for each 2d point.
+    Noise2d(Noise),
 }
 
 impl Generator2d {
@@ -106,14 +102,6 @@ impl Generator2d {
         }
     }
 
-    pub fn new_noise(seed: u32, scale: f64, max_value: u8) -> Generator2d {
-        Generator2d::Noise1d {
-            algo: Box::new(SuperSimplex::new().set_seed(seed)),
-            scale,
-            factor: max_value as f64 / 2.0,
-        }
-    }
-
     /// Generates a value for a 2d point (x,y).
     pub fn generate(&self, x: u32, y: u32) -> u8 {
         match self {
@@ -128,16 +116,7 @@ impl Generator2d {
                 generator.generate(distance)
             }
             Generator2d::IndexGenerator { size } => size.saturating_to_index(x, y) as u8,
-            Generator2d::Noise1d {
-                algo,
-                scale,
-                factor,
-            } => {
-                let x = x as f64 / scale;
-                let y = y as f64 / scale;
-                let positive_value = algo.get([x, y]) + 1.0;
-                (positive_value * factor) as u8
-            }
+            Generator2d::Noise2d(noise) => noise.generate2d(x, y),
         }
     }
 }
