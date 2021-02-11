@@ -8,8 +8,8 @@ use ofws_core::data::generator::generator2d::Generator2d;
 use ofws_core::data::generator::gradient::Gradient;
 use ofws_core::data::generator::noise::Noise;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
-use ofws_core::data::map::generation::distortion::DistortAlongY;
-use ofws_core::data::map::generation::generator::AddGeneratorStep;
+use ofws_core::data::map::generation::distortion::Distortion1d;
+use ofws_core::data::map::generation::generator::AddGenerator;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
@@ -73,7 +73,7 @@ fn create_attributes(map: &mut Map2d) {
     map.create_attribute("biome", 0).unwrap();
 }
 
-fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
+fn create_generation_steps(map: &Map2d) -> Vec<GenerationStep> {
     let elevation_id = map.get_attribute_id("elevation").unwrap();
     let temperature_id = map.get_attribute_id("temperature").unwrap();
     let rainfall_id = map.get_attribute_id("rainfall").unwrap();
@@ -91,79 +91,69 @@ fn create_generation_steps(map: &Map2d) -> Vec<Box<dyn GenerationStep>> {
     ]
 }
 
-fn add_continent(map: &Map2d, elevation_id: usize) -> Box<dyn GenerationStep> {
+fn add_continent(map: &Map2d, elevation_id: usize) -> GenerationStep {
     let half_x = map.get_size().width() / 2;
     let half_y = map.get_size().height() / 2;
 
     let gradient = Gradient::new(125, 0, 0, half_x / 2);
     let gradient = Generator1d::Gradient1d(gradient);
     let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
-    Box::new(AddGeneratorStep::new("continent", elevation_id, mountain))
+    let step = AddGenerator::new("continent", elevation_id, mountain);
+    GenerationStep::AddGenerator(step)
 }
 
-fn add_islands(elevation_id: usize) -> Box<dyn GenerationStep> {
+fn add_islands(elevation_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 20.0, 0, 125).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    Box::new(AddGeneratorStep::new("islands", elevation_id, noise))
+    let step = AddGenerator::new("islands", elevation_id, noise);
+    GenerationStep::AddGenerator(step)
 }
 
-fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Box<dyn GenerationStep> {
+fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> GenerationStep {
     let half_y = map.get_size().height() / 2;
     let gradient = Gradient::new(255, 0, half_y, half_y);
     let gradient = Generator1d::AbsoluteGradient1d(gradient);
     let generator = Generator2d::new_apply_to_y(gradient);
-    Box::new(AddGeneratorStep::new(
-        "gradient y",
-        temperature_id,
-        generator,
-    ))
+    let step = AddGenerator::new("gradient y", temperature_id, generator);
+    GenerationStep::AddGenerator(step)
 }
 
-fn distort_temperature(temperature_id: usize) -> Box<dyn GenerationStep> {
+fn distort_temperature(temperature_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 60.0, 0, 20).unwrap();
     let noise = Generator1d::Noise1d(noise);
-    Box::new(DistortAlongY::new(temperature_id, noise))
+    let step = Distortion1d::new(temperature_id, noise);
+    GenerationStep::DistortAlongY(step)
 }
 
 fn subtract_elevation_from_temperature(
     elevation_id: usize,
     temperature_id: usize,
-) -> Box<dyn GenerationStep> {
-    Box::new(ModifyWithAttribute::new(
-        elevation_id,
-        temperature_id,
-        -0.8,
-        OCEAN_VALUE,
-    ))
+) -> GenerationStep {
+    let step = ModifyWithAttribute::new(elevation_id, temperature_id, -0.8, OCEAN_VALUE);
+    GenerationStep::ModifyWithAttribute(step)
 }
 
-fn create_rainfall(rainfall_id: usize) -> Box<dyn GenerationStep> {
+fn create_rainfall(rainfall_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 100.0, 0, 255).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    Box::new(AddGeneratorStep::new("noise", rainfall_id, noise))
+    let step = AddGenerator::new("noise", rainfall_id, noise);
+    GenerationStep::AddGenerator(step)
 }
 
-fn select_biome(
-    temperature_id: usize,
-    rainfall_id: usize,
-    biome_id: usize,
-) -> Box<dyn GenerationStep> {
-    Box::new(BiomeSelector::new(
+fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> GenerationStep {
+    let step = BiomeSelector::new(
         rainfall_id,
         temperature_id,
         biome_id,
         Size2d::new(3, 4),
         vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    ))
+    );
+    GenerationStep::BiomeSelector(step)
 }
 
-fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> Box<dyn GenerationStep> {
-    Box::new(SetValueIfBelowThreshold::new(
-        elevation_id,
-        biome_id,
-        OCEAN_ID,
-        OCEAN_VALUE,
-    ))
+fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {
+    let step = SetValueIfBelowThreshold::new(elevation_id, biome_id, OCEAN_ID, OCEAN_VALUE);
+    GenerationStep::SetValueIfBelowThreshold(step)
 }
 
 fn create_elevation_color_interpolator() -> VectorInterpolator<Color> {

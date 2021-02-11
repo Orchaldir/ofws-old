@@ -1,4 +1,3 @@
-use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
 use crate::data::size2d::Size2d;
 
@@ -37,11 +36,9 @@ impl SetValueIfBelowThreshold {
 
         indices
     }
-}
 
-impl GenerationStep for SetValueIfBelowThreshold {
     // Runs the step.
-    fn run(&self, map: &mut Map2d) {
+    pub fn run(&self, map: &mut Map2d) {
         info!(
             "Overwrite '{}' with '{}' based on attribute '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),
@@ -122,9 +119,7 @@ impl BiomeSelector {
 
         biomes
     }
-}
 
-impl GenerationStep for BiomeSelector {
     // Runs the step.
     ///
     /// ```
@@ -144,7 +139,7 @@ impl GenerationStep for BiomeSelector {
     /// let attribute = map.get_attribute(2);
     /// assert_eq!(attribute.get_all(), &vec![10u8, 20, 30, 40, 50, 60]);
     /// ```
-    fn run(&self, map: &mut Map2d) {
+    pub fn run(&self, map: &mut Map2d) {
         info!(
             "Set '{}' based on attributes '{}' & '{}' of map '{}'",
             map.get_attribute(self.target_id).get_name(),

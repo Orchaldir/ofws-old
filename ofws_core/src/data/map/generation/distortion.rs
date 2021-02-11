@@ -1,18 +1,17 @@
 use crate::data::generator::generator1d::Generator1d;
 use crate::data::generator::generator2d::Generator2d;
 use crate::data::map::attribute::Attribute;
-use crate::data::map::generation::GenerationStep;
 use crate::data::map::Map2d;
 
-/// Shifts each row of an [`Attribute`] along the x-axis based on a [`Generator1d`].
-pub struct DistortAlongX {
+/// Shifts each column or row of an [`Attribute`] along the axis based on a [`Generator1d`].
+pub struct Distortion1d {
     attribute_id: usize,
     generator: Generator1d,
 }
 
-impl DistortAlongX {
-    pub fn new(attribute_id: usize, generator: Generator1d) -> DistortAlongX {
-        DistortAlongX {
+impl Distortion1d {
+    pub fn new(attribute_id: usize, generator: Generator1d) -> Distortion1d {
+        Distortion1d {
             attribute_id,
             generator,
         }
@@ -33,7 +32,7 @@ impl DistortAlongX {
         }
     }
 
-    fn distort_map(&self, map: &Map2d) -> Vec<u8> {
+    fn distort_map_along_x(&self, map: &Map2d) -> Vec<u8> {
         let length = map.size.get_area();
         let attribute = map.get_attribute(self.attribute_id);
         let mut values = Vec::with_capacity(length);
@@ -46,54 +45,36 @@ impl DistortAlongX {
 
         values
     }
-}
 
-impl GenerationStep for DistortAlongX {
     // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::distortion::DistortAlongX;
-    ///# use ofws_core::data::map::generation::GenerationStep;
+    ///# use ofws_core::data::map::generation::distortion::Distortion1d;
     ///# use ofws_core::data::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let step = DistortAlongX::new(attribute_id, InputAsOutput);
+    /// let step = Distortion1d::new(attribute_id, InputAsOutput);
     ///
-    /// step.run(&mut map);
+    /// step.distort_along_x(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
     /// assert_eq!(attribute.get_all(), &vec![1u8, 2, 3, 4, 4, 5, 7, 7, 7]);
     /// ```
-    fn run(&self, map: &mut Map2d) {
+    pub fn distort_along_x(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' along the x-axis.",
             map.get_attribute(self.attribute_id).get_name(),
             map.get_name()
         );
 
-        let values = self.distort_map(map);
+        let values = self.distort_map_along_x(map);
         let attribute = map.get_attribute_mut(self.attribute_id);
 
         attribute.replace_values(values);
-    }
-}
-
-/// Shifts each column of an [`Attribute`] along the y-axis based on a [`Generator1d`].
-pub struct DistortAlongY {
-    attribute_id: usize,
-    generator: Generator1d,
-}
-
-impl DistortAlongY {
-    pub fn new(attribute_id: usize, generator: Generator1d) -> DistortAlongY {
-        DistortAlongY {
-            attribute_id,
-            generator,
-        }
     }
 
     fn distort_column(&self, x: u32, shift: u8, attribute: &Attribute, values: &mut Vec<u8>) {
@@ -117,7 +98,7 @@ impl DistortAlongY {
         }
     }
 
-    fn distort_map(&self, map: &Map2d) -> Vec<u8> {
+    fn distort_map_along_y(&self, map: &Map2d) -> Vec<u8> {
         let length = map.size.get_area();
         let attribute = map.get_attribute(self.attribute_id);
         let mut values = vec![0; length];
@@ -130,36 +111,33 @@ impl DistortAlongY {
 
         values
     }
-}
 
-impl GenerationStep for DistortAlongY {
     // Runs the step.
     ///
     /// ```
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::distortion::DistortAlongY;
-    ///# use ofws_core::data::map::generation::GenerationStep;
+    ///# use ofws_core::data::map::generation::distortion::Distortion1d;
     ///# use ofws_core::data::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let step = DistortAlongY::new(attribute_id, InputAsOutput);
+    /// let step = Distortion1d::new(attribute_id, InputAsOutput);
     ///
-    /// step.run(&mut map);
+    /// step.distort_along_y(&mut map);
     ///
     /// let attribute = map.get_attribute(attribute_id);
     /// assert_eq!(attribute.get_all(), &vec![1u8, 2, 3, 4, 2, 3, 7, 5, 3]);
     /// ```
-    fn run(&self, map: &mut Map2d) {
+    pub fn distort_along_y(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' along the y-axis.",
             map.get_attribute(self.attribute_id).get_name(),
             map.get_name()
         );
 
-        let values = self.distort_map(map);
+        let values = self.distort_map_along_y(map);
         let attribute = map.get_attribute_mut(self.attribute_id);
 
         attribute.replace_values(values);
@@ -204,11 +182,9 @@ impl Distortion2d {
 
         values
     }
-}
 
-impl GenerationStep for Distortion2d {
     // Runs the step.
-    fn run(&self, map: &mut Map2d) {
+    pub fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' in 2 dimensions.",
             map.get_attribute(self.attribute_id).get_name(),
