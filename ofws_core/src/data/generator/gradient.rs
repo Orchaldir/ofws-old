@@ -1,6 +1,7 @@
 use crate::data::math::distance::abs_diff;
 use crate::data::math::interpolation::lerp;
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Gradient {
     value_start: u8,
     value_end: u8,

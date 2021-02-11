@@ -1,5 +1,6 @@
 use crate::data::generator::gradient::Gradient;
-use crate::data::generator::noise::Noise;
+use crate::data::generator::noise::{Noise, NoiseData};
+use std::convert::{TryFrom, TryInto};
 
 #[svgbobdoc::transform]
 /// Generates values for a 1d input.
@@ -107,4 +108,63 @@ impl Generator1d {
             Generator1d::Noise1d(noise) => noise.generate1d(input),
         }
     }
+}
+
+/// For serializing, deserializing & validating [`Generator1d`].
+///
+///```
+///# use ofws_core::data::generator::generator1d::{Generator1dData, assert_eq};
+///# use ofws_core::data::generator::gradient::Gradient;
+///# use ofws_core::data::generator::noise::NoiseData;
+/// let gradient = Gradient::new(0, 255, 1000, 500);
+/// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
+///
+/// assert_eq(Generator1dData::AbsoluteGradient1d(gradient));
+/// assert_eq(Generator1dData::Gradient1d(gradient));
+/// assert_eq(Generator1dData::InputAsOutput);
+/// assert_eq(Generator1dData::Noise1d(noise_data));
+///```
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Generator1dData {
+    AbsoluteGradient1d(Gradient),
+    Gradient1d(Gradient),
+    InputAsOutput,
+    Noise1d(NoiseData),
+}
+
+impl TryFrom<Generator1dData> for Generator1d {
+    type Error = &'static str;
+
+    fn try_from(data: Generator1dData) -> Result<Self, Self::Error> {
+        match data {
+            Generator1dData::AbsoluteGradient1d(gradient) => {
+                Ok(Generator1d::AbsoluteGradient1d(gradient))
+            }
+            Generator1dData::Gradient1d(gradient) => Ok(Generator1d::Gradient1d(gradient)),
+            Generator1dData::InputAsOutput => Ok(Generator1d::InputAsOutput),
+            Generator1dData::Noise1d(noise_data) => {
+                let noise: Noise = noise_data.try_into()?;
+                Ok(Generator1d::Noise1d(noise))
+            }
+        }
+    }
+}
+
+impl From<Generator1d> for Generator1dData {
+    fn from(generator: Generator1d) -> Self {
+        match generator {
+            Generator1d::AbsoluteGradient1d(gradient) => {
+                Generator1dData::AbsoluteGradient1d(gradient)
+            }
+            Generator1d::Gradient1d(gradient) => Generator1dData::Gradient1d(gradient),
+            Generator1d::InputAsOutput => Generator1dData::InputAsOutput,
+            Generator1d::Noise1d(noise) => Generator1dData::Noise1d(noise.into()),
+        }
+    }
+}
+
+pub fn assert_eq(data: Generator1dData) {
+    let generator: Generator1d = data.try_into().unwrap();
+    let result: Generator1dData = generator.into();
+    assert_eq!(result, data)
 }
