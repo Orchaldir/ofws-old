@@ -1,4 +1,5 @@
 use crate::data::math::interpolation::Interpolate;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 pub trait Selection: Default + Interpolate + Clone + Copy {}
@@ -6,6 +7,7 @@ pub trait Selection: Default + Interpolate + Clone + Copy {}
 impl Selection for u8 {}
 
 /// Selects an object of type T based on the input.
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Selector<T: Selection> {
     /// Interpolates 2 elements.
     ///
