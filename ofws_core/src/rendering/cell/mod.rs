@@ -1,62 +1,44 @@
-use crate::data::color::{Color, PINK};
+use crate::data::color::Color;
 use crate::data::map::Map2d;
-use crate::data::math::interpolation::Interpolator;
+use crate::data::selector::Selector;
 use crate::rendering::tile::FULL_TILE;
-use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
 /// Renders a cell of a [`Map2d`].
-pub trait CellRenderer {
-    /// Returns the ascii code & color of the cell.
-    fn get(&self, map: &Map2d, index: usize) -> (u8, Color);
+#[derive(Debug, Serialize, Deserialize)]
+pub enum CellRenderer {
+    /// Renders a cell of a [`Map2d`] based on a specific attribute & a selector.
+    AttributeRenderer {
+        attribute_id: usize,
+        color_selector: Selector<Color>,
+    },
 }
 
-/// Renders a cell of a [`Map2d`] based on a specific attribute.
-pub struct AttributeRenderer<T: Interpolator<Color>> {
-    attribute_id: usize,
-    interpolator: T,
-}
-
-impl<T: Interpolator<Color>> AttributeRenderer<T> {
-    pub fn new(attribute_id: usize, interpolator: T) -> AttributeRenderer<T> {
-        AttributeRenderer {
+impl CellRenderer {
+    pub fn new_attribute_renderer(
+        attribute_id: usize,
+        color_selector: Selector<Color>,
+    ) -> CellRenderer {
+        CellRenderer::AttributeRenderer {
             attribute_id,
-            interpolator,
+            color_selector,
         }
     }
 }
 
-impl<T: Interpolator<Color>> CellRenderer for AttributeRenderer<T> {
-    /// Returns the ascii code & color of the cell based on the attribute.
-    fn get(&self, map: &Map2d, index: usize) -> (u8, Color) {
-        let attribute = map.get_attribute(self.attribute_id);
-        let value = attribute.get(index);
-        let factor = value as f32 / 255.0;
-        let color = self.interpolator.interpolate(factor);
-        (FULL_TILE, color)
-    }
-}
-
-/// Renders a cell of a [`Map2d`] based on a specific attribute.
-pub struct AttributeLookUp {
-    attribute_id: usize,
-    colors: HashMap<u8, Color>,
-}
-
-impl AttributeLookUp {
-    pub fn new(attribute_id: usize, colors: HashMap<u8, Color>) -> AttributeLookUp {
-        AttributeLookUp {
-            attribute_id,
-            colors,
+impl CellRenderer {
+    /// Returns the ascii code & color of the cell for rendering.
+    pub fn get(&self, map: &Map2d, index: usize) -> (u8, Color) {
+        match self {
+            CellRenderer::AttributeRenderer {
+                attribute_id,
+                color_selector,
+            } => {
+                let attribute = map.get_attribute(*attribute_id);
+                let value = attribute.get(index);
+                let color = color_selector.get(value);
+                (FULL_TILE, color)
+            }
         }
-    }
-}
-
-impl CellRenderer for AttributeLookUp {
-    /// Returns the ascii code & color of the cell based on the attribute lookup.
-    fn get(&self, map: &Map2d, index: usize) -> (u8, Color) {
-        let attribute = map.get_attribute(self.attribute_id);
-        let value = attribute.get(index);
-        let color = self.colors.get(&value).unwrap_or(&PINK);
-        (FULL_TILE, *color)
     }
 }
