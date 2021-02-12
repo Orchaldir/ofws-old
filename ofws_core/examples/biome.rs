@@ -13,25 +13,24 @@ use ofws_core::data::map::generation::generator::AddGenerator;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
-use ofws_core::data::math::interpolation::vector::VectorInterpolator;
+use ofws_core::data::selector::Selector;
 use ofws_core::data::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
-use ofws_core::rendering::cell::{AttributeLookUp, AttributeRenderer, CellRenderer};
+use ofws_core::rendering::cell::CellRenderer;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 const OCEAN_ID: u8 = 12;
-const OCEAN_THRESHOLD: f32 = 0.3;
-const OCEAN_VALUE: u8 = (255.0 * OCEAN_THRESHOLD) as u8;
+const OCEAN_VALUE: u8 = 76;
 
 pub struct BiomeExample {
     size: Size2d,
     map: Option<Map2d>,
-    attribute_renderer: Box<dyn CellRenderer>,
+    attribute_renderer: CellRenderer,
     texture_id: TextureId,
 }
 
@@ -156,7 +155,7 @@ fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {
     GenerationStep::SetValueIfBelowThreshold(step)
 }
 
-fn create_elevation_color_interpolator() -> VectorInterpolator<Color> {
+fn create_elevation_color_interpolator() -> Selector<Color> {
     let dark_blue = Color::new(0, 0, 128);
     let light_green = Color::new(100, 255, 100);
     let dark_green = Color::new(0, 80, 0);
@@ -164,69 +163,60 @@ fn create_elevation_color_interpolator() -> VectorInterpolator<Color> {
     let dark_gray = Color::gray(50);
 
     let vector = vec![
-        (0.0, dark_blue),
-        (OCEAN_THRESHOLD, CYAN),
-        (0.31, light_green),
-        (0.6, dark_green),
-        (0.61, dark_gray),
-        (0.8, light_gray),
-        (0.95, WHITE),
+        (0, dark_blue),
+        (OCEAN_VALUE, CYAN),
+        (OCEAN_VALUE + 1, light_green),
+        (153, dark_green),
+        (154, dark_gray),
+        (204, light_gray),
+        (242, WHITE),
     ];
 
-    VectorInterpolator::new(vector).unwrap()
+    Selector::new_interpolate_vector(vector).unwrap()
 }
 
-fn create_temperature_color_interpolator() -> VectorInterpolator<Color> {
+fn create_temperature_color_interpolator() -> Selector<Color> {
     let vector = vec![
-        (0.0, WHITE),
-        (0.2, CYAN),
-        (0.4, BLUE),
-        (0.6, GREEN),
-        (0.8, YELLOW),
-        (1.0, RED),
+        (0u8, WHITE),
+        (51, CYAN),
+        (102, BLUE),
+        (153, GREEN),
+        (204, YELLOW),
+        (255, RED),
     ];
 
-    VectorInterpolator::new(vector).unwrap()
+    Selector::new_interpolate_vector(vector).unwrap()
 }
 
-fn create_rainfall_color_interpolator() -> VectorInterpolator<Color> {
+fn create_rainfall_color_interpolator() -> Selector<Color> {
     let light_blue = Color::new(100, 200, 255);
     let light_golden_rod = Color::new(250, 250, 220);
     let golden_rod = Color::new(250, 200, 40);
 
     let vector = vec![
-        (0.0, BLUE),
-        (0.2, light_blue),
-        (0.5, GREEN),
-        (0.8, light_golden_rod),
-        (1.0, golden_rod),
+        (0, BLUE),
+        (51, light_blue),
+        (128, GREEN),
+        (204, light_golden_rod),
+        (255, golden_rod),
     ];
 
-    VectorInterpolator::new(vector).unwrap()
+    Selector::new_interpolate_vector(vector).unwrap()
 }
 
-fn create_elevation_renderer() -> Box<dyn CellRenderer> {
-    Box::new(AttributeRenderer::new(
-        0,
-        create_elevation_color_interpolator(),
-    ))
+fn create_elevation_renderer() -> CellRenderer {
+    CellRenderer::new_attribute_renderer(0, create_elevation_color_interpolator())
 }
 
-fn create_temperature_renderer() -> Box<dyn CellRenderer> {
-    Box::new(AttributeRenderer::new(
-        1,
-        create_temperature_color_interpolator(),
-    ))
+fn create_temperature_renderer() -> CellRenderer {
+    CellRenderer::new_attribute_renderer(1, create_temperature_color_interpolator())
 }
 
-fn create_rainfall_renderer() -> Box<dyn CellRenderer> {
-    Box::new(AttributeRenderer::new(
-        2,
-        create_rainfall_color_interpolator(),
-    ))
+fn create_rainfall_renderer() -> CellRenderer {
+    CellRenderer::new_attribute_renderer(2, create_rainfall_color_interpolator())
 }
 
-fn create_biome_renderer() -> Box<dyn CellRenderer> {
+fn create_biome_renderer() -> CellRenderer {
     let light_green = Color::new(100, 255, 100);
     let dark_green = Color::new(0, 80, 0);
     let darker_green = Color::new(0, 40, 0);
@@ -249,7 +239,8 @@ fn create_biome_renderer() -> Box<dyn CellRenderer> {
     .into_iter()
     .collect();
 
-    Box::new(AttributeLookUp::new(3, colors))
+    let selector = Selector::Lookup(colors);
+    CellRenderer::new_attribute_renderer(3, selector)
 }
 
 impl App for BiomeExample {

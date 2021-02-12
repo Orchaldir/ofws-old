@@ -1,6 +1,3 @@
-pub mod pair;
-pub mod vector;
-
 /// Define how to interpolate between elements of the same type.
 pub trait Interpolate {
     /// Linear interpolation between 2 elements of the same type.
@@ -18,12 +15,6 @@ impl Interpolate for u8 {
     fn lerp(&self, other: &u8, factor: f32) -> u8 {
         lerp(*self, *other, factor)
     }
-}
-
-/// Interpolates between 2 or more elements of the same type.
-pub trait Interpolator<T: Interpolate> {
-    /// Returns the interpolated value.
-    fn interpolate(&self, factor: f32) -> T;
 }
 
 /// Interpolates between 2 u8 linearly.
