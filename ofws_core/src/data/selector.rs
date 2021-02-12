@@ -20,7 +20,7 @@ pub enum Selector<T: Selection> {
     ///
     /// ```
     ///# use ofws_core::data::selector::Selector;
-    /// let interpolator = Selector::InterpolateVector(vec![(100,150), (150,200), (200, 100)]);
+    /// let interpolator = Selector::new_interpolate_vector(vec![(100,150), (150,200), (200, 100)]).unwrap();
     ///
     /// assert_eq!(interpolator.get(  0), 150);
     /// assert_eq!(interpolator.get( 50), 150);
@@ -51,6 +51,38 @@ pub enum Selector<T: Selection> {
 impl<T: Selection> Selector<T> {
     pub fn new_interpolate_pair(first: T, second: T) -> Selector<T> {
         Selector::InterpolatePair { first, second }
+    }
+
+    /// Returns a VectorInterpolator, if the input is valid. It needs 2 or more elements:
+    ///
+    /// ```
+    ///# use ofws_core::data::selector::Selector;
+    /// assert!(Selector::new_interpolate_vector(vec![(0,50)]).is_none());
+    /// ```
+    ///
+    /// The elements must be ordered based in their position:
+    ///
+    /// ```
+    ///# use ofws_core::data::selector::Selector;
+    /// assert!(Selector::new_interpolate_vector(vec![(50,50),(0,200)]).is_none());
+    /// ```
+    pub fn new_interpolate_vector(vector: Vec<(u8, T)>) -> Option<Selector<T>> {
+        if vector.len() < 2 {
+            warn!("The vector needs at least 2 elements!");
+            return None;
+        }
+
+        let mut last_value = 0;
+
+        for (value, _) in &vector {
+            if *value < last_value {
+                warn!("The elements of vector are not ordered!");
+                return None;
+            }
+            last_value = *value;
+        }
+
+        Some(Selector::InterpolateVector(vector))
     }
 
     /// Selects an object of type T based on the input.
