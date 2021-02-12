@@ -124,14 +124,14 @@ impl Attribute {
         &self.values
     }
 
-    /// Replaces the attribute's values.
+    /// Replaces all of the attribute's values.
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
-    /// attribute.replace_values(vec![3, 4]);
+    /// attribute.replace_all(vec![3, 4]);
     ///
     /// assert_eq!(attribute.get(0), 3);
     /// assert_eq!(attribute.get(1), 4);
@@ -146,14 +146,43 @@ impl Attribute {
     ///# use ofws_core::data::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
-    /// attribute.replace_values(vec![3, 4, 5]);
+    /// attribute.replace_all(vec![3, 4, 5]);
     /// ```
-    pub fn replace_values(&mut self, values: Vec<u8>) {
+    pub fn replace_all(&mut self, values: Vec<u8>) {
         assert_eq!(
             values.len(),
             self.values.len(),
             "Wrong number of new values!"
         );
         self.values = values;
+    }
+
+    /// Replaces some of the attribute's values.
+    ///
+    /// ```
+    ///# use ofws_core::data::map::attribute::Attribute;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 3), 42);
+    ///
+    /// attribute.replace_some(vec![0, 2], 5);
+    ///
+    /// assert_eq!(attribute.get_all(), &vec![5u8, 42, 5]);
+    /// ```
+    ///
+    /// # Panics
+    ///
+    /// Panics if an index is outside th map.
+    ///
+    /// ```should_panic
+    ///# use ofws_core::data::map::attribute::Attribute;
+    ///# use ofws_core::data::size2d::Size2d;
+    /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
+    ///
+    /// attribute.replace_some(vec![5], 9);
+    /// ```
+    pub fn replace_some(&mut self, indices: Vec<usize>, value: u8) {
+        for index in indices.iter() {
+            self.values[*index] = value;
+        }
     }
 }

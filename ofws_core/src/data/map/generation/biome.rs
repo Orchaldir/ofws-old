@@ -50,9 +50,7 @@ impl SetValueIfBelowThreshold {
         let indices = self.calculate_indices_to_overwrite(map);
         let attribute = map.get_attribute_mut(self.target_id);
 
-        for index in indices.iter() {
-            *attribute.get_mut(*index) = self.value;
-        }
+        attribute.replace_some(indices, self.value);
     }
 }
 
@@ -151,6 +149,6 @@ impl BiomeSelector {
         let biomes = self.calculate_biomes(map);
         let attribute = map.get_attribute_mut(self.target_id);
 
-        attribute.replace_values(biomes);
+        attribute.replace_all(biomes);
     }
 }

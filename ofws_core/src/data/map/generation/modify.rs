@@ -54,6 +54,6 @@ impl ModifyWithAttribute {
         let values = self.calculate_values(map);
         let attribute = map.get_attribute_mut(self.target_id);
 
-        attribute.replace_values(values);
+        attribute.replace_all(values);
     }
 }

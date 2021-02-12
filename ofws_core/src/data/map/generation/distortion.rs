@@ -74,7 +74,7 @@ impl Distortion1d {
         let values = self.distort_map_along_x(map);
         let attribute = map.get_attribute_mut(self.attribute_id);
 
-        attribute.replace_values(values);
+        attribute.replace_all(values);
     }
 
     fn distort_column(&self, x: u32, shift: u8, attribute: &Attribute, values: &mut Vec<u8>) {
@@ -140,7 +140,7 @@ impl Distortion1d {
         let values = self.distort_map_along_y(map);
         let attribute = map.get_attribute_mut(self.attribute_id);
 
-        attribute.replace_values(values);
+        attribute.replace_all(values);
     }
 }
 
@@ -194,6 +194,6 @@ impl Distortion2d {
         let values = self.distort_map(map);
         let attribute = map.get_attribute_mut(self.attribute_id);
 
-        attribute.replace_values(values);
+        attribute.replace_all(values);
     }
 }
