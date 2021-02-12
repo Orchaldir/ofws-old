@@ -32,6 +32,7 @@ impl TextureBuilder {
         });
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn add_triangle(
         &mut self,
         a: Point,
