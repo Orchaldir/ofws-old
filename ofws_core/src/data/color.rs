@@ -1,9 +1,11 @@
 use crate::data::math::interpolation::{lerp, Interpolate};
+use crate::data::selector::Selection;
+use serde::{Deserialize, Serialize};
 
 /// Represents a color with the RGB color model.
 ///
 /// See [Wikipedia](https://en.wikipedia.org/wiki/RGB_color_model).
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Color {
     r: u8,
     g: u8,
@@ -74,6 +76,14 @@ impl Interpolate for Color {
             g: lerp(self.g, other.g, factor),
             b: lerp(self.b, other.b, factor),
         }
+    }
+}
+
+impl Selection for Color {}
+
+impl Default for Color {
+    fn default() -> Self {
+        PINK
     }
 }
 
