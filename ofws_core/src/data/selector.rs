@@ -57,32 +57,30 @@ impl<T: Selection> Selector<T> {
     ///
     /// ```
     ///# use ofws_core::data::selector::Selector;
-    /// assert!(Selector::new_interpolate_vector(vec![(0,50)]).is_none());
+    /// assert!(Selector::new_interpolate_vector(vec![(0,50)]).is_err());
     /// ```
     ///
     /// The elements must be ordered based in their position:
     ///
     /// ```
     ///# use ofws_core::data::selector::Selector;
-    /// assert!(Selector::new_interpolate_vector(vec![(50,50),(0,200)]).is_none());
+    /// assert!(Selector::new_interpolate_vector(vec![(50,50),(0,200)]).is_err());
     /// ```
-    pub fn new_interpolate_vector(vector: Vec<(u8, T)>) -> Option<Selector<T>> {
+    pub fn new_interpolate_vector(vector: Vec<(u8, T)>) -> Result<Selector<T>, &'static str> {
         if vector.len() < 2 {
-            warn!("The vector needs at least 2 elements!");
-            return None;
+            return Err("The vector needs at least 2 elements!");
         }
 
         let mut last_value = 0;
 
         for (value, _) in &vector {
             if *value < last_value {
-                warn!("The elements of vector are not ordered!");
-                return None;
+                return Err("The elements of vector are not ordered!");
             }
             last_value = *value;
         }
 
-        Some(Selector::InterpolateVector(vector))
+        Ok(Selector::InterpolateVector(vector))
     }
 
     /// Selects an object of type T based on the input.
