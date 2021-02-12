@@ -6,6 +6,12 @@ pub trait Selection: Default + Interpolate + Clone + Copy {}
 
 impl Selection for u8 {}
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct InterpolateEntry<T: Selection> {
+    threshold: u8,
+    value: T,
+}
+
 /// Selects an object of type T based on the input.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Selector<T: Selection> {
@@ -33,7 +39,7 @@ pub enum Selector<T: Selection> {
     /// assert_eq!(interpolator.get(200), 100);
     /// assert_eq!(interpolator.get(255), 100);
     /// ```
-    InterpolateVector(Vec<(u8, T)>),
+    InterpolateVector(Vec<InterpolateEntry<T>>),
     /// Looks the input up in a hashmap or returns the default value.
     ///
     /// ```
@@ -82,7 +88,15 @@ impl<T: Selection> Selector<T> {
             last_value = *value;
         }
 
-        Ok(Selector::InterpolateVector(vector))
+        Ok(Selector::InterpolateVector(
+            vector
+                .iter()
+                .map(|e| InterpolateEntry {
+                    threshold: e.0,
+                    value: e.1,
+                })
+                .collect::<Vec<_>>(),
+        ))
     }
 
     /// Selects an object of type T based on the input.
@@ -97,22 +111,22 @@ impl<T: Selection> Selector<T> {
     }
 }
 
-fn interpolate<T: Selection>(vector: &[(u8, T)], input: u8) -> T {
+fn interpolate<T: Selection>(vector: &[InterpolateEntry<T>], input: u8) -> T {
     let mut last_entry = vector.get(0).unwrap();
 
-    if input <= last_entry.0 {
-        return last_entry.1;
+    if input <= last_entry.threshold {
+        return last_entry.value;
     }
 
     for entry in &vector[1..] {
-        if input <= entry.0 {
-            let factor_in_interval =
-                (input - last_entry.0) as f32 / (entry.0 - last_entry.0) as f32;
-            return last_entry.1.lerp(&entry.1, factor_in_interval);
+        if input <= entry.threshold {
+            let factor_in_interval = (input - last_entry.threshold) as f32
+                / (entry.threshold - last_entry.threshold) as f32;
+            return last_entry.value.lerp(&entry.value, factor_in_interval);
         }
 
         last_entry = entry;
     }
 
-    last_entry.1
+    last_entry.value
 }
