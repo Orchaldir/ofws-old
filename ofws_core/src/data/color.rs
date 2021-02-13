@@ -1,5 +1,5 @@
 use crate::data::math::interpolation::{lerp, Interpolate};
-use crate::data::selector::Selection;
+use crate::data::math::selector::Selection;
 use serde::{Deserialize, Serialize};
 
 /// Represents a color with the RGB color model.

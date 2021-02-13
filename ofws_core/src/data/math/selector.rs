@@ -18,7 +18,7 @@ pub enum Selector<T: Selection> {
     /// Interpolates 2 elements.
     ///
     /// ```
-    ///# use ofws_core::data::selector::Selector;
+    ///# use ofws_core::data::math::selector::Selector;
     /// let selector = Selector::new_interpolate_pair(100, 200);
     ///
     /// assert_eq!(selector.get(128), 150);
@@ -27,7 +27,7 @@ pub enum Selector<T: Selection> {
     /// Interpolates multiple elements.
     ///
     /// ```
-    ///# use ofws_core::data::selector::Selector;
+    ///# use ofws_core::data::math::selector::Selector;
     /// let interpolator = Selector::new_interpolate_vector(vec![(100,150), (150,200), (200, 100)]).unwrap();
     ///
     /// assert_eq!(interpolator.get(  0), 150);
@@ -43,7 +43,7 @@ pub enum Selector<T: Selection> {
     /// Looks the input up in a hashmap or returns the default value.
     ///
     /// ```
-    ///# use ofws_core::data::selector::Selector;
+    ///# use ofws_core::data::math::selector::Selector;
     /// let hashmap = vec![(1u8, 25u8), (3, 100)].into_iter().collect();
     /// let selector = Selector::Lookup(hashmap);
     ///
@@ -64,14 +64,14 @@ impl<T: Selection> Selector<T> {
     /// Returns a VectorInterpolator, if the input is valid. It needs 2 or more elements:
     ///
     /// ```
-    ///# use ofws_core::data::selector::Selector;
+    ///# use ofws_core::data::math::selector::Selector;
     /// assert!(Selector::new_interpolate_vector(vec![(0,50)]).is_err());
     /// ```
     ///
     /// The elements must be ordered based in their position:
     ///
     /// ```
-    ///# use ofws_core::data::selector::Selector;
+    ///# use ofws_core::data::math::selector::Selector;
     /// assert!(Selector::new_interpolate_vector(vec![(50,50),(0,200)]).is_err());
     /// ```
     pub fn new_interpolate_vector(vector: Vec<(u8, T)>) -> Result<Selector<T>, &'static str> {
