@@ -1,6 +1,8 @@
 use crate::data::map::attribute::Attribute;
 use crate::data::map::Map2d;
-use crate::data::math::generator::generator1d::Generator1d;
+use crate::data::math::generator::generator1d::{Generator1d, Generator1dData};
+use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 
 pub mod distortion2d;
 
@@ -136,5 +138,38 @@ impl Distortion1d {
         let attribute = map.get_attribute_mut(self.attribute_id);
 
         attribute.replace_all(values);
+    }
+}
+
+/// For serializing, deserializing & validating [`Distortion1d`].
+///
+///```
+///# use ofws_core::data::map::generation::distortion::{Distortion1d, Distortion1dData};
+///# use ofws_core::data::math::generator::generator1d::Generator1dData::InputAsOutput;
+///# use ofws_core::data::math::size2d::Size2d;
+///# use std::convert::TryInto;
+/// let data = Distortion1dData::new(20, InputAsOutput);
+/// let step: Distortion1d = data.clone().try_into().unwrap();
+/// let result: Distortion1dData = step.into();
+/// assert_eq!(data, result)
+///```
+#[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct Distortion1dData {
+    attribute_id: usize,
+    generator: Generator1dData,
+}
+
+impl TryFrom<Distortion1dData> for Distortion1d {
+    type Error = &'static str;
+
+    fn try_from(data: Distortion1dData) -> Result<Self, Self::Error> {
+        let generator: Generator1d = data.generator.try_into()?;
+        Ok(Distortion1d::new(data.attribute_id, generator))
+    }
+}
+
+impl From<Distortion1d> for Distortion1dData {
+    fn from(step: Distortion1d) -> Self {
+        Distortion1dData::new(step.attribute_id, step.generator.into())
     }
 }

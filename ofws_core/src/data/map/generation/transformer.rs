@@ -64,7 +64,7 @@ impl TransformAttribute2d {
     }
 }
 
-/// For serializing, deserializing & validating [`TransformAttribute2dData`].
+/// For serializing, deserializing & validating [`TransformAttribute2d`].
 ///
 ///```
 /// use std::convert::TryInto;
