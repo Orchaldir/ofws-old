@@ -1,6 +1,8 @@
-use crate::data::map::generation::step::GenerationStep;
+use crate::data::map::generation::step::{GenerationStep, GenerationStepData};
 use crate::data::map::Map2d;
 use crate::data::math::size2d::Size2d;
+use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 use std::ops::Sub;
 
 pub mod attribute;
@@ -58,5 +60,47 @@ impl MapGeneration {
         info!("Finished generation of '{}' in {:?}", self.name, duration);
 
         map
+    }
+}
+
+// For serializing, deserializing & validating [`MapGeneration`].
+///
+///```
+///# use std::convert::TryInto;
+///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration};
+///# use ofws_core::data::map::generation::attribute::CreateAttribute;
+///# use ofws_core::data::map::generation::step::GenerationStepData;
+///# use ofws_core::data::math::size2d::Size2d;
+/// let steps = vec![GenerationStepData::CreateAttribute(CreateAttribute::new("attribute", 42))];
+/// let data = MapGenerationData::new("map".to_string(), Size2d::new(4, 5), steps);
+/// let step: MapGeneration = data.clone().try_into().unwrap();
+/// let result: MapGenerationData = step.into();
+/// assert_eq!(data, result)
+///```
+#[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct MapGenerationData {
+    name: String,
+    size: Size2d,
+    steps: Vec<GenerationStepData>,
+}
+
+impl TryFrom<MapGenerationData> for MapGeneration {
+    type Error = &'static str;
+
+    fn try_from(data: MapGenerationData) -> Result<Self, Self::Error> {
+        let steps: Result<Vec<_>, _> = data.steps.into_iter().map(|data| data.try_into()).collect();
+        let steps = steps?;
+        Ok(MapGeneration::new(data.name, data.size, steps))
+    }
+}
+
+impl From<MapGeneration> for MapGenerationData {
+    fn from(map_generation: MapGeneration) -> Self {
+        let steps: Vec<GenerationStepData> = map_generation
+            .steps
+            .into_iter()
+            .map(|data| data.into())
+            .collect();
+        MapGenerationData::new(map_generation.name, map_generation.size, steps)
     }
 }
