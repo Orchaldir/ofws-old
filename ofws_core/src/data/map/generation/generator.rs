@@ -106,7 +106,7 @@ impl GeneratorStep {
     }
 }
 
-/// For serializing, deserializing & validating [`GeneratorStepData`].
+/// For serializing, deserializing & validating [`GeneratorStep`].
 ///
 ///```
 ///# use ofws_core::data::map::generation::generator::{GeneratorStepData, GeneratorStep};
