@@ -3,7 +3,7 @@ extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::map::generation::attribute::CreateAttribute;
-use ofws_core::data::map::generation::biome::{BiomeSelector, TransformAttribute2d};
+use ofws_core::data::map::generation::biome::TransformAttribute2d;
 use ofws_core::data::map::generation::distortion::Distortion1d;
 use ofws_core::data::map::generation::generator::GeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
@@ -15,6 +15,7 @@ use ofws_core::data::math::generator::gradient::Gradient;
 use ofws_core::data::math::generator::noise::Noise;
 use ofws_core::data::math::selector::Selector;
 use ofws_core::data::math::size2d::Size2d;
+use ofws_core::data::math::transformer::clusterer2d::Clusterer2d;
 use ofws_core::data::math::transformer::transformer2d::Transformer2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
@@ -128,14 +129,13 @@ fn create_rainfall(rainfall_id: usize) -> GenerationStep {
 }
 
 fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> GenerationStep {
-    let step = BiomeSelector::new(
-        rainfall_id,
-        temperature_id,
-        biome_id,
+    let clusterer = Clusterer2d::new(
         Size2d::new(3, 4),
         vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     );
-    GenerationStep::BiomeSelector(step)
+    let transformer = Transformer2d::Clusterer(clusterer);
+    let step = TransformAttribute2d::new(rainfall_id, temperature_id, biome_id, transformer);
+    GenerationStep::TransformAttribute2d(step)
 }
 
 fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {

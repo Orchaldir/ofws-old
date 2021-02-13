@@ -1,5 +1,5 @@
 use crate::data::map::generation::attribute::CreateAttribute;
-use crate::data::map::generation::biome::{BiomeSelector, TransformAttribute2d};
+use crate::data::map::generation::biome::TransformAttribute2d;
 use crate::data::map::generation::distortion::{Distortion1d, Distortion2d};
 use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
@@ -67,7 +67,6 @@ impl MapGeneration {
 /// A step during map generation.
 pub enum GenerationStep {
     CreateAttribute(CreateAttribute),
-    BiomeSelector(BiomeSelector),
     DistortAlongX(Distortion1d),
     DistortAlongY(Distortion1d),
     Distortion2d(Distortion2d),
@@ -82,7 +81,6 @@ impl GenerationStep {
     pub fn run(&self, map: &mut Map2d) {
         match self {
             GenerationStep::CreateAttribute(step) => step.run(map),
-            GenerationStep::BiomeSelector(step) => step.run(map),
             GenerationStep::DistortAlongX(step) => step.distort_along_x(map),
             GenerationStep::DistortAlongY(step) => step.distort_along_y(map),
             GenerationStep::Distortion2d(step) => step.run(map),
