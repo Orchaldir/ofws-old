@@ -1,12 +1,13 @@
 use crate::data::map::generation::step::{GenerationStep, GenerationStepData};
 use crate::data::map::Map2d;
 use crate::data::math::size2d::Size2d;
-use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use std::ops::Sub;
+use serde::{Deserialize, Serialize};
 
 pub mod attribute;
 pub mod distortion;
+pub mod distortion2d;
 pub mod generator;
 pub mod modify;
 pub mod step;

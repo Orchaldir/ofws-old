@@ -49,7 +49,7 @@ impl Distortion2d {
 /// For serializing, deserializing & validating [`Distortion2d`].
 ///
 ///```
-///# use ofws_core::data::map::generation::distortion::distortion2d::{Distortion2d, Distortion2dData};
+///# use ofws_core::data::map::generation::distortion2d::{Distortion2d, Distortion2dData};
 ///# use ofws_core::data::math::generator::generator2d::Generator2dData::IndexGenerator;
 ///# use ofws_core::data::math::size2d::Size2d;
 ///# use std::convert::TryInto;
