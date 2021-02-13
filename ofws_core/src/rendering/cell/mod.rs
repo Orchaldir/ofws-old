@@ -1,6 +1,6 @@
 use crate::data::color::Color;
 use crate::data::map::Map2d;
-use crate::data::selector::Selector;
+use crate::data::math::selector::Selector;
 use crate::rendering::tile::FULL_TILE;
 use serde::{Deserialize, Serialize};
 
