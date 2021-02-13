@@ -1,6 +1,6 @@
-use crate::data::generator::generator1d::{Generator1d, Generator1dData};
-use crate::data::generator::noise::{Noise, NoiseData};
 use crate::data::math::distance::calculate_distance;
+use crate::data::math::generator::generator1d::{Generator1d, Generator1dData};
+use crate::data::math::generator::noise::{Noise, NoiseData};
 use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
@@ -12,8 +12,8 @@ pub enum Generator2d {
     /// Feeds the x values to a [`Generator1d`].
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d;
-    ///# use ofws_core::data::generator::generator2d::Generator2d;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d;
+    ///# use ofws_core::data::math::generator::generator2d::Generator2d;
     /// let generator = Generator2d::new_apply_to_x(Generator1d::InputAsOutput);
     ///
     /// assert_eq!(generator.generate(0, 0), 0);
@@ -30,8 +30,8 @@ pub enum Generator2d {
     /// Feeds the y values to a [`Generator1d`].
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d;
-    ///# use ofws_core::data::generator::generator2d::Generator2d;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d;
+    ///# use ofws_core::data::math::generator::generator2d::Generator2d;
     /// let generator = Generator2d::new_apply_to_y(Generator1d::InputAsOutput);
     ///
     /// assert_eq!(generator.generate(0, 0), 0);
@@ -48,8 +48,8 @@ pub enum Generator2d {
     /// Feeds the distance from a point to a [`Generator1d`].
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d;
-    ///# use ofws_core::data::generator::generator2d::Generator2d;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d;
+    ///# use ofws_core::data::math::generator::generator2d::Generator2d;
     /// let generator = Generator2d::new_apply_to_distance(Generator1d::InputAsOutput, 10, 5);
     ///
     /// assert_eq!(generator.generate(10,  5), 0);
@@ -66,7 +66,7 @@ pub enum Generator2d {
     /// Generates the index of each 2d point.
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator2d::Generator2d;
+    ///# use ofws_core::data::math::generator::generator2d::Generator2d;
     /// let generator = Generator2d::new_index(2, 3);
     ///
     /// assert_eq!(generator.generate(0, 0), 0);
@@ -124,10 +124,10 @@ impl Generator2d {
 /// For serializing, deserializing & validating [`Generator2d`].
 ///
 ///```
-///# use ofws_core::data::generator::generator1d::Generator1dData::InputAsOutput;
-///# use ofws_core::data::generator::generator2d::{Generator2dData, assert_eq};
-///# use ofws_core::data::generator::gradient::Gradient;
-///# use ofws_core::data::generator::noise::NoiseData;
+///# use ofws_core::data::math::generator::generator1d::Generator1dData::InputAsOutput;
+///# use ofws_core::data::math::generator::generator2d::{Generator2dData, assert_eq};
+///# use ofws_core::data::math::generator::gradient::Gradient;
+///# use ofws_core::data::math::generator::noise::NoiseData;
 ///# use ofws_core::data::math::size2d::Size2d;
 /// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 ///

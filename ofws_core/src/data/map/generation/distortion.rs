@@ -1,7 +1,7 @@
-use crate::data::generator::generator1d::Generator1d;
-use crate::data::generator::generator2d::Generator2d;
 use crate::data::map::attribute::Attribute;
 use crate::data::map::Map2d;
+use crate::data::math::generator::generator1d::Generator1d;
+use crate::data::math::generator::generator2d::Generator2d;
 
 /// Shifts each column or row of an [`Attribute`] based on a [`Generator1d`].
 pub struct Distortion1d {
@@ -49,9 +49,9 @@ impl Distortion1d {
     /// Shifts each each row along the x-axis based on a [`Generator1d`].
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::Distortion1d;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);
@@ -115,9 +115,9 @@ impl Distortion1d {
     /// Shifts each each column along the y-axis based on a [`Generator1d`].
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::Distortion1d;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);

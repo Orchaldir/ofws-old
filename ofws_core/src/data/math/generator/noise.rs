@@ -14,13 +14,13 @@ impl Noise {
     /// Try to create a Noise. Fails if scale is negative:
     ///
     ///```
-    ///# use ofws_core::data::generator::noise::Noise;
+    ///# use ofws_core::data::math::generator::noise::Noise;
     /// assert!(Noise::new(0, -1.0, 0, 255).is_err())
     ///```
     /// Also fails if min_value >= max_value:
     ///
     ///```
-    ///# use ofws_core::data::generator::noise::Noise;
+    ///# use ofws_core::data::math::generator::noise::Noise;
     /// assert!(Noise::new(0, 5.0, 200, 105).is_err())
     ///```
     ///
@@ -58,7 +58,7 @@ impl Noise {
 /// For serializing, deserializing & validating [`Noise`].
 ///
 ///```
-///# use ofws_core::data::generator::noise::{NoiseData, Noise};
+///# use ofws_core::data::math::generator::noise::{NoiseData, Noise};
 /// use std::convert::TryInto;
 ///
 /// let data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };

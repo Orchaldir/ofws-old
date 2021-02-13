@@ -1,5 +1,5 @@
-use crate::data::generator::gradient::Gradient;
-use crate::data::generator::noise::{Noise, NoiseData};
+use crate::data::math::generator::gradient::Gradient;
+use crate::data::math::generator::noise::{Noise, NoiseData};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
@@ -28,8 +28,8 @@ pub enum Generator1d {
     /// # Example
     ///
     /// ```
-    ///# use ofws_core::data::generator::generator1d::Generator1d;
-    ///# use ofws_core::data::generator::gradient::Gradient;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d;
+    ///# use ofws_core::data::math::generator::gradient::Gradient;
     /// let gradient = Gradient::new(100, 0, 80, 100);
     /// let generator = Generator1d::AbsoluteGradient1d(gradient);
     ///
@@ -67,8 +67,8 @@ pub enum Generator1d {
     /// # Example
     ///
     ///```
-    ///# use ofws_core::data::generator::generator1d::Generator1d;
-    ///# use ofws_core::data::generator::gradient::Gradient;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d;
+    ///# use ofws_core::data::math::generator::gradient::Gradient;
     /// let gradient = Gradient::new(100, 200, 1000, 100);
     /// let generator = Generator1d::Gradient1d(gradient);
     ///
@@ -88,7 +88,7 @@ pub enum Generator1d {
     /// # Example
     ///
     ///```
-    ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d::InputAsOutput;
     ///
     /// assert_eq!(InputAsOutput.generate(0), 0);
     /// assert_eq!(InputAsOutput.generate(1), 1);
@@ -114,9 +114,9 @@ impl Generator1d {
 /// For serializing, deserializing & validating [`Generator1d`].
 ///
 ///```
-///# use ofws_core::data::generator::generator1d::{Generator1dData, assert_eq};
-///# use ofws_core::data::generator::gradient::Gradient;
-///# use ofws_core::data::generator::noise::NoiseData;
+///# use ofws_core::data::math::generator::generator1d::{Generator1dData, assert_eq};
+///# use ofws_core::data::math::generator::gradient::Gradient;
+///# use ofws_core::data::math::generator::noise::NoiseData;
 /// let gradient = Gradient::new(0, 255, 1000, 500);
 /// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 ///
