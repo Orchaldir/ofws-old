@@ -2,7 +2,7 @@ use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 
 /// Determines a cluster id from both inputs. E.g. biome from rainfall & temperature.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Clusterer2d {
     lookup_table_size: Size2d,
     cluster_size: Size2d,

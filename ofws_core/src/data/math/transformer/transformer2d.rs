@@ -1,6 +1,7 @@
 use crate::data::math::transformer::clusterer2d::Clusterer2d;
 use crate::data::math::transformer::threshold::OverwriteWithThreshold;
 use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 
 /// Transforms 2 inputs into an output.
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,4 +35,61 @@ impl Transformer2d {
             }
         }
     }
+}
+
+/// For serializing, deserializing & validating [`Transformer2d`].
+///
+///```
+///# use ofws_core::data::math::size2d::Size2d;
+///# use ofws_core::data::math::transformer::clusterer2d::Clusterer2d;
+///# use ofws_core::data::math::transformer::threshold::OverwriteWithThreshold;
+///# use ofws_core::data::math::transformer::transformer2d::{Transformer2dData, assert_eq};
+/// let clusterer = Clusterer2d::new(Size2d::new(1, 2), vec![10, 11]).unwrap();
+/// let overwrite_data = OverwriteWithThreshold::new(100, 200);
+///
+/// assert_eq(Transformer2dData::Clusterer(clusterer));
+/// assert_eq(Transformer2dData::OverwriteIfAboveThreshold(overwrite_data));
+/// assert_eq(Transformer2dData::OverwriteIfBelowThreshold(overwrite_data));
+///```
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub enum Transformer2dData {
+    Clusterer(Clusterer2d),
+    OverwriteIfAboveThreshold(OverwriteWithThreshold<u8>),
+    OverwriteIfBelowThreshold(OverwriteWithThreshold<u8>),
+}
+
+impl TryFrom<Transformer2dData> for Transformer2d {
+    type Error = &'static str;
+
+    fn try_from(data: Transformer2dData) -> Result<Self, Self::Error> {
+        match data {
+            Transformer2dData::Clusterer(c) => Ok(Transformer2d::Clusterer(c)),
+            Transformer2dData::OverwriteIfAboveThreshold(o) => {
+                Ok(Transformer2d::OverwriteIfAboveThreshold(o))
+            }
+            Transformer2dData::OverwriteIfBelowThreshold(o) => {
+                Ok(Transformer2d::OverwriteIfBelowThreshold(o))
+            }
+        }
+    }
+}
+
+impl From<Transformer2d> for Transformer2dData {
+    fn from(generator: Transformer2d) -> Self {
+        match generator {
+            Transformer2d::Clusterer(c) => Transformer2dData::Clusterer(c),
+            Transformer2d::OverwriteIfAboveThreshold(o) => {
+                Transformer2dData::OverwriteIfAboveThreshold(o)
+            }
+            Transformer2d::OverwriteIfBelowThreshold(o) => {
+                Transformer2dData::OverwriteIfBelowThreshold(o)
+            }
+        }
+    }
+}
+
+pub fn assert_eq(data: Transformer2dData) {
+    let generator: Transformer2d = data.clone().try_into().unwrap();
+    let result: Transformer2dData = generator.into();
+    assert_eq!(result, data)
 }
