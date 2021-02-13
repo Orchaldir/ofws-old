@@ -9,6 +9,7 @@ pub mod attribute;
 pub mod distortion1d;
 pub mod distortion2d;
 pub mod generator;
+pub mod io;
 pub mod modify;
 pub mod step;
 pub mod transformer;
