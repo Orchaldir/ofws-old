@@ -5,6 +5,7 @@ use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
 use crate::data::map::Map2d;
 use crate::data::size2d::Size2d;
+use std::ops::Sub;
 
 pub mod attribute;
 pub mod biome;
@@ -34,6 +35,8 @@ impl MapGeneration {
 
     /// Generates the map.
     pub fn generate(&self) -> Map2d {
+        let start = std::time::Instant::now();
+
         info!(
             "Generate the map '{}' with {:?} in {} steps:",
             self.name,
@@ -41,11 +44,21 @@ impl MapGeneration {
             self.steps.len(),
         );
 
+        let mut start_step = start;
         let mut map = Map2d::with_name(self.name.clone(), self.size);
 
-        self.steps.iter().for_each(|step| step.run(&mut map));
+        self.steps.iter().for_each(|step| {
+            step.run(&mut map);
+            let end_step = std::time::Instant::now();
+            let duration = end_step.sub(start_step);
+            debug!("Step took {:?}", duration);
+            start_step = end_step;
+        });
 
-        info!("Finished generation of '{}'", self.name);
+        let end = std::time::Instant::now();
+        let duration = end.sub(start);
+
+        info!("Finished generation of '{}' in {:?}", self.name, duration);
 
         map
     }
