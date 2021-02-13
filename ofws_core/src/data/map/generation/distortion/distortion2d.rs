@@ -1,5 +1,7 @@
 use crate::data::map::Map2d;
-use crate::data::math::generator::generator2d::Generator2d;
+use crate::data::math::generator::generator2d::{Generator2d, Generator2dData};
+use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 
 /// Distorts an [`Attribute`] along 2 dimensions.
 #[derive(new)]
@@ -41,5 +43,50 @@ impl Distortion2d {
         let attribute = map.get_attribute_mut(self.attribute_id);
 
         attribute.replace_all(values);
+    }
+}
+
+/// For serializing, deserializing & validating [`Distortion2d`].
+///
+///```
+///# use ofws_core::data::map::generation::distortion::distortion2d::{Distortion2d, Distortion2dData};
+///# use ofws_core::data::math::generator::generator2d::Generator2dData::IndexGenerator;
+///# use ofws_core::data::math::size2d::Size2d;
+///# use std::convert::TryInto;
+/// let generator_x = IndexGenerator(Size2d::new(1, 2));
+/// let generator_y = IndexGenerator(Size2d::new(3, 4));
+/// let data = Distortion2dData::new(20, generator_x, generator_y);
+/// let step: Distortion2d = data.clone().try_into().unwrap();
+/// let result: Distortion2dData = step.into();
+/// assert_eq!(data, result)
+///```
+#[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct Distortion2dData {
+    attribute_id: usize,
+    generator_x: Generator2dData,
+    generator_y: Generator2dData,
+}
+
+impl TryFrom<Distortion2dData> for Distortion2d {
+    type Error = &'static str;
+
+    fn try_from(data: Distortion2dData) -> Result<Self, Self::Error> {
+        let generator_x: Generator2d = data.generator_x.try_into()?;
+        let generator_y: Generator2d = data.generator_y.try_into()?;
+        Ok(Distortion2d::new(
+            data.attribute_id,
+            generator_x,
+            generator_y,
+        ))
+    }
+}
+
+impl From<Distortion2d> for Distortion2dData {
+    fn from(step: Distortion2d) -> Self {
+        Distortion2dData::new(
+            step.attribute_id,
+            step.generator_x.into(),
+            step.generator_y.into(),
+        )
     }
 }
