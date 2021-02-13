@@ -1,5 +1,6 @@
 use crate::data::map::generation::attribute::CreateAttribute;
-use crate::data::map::generation::distortion::{Distortion1d, Distortion2d};
+use crate::data::map::generation::distortion::distortion2d::Distortion2d;
+use crate::data::map::generation::distortion::Distortion1d;
 use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
 use crate::data::map::generation::transformer::TransformAttribute2d;
