@@ -64,7 +64,7 @@ impl TransformAttribute2d {
     }
 }
 
-/// For serializing, deserializing & validating [`Noise`].
+/// For serializing, deserializing & validating [`TransformAttribute2dData`].
 ///
 ///```
 /// use std::convert::TryInto;
@@ -100,11 +100,11 @@ impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
 
 impl From<TransformAttribute2d> for TransformAttribute2dData {
     fn from(step: TransformAttribute2d) -> Self {
-        TransformAttribute2dData {
-            source_id0: step.source_id0,
-            source_id1: step.source_id1,
-            target_id: step.target_id,
-            transformer: step.transformer.into(),
-        }
+        TransformAttribute2dData::new(
+            step.source_id0,
+            step.source_id1,
+            step.target_id,
+            step.transformer.into(),
+        )
     }
 }
