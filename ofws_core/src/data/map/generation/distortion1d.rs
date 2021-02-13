@@ -45,7 +45,7 @@ impl Distortion1d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::distortion::Distortion1d;
+    ///# use ofws_core::data::map::generation::distortion1d::Distortion1d;
     ///# use ofws_core::data::math::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
@@ -111,7 +111,7 @@ impl Distortion1d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::distortion::Distortion1d;
+    ///# use ofws_core::data::map::generation::distortion1d::Distortion1d;
     ///# use ofws_core::data::math::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
@@ -142,7 +142,7 @@ impl Distortion1d {
 /// For serializing, deserializing & validating [`Distortion1d`].
 ///
 ///```
-///# use ofws_core::data::map::generation::distortion::{Distortion1d, Distortion1dData};
+///# use ofws_core::data::map::generation::distortion1d::{Distortion1d, Distortion1dData};
 ///# use ofws_core::data::math::generator::generator1d::Generator1dData::InputAsOutput;
 ///# use ofws_core::data::math::size2d::Size2d;
 ///# use std::convert::TryInto;

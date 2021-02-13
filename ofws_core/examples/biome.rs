@@ -3,7 +3,7 @@ extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::map::generation::attribute::CreateAttribute;
-use ofws_core::data::map::generation::distortion::Distortion1d;
+use ofws_core::data::map::generation::distortion1d::Distortion1d;
 use ofws_core::data::map::generation::generator::GeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::step::GenerationStep;
