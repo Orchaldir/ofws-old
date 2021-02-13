@@ -3,7 +3,7 @@ extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
 use ofws_core::data::map::generation::attribute::CreateAttribute;
-use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
+use ofws_core::data::map::generation::biome::{BiomeSelector, TransformAttribute2d};
 use ofws_core::data::map::generation::distortion::Distortion1d;
 use ofws_core::data::map::generation::generator::GeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
@@ -15,6 +15,7 @@ use ofws_core::data::math::generator::gradient::Gradient;
 use ofws_core::data::math::generator::noise::Noise;
 use ofws_core::data::math::selector::Selector;
 use ofws_core::data::math::size2d::Size2d;
+use ofws_core::data::math::transformer::transformer2d::Transformer2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
@@ -138,8 +139,9 @@ fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> G
 }
 
 fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {
-    let step = SetValueIfBelowThreshold::new(elevation_id, biome_id, OCEAN_ID, OCEAN_VALUE);
-    GenerationStep::SetValueIfBelowThreshold(step)
+    let transformer = Transformer2d::new_overwrite_if_below(OCEAN_ID, OCEAN_VALUE);
+    let step = TransformAttribute2d::new(elevation_id, biome_id, biome_id, transformer);
+    GenerationStep::TransformAttribute2d(step)
 }
 
 fn create_elevation_color_interpolator() -> Selector<Color> {
