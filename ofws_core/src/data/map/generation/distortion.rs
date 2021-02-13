@@ -3,7 +3,7 @@ use crate::data::generator::generator2d::Generator2d;
 use crate::data::map::attribute::Attribute;
 use crate::data::map::Map2d;
 
-/// Shifts each column or row of an [`Attribute`] along the axis based on a [`Generator1d`].
+/// Shifts each column or row of an [`Attribute`] based on a [`Generator1d`].
 pub struct Distortion1d {
     attribute_id: usize,
     generator: Generator1d,
@@ -46,7 +46,7 @@ impl Distortion1d {
         values
     }
 
-    // Runs the step.
+    /// Shifts each each row along the x-axis based on a [`Generator1d`].
     ///
     /// ```
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
@@ -112,7 +112,7 @@ impl Distortion1d {
         values
     }
 
-    // Runs the step.
+    /// Shifts each each column along the y-axis based on a [`Generator1d`].
     ///
     /// ```
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
