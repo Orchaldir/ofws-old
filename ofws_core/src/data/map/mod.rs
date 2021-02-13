@@ -24,9 +24,11 @@ impl Map2d {
     /// ```
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::size2d::Size2d;
-    /// let mut map = Map2d::with_name("world", Size2d::new(2, 3));
+    /// let size = Size2d::new(2, 3);
+    /// let mut map = Map2d::with_name("world", size);
     ///
     /// assert_eq!(map.get_name(), "world");
+    /// assert_eq!(map.get_size(), size);
     /// ```
     pub fn with_name<S: Into<String>>(name: S, size: Size2d) -> Map2d {
         Map2d {
