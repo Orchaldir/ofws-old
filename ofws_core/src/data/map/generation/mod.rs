@@ -1,17 +1,17 @@
 use crate::data::map::generation::attribute::CreateAttribute;
-use crate::data::map::generation::biome::TransformAttribute2d;
 use crate::data::map::generation::distortion::{Distortion1d, Distortion2d};
 use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
+use crate::data::map::generation::transformer::TransformAttribute2d;
 use crate::data::map::Map2d;
 use crate::data::math::size2d::Size2d;
 use std::ops::Sub;
 
 pub mod attribute;
-pub mod biome;
 pub mod distortion;
 pub mod generator;
 pub mod modify;
+pub mod transformer;
 
 /// Generates a map based on a number of steps.
 pub struct MapGeneration {
