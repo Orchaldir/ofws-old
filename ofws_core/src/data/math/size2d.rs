@@ -23,18 +23,13 @@ use std::ops::{Add, Mul};
 ///
 /// A size with width 2 & height 3.
 /// The numbers are indices of each cell.
-#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(new, Copy, Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Size2d {
     width: u32,
     height: u32,
 }
 
 impl Size2d {
-    /// Creates a new Size2d
-    pub fn new(width: u32, height: u32) -> Size2d {
-        Size2d { width, height }
-    }
-
     /// Returns the area covered by this size
     ///
     /// ```

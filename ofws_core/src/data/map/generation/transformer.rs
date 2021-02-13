@@ -2,6 +2,7 @@ use crate::data::map::Map2d;
 use crate::data::math::transformer::transformer2d::Transformer2d;
 
 /// Transforms 2 [`Attribute`]s and writes into another.
+#[derive(new)]
 pub struct TransformAttribute2d {
     source_id0: usize,
     source_id1: usize,
@@ -10,20 +11,6 @@ pub struct TransformAttribute2d {
 }
 
 impl TransformAttribute2d {
-    pub fn new(
-        source_id0: usize,
-        source_id1: usize,
-        target_id: usize,
-        transformer: Transformer2d,
-    ) -> TransformAttribute2d {
-        TransformAttribute2d {
-            source_id0,
-            source_id1,
-            target_id,
-            transformer,
-        }
-    }
-
     fn transform(&self, map: &mut Map2d) -> Vec<u8> {
         let size = map.size;
         let source_attribute0 = map.get_attribute(self.source_id0);

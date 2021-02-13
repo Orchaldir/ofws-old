@@ -2,7 +2,7 @@ use crate::data::math::distance::abs_diff;
 use crate::data::math::interpolation::lerp;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(new, Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct Gradient {
     value_start: u8,
     value_end: u8,
@@ -11,15 +11,6 @@ pub struct Gradient {
 }
 
 impl Gradient {
-    pub fn new(value_start: u8, value_end: u8, start: u32, length: u32) -> Gradient {
-        Gradient {
-            value_start,
-            value_end,
-            start,
-            length,
-        }
-    }
-
     /// Generates the gradient.
     pub fn generate(&self, input: u32) -> u8 {
         if input <= self.start {

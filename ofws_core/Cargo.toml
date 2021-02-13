@@ -8,7 +8,8 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
-env_logger = "0.8.2"
+derive-new = "0.5"
+env_logger = "0.8"
 log = "0.4"
 noise = "0.7"
 num-integer = "0.1"
