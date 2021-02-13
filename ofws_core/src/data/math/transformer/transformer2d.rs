@@ -1,9 +1,12 @@
+use crate::data::math::transformer::clusterer2d::Clusterer2d;
 use crate::data::math::transformer::threshold::OverwriteWithThreshold;
 use serde::{Deserialize, Serialize};
 
 /// Transforms 2 inputs into an output.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Transformer2d {
+    /// Determine a cluster id from both inputs. E.g. biome from rainfall & temperature.
+    Clusterer(Clusterer2d),
     /// Overwrites the input, if it is above a threshold.
     OverwriteIfAboveThreshold(OverwriteWithThreshold<u8>),
     /// Overwrites the input, if it is below a threshold.
@@ -22,6 +25,7 @@ impl Transformer2d {
     /// Transforms 2 inputs into an output.
     pub fn transform(&self, input0: u8, input1: u8) -> u8 {
         match self {
+            Transformer2d::Clusterer(clusterer) => clusterer.cluster(input0, input1),
             Transformer2d::OverwriteIfAboveThreshold(data) => {
                 data.overwrite_output_if_above(input0, input1)
             }
