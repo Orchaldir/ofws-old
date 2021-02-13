@@ -132,7 +132,8 @@ fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> G
     let clusterer = Clusterer2d::new(
         Size2d::new(3, 4),
         vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    );
+    )
+    .unwrap();
     let transformer = Transformer2d::Clusterer(clusterer);
     let step = TransformAttribute2d::new(rainfall_id, temperature_id, biome_id, transformer);
     GenerationStep::TransformAttribute2d(step)
