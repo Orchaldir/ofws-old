@@ -2,7 +2,7 @@ use crate::data::math::transformer::Transformed;
 use serde::{Deserialize, Serialize};
 
 /// Overwrites the input if above or below a threshold.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct OverwriteWithThreshold<T: Transformed> {
     value: T,
     threshold: T,
