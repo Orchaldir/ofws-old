@@ -9,7 +9,7 @@ use ofws_core::data::generator::gradient::Gradient;
 use ofws_core::data::generator::noise::Noise;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::distortion::Distortion1d;
-use ofws_core::data::map::generation::generator::AddGenerator;
+use ofws_core::data::map::generation::generator::GeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::GenerationStep;
 use ofws_core::data::map::Map2d;
@@ -97,15 +97,15 @@ fn add_continent(map: &Map2d, elevation_id: usize) -> GenerationStep {
     let gradient = Gradient::new(125, 0, 0, half_x / 2);
     let gradient = Generator1d::Gradient1d(gradient);
     let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
-    let step = AddGenerator::new("continent", elevation_id, mountain);
-    GenerationStep::AddGenerator(step)
+    let step = GeneratorStep::new("continent", elevation_id, mountain);
+    GenerationStep::GeneratorAdd(step)
 }
 
 fn add_islands(elevation_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 20.0, 0, 125).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    let step = AddGenerator::new("islands", elevation_id, noise);
-    GenerationStep::AddGenerator(step)
+    let step = GeneratorStep::new("islands", elevation_id, noise);
+    GenerationStep::GeneratorAdd(step)
 }
 
 fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> GenerationStep {
@@ -113,8 +113,8 @@ fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> Generation
     let gradient = Gradient::new(255, 0, half_y, half_y);
     let gradient = Generator1d::AbsoluteGradient1d(gradient);
     let generator = Generator2d::new_apply_to_y(gradient);
-    let step = AddGenerator::new("gradient y", temperature_id, generator);
-    GenerationStep::AddGenerator(step)
+    let step = GeneratorStep::new("gradient y", temperature_id, generator);
+    GenerationStep::GeneratorAdd(step)
 }
 
 fn distort_temperature(temperature_id: usize) -> GenerationStep {
@@ -135,8 +135,8 @@ fn subtract_elevation_from_temperature(
 fn create_rainfall(rainfall_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 100.0, 0, 255).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    let step = AddGenerator::new("noise", rainfall_id, noise);
-    GenerationStep::AddGenerator(step)
+    let step = GeneratorStep::new("noise", rainfall_id, noise);
+    GenerationStep::GeneratorAdd(step)
 }
 
 fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> GenerationStep {
