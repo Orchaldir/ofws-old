@@ -1,5 +1,5 @@
 use crate::data::map::generation::attribute::CreateAttribute;
-use crate::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
+use crate::data::map::generation::biome::{BiomeSelector, TransformAttribute2d};
 use crate::data::map::generation::distortion::{Distortion1d, Distortion2d};
 use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
@@ -74,7 +74,7 @@ pub enum GenerationStep {
     GeneratorAdd(GeneratorStep),
     GeneratorSub(GeneratorStep),
     ModifyWithAttribute(ModifyWithAttribute),
-    SetValueIfBelowThreshold(SetValueIfBelowThreshold),
+    TransformAttribute2d(TransformAttribute2d),
 }
 
 impl GenerationStep {
@@ -89,7 +89,7 @@ impl GenerationStep {
             GenerationStep::GeneratorAdd(step) => step.add(map),
             GenerationStep::GeneratorSub(step) => step.sub(map),
             GenerationStep::ModifyWithAttribute(step) => step.run(map),
-            GenerationStep::SetValueIfBelowThreshold(step) => step.run(map),
+            GenerationStep::TransformAttribute2d(step) => step.run(map),
         }
     }
 }
