@@ -63,7 +63,7 @@ impl Noise {
 ///
 /// let data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 /// let noise: Noise = data.clone().try_into().unwrap();
-/// let result: NoiseData = noise.into();
+/// let result: NoiseData = (&noise).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
@@ -82,8 +82,8 @@ impl TryFrom<NoiseData> for Noise {
     }
 }
 
-impl From<Noise> for NoiseData {
-    fn from(noise: Noise) -> Self {
+impl From<&Noise> for NoiseData {
+    fn from(noise: &Noise) -> Self {
         let min_value = ((noise.base - 1.0) * 255.0) as u8;
         NoiseData {
             seed: noise.algo.seed(),

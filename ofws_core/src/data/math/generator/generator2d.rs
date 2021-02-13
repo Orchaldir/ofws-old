@@ -182,8 +182,8 @@ impl TryFrom<Generator2dData> for Generator2d {
     }
 }
 
-impl From<Generator2d> for Generator2dData {
-    fn from(generator: Generator2d) -> Self {
+impl From<&Generator2d> for Generator2dData {
+    fn from(generator: &Generator2d) -> Self {
         match generator {
             Generator2d::ApplyToX(generator) => Generator2dData::ApplyToX(generator.into()),
             Generator2d::ApplyToY(generator) => Generator2dData::ApplyToY(generator.into()),
@@ -193,10 +193,10 @@ impl From<Generator2d> for Generator2dData {
                 center_y,
             } => Generator2dData::ApplyToDistance {
                 generator: generator.into(),
-                center_x,
-                center_y,
+                center_x: *center_x,
+                center_y: *center_y,
             },
-            Generator2d::IndexGenerator(size) => Generator2dData::IndexGenerator(size),
+            Generator2d::IndexGenerator(size) => Generator2dData::IndexGenerator(*size),
             Generator2d::Noise2d(noise) => Generator2dData::Noise2d(noise.into()),
         }
     }
@@ -204,6 +204,6 @@ impl From<Generator2d> for Generator2dData {
 
 pub fn assert_eq(data: Generator2dData) {
     let generator: Generator2d = data.try_into().unwrap();
-    let result: Generator2dData = generator.into();
+    let result: Generator2dData = (&generator).into();
     assert_eq!(result, data)
 }

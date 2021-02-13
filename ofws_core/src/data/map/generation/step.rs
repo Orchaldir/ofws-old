@@ -80,17 +80,19 @@ impl TryFrom<GenerationStepData> for GenerationStep {
     }
 }
 
-impl From<GenerationStep> for GenerationStepData {
-    fn from(generator: GenerationStep) -> Self {
+impl From<&GenerationStep> for GenerationStepData {
+    fn from(generator: &GenerationStep) -> Self {
         match generator {
-            GenerationStep::CreateAttribute(data) => GenerationStepData::CreateAttribute(data),
+            GenerationStep::CreateAttribute(data) => {
+                GenerationStepData::CreateAttribute(data.clone())
+            }
             GenerationStep::DistortAlongX(data) => GenerationStepData::DistortAlongX(data.into()),
             GenerationStep::DistortAlongY(data) => GenerationStepData::DistortAlongY(data.into()),
             GenerationStep::Distortion2d(data) => GenerationStepData::Distortion2d(data.into()),
             GenerationStep::GeneratorAdd(data) => GenerationStepData::GeneratorAdd(data.into()),
             GenerationStep::GeneratorSub(data) => GenerationStepData::GeneratorSub(data.into()),
             GenerationStep::ModifyWithAttribute(data) => {
-                GenerationStepData::ModifyWithAttribute(data)
+                GenerationStepData::ModifyWithAttribute(data.clone())
             }
             GenerationStep::TransformAttribute2d(data) => {
                 GenerationStepData::TransformAttribute2d(data.into())
@@ -101,6 +103,6 @@ impl From<GenerationStep> for GenerationStepData {
 
 pub fn assert_eq(data: GenerationStepData) {
     let generator: GenerationStep = data.clone().try_into().unwrap();
-    let result: GenerationStepData = generator.into();
+    let result: GenerationStepData = (&generator).into();
     assert_eq!(result, data)
 }

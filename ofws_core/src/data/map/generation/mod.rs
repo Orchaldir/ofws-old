@@ -75,7 +75,7 @@ impl MapGeneration {
 /// let steps = vec![GenerationStepData::CreateAttribute(CreateAttribute::new("attribute", 42))];
 /// let data = MapGenerationData::new("map".to_string(), Size2d::new(4, 5), steps);
 /// let step: MapGeneration = data.clone().try_into().unwrap();
-/// let result: MapGenerationData = step.into();
+/// let result: MapGenerationData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -95,13 +95,13 @@ impl TryFrom<MapGenerationData> for MapGeneration {
     }
 }
 
-impl From<MapGeneration> for MapGenerationData {
-    fn from(map_generation: MapGeneration) -> Self {
+impl From<&MapGeneration> for MapGenerationData {
+    fn from(map_generation: &MapGeneration) -> Self {
         let steps: Vec<GenerationStepData> = map_generation
             .steps
-            .into_iter()
+            .iter()
             .map(|data| data.into())
             .collect();
-        MapGenerationData::new(map_generation.name, map_generation.size, steps)
+        MapGenerationData::new(map_generation.name.clone(), map_generation.size, steps)
     }
 }

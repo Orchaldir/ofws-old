@@ -116,7 +116,7 @@ impl GeneratorStep {
 /// let generator = Generator2dData::IndexGenerator(Size2d::new(1, 2));
 /// let data = GeneratorStepData::new("10".to_string(), 20, generator);
 /// let step: GeneratorStep = data.clone().try_into().unwrap();
-/// let result: GeneratorStepData = step.into();
+/// let result: GeneratorStepData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -135,8 +135,12 @@ impl TryFrom<GeneratorStepData> for GeneratorStep {
     }
 }
 
-impl From<GeneratorStep> for GeneratorStepData {
-    fn from(step: GeneratorStep) -> Self {
-        GeneratorStepData::new(step.name, step.attribute_id, step.generator.into())
+impl From<&GeneratorStep> for GeneratorStepData {
+    fn from(step: &GeneratorStep) -> Self {
+        GeneratorStepData::new(
+            step.name.clone(),
+            step.attribute_id,
+            (&step.generator).into(),
+        )
     }
 }
