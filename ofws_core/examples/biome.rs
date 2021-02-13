@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate log;
 extern crate ofws_rendering_glium;
 
@@ -7,11 +6,12 @@ use ofws_core::data::generator::generator1d::Generator1d;
 use ofws_core::data::generator::generator2d::Generator2d;
 use ofws_core::data::generator::gradient::Gradient;
 use ofws_core::data::generator::noise::Noise;
+use ofws_core::data::map::generation::attribute::CreateAttribute;
 use ofws_core::data::map::generation::biome::{BiomeSelector, SetValueIfBelowThreshold};
 use ofws_core::data::map::generation::distortion::Distortion1d;
 use ofws_core::data::map::generation::generator::GeneratorStep;
 use ofws_core::data::map::generation::modify::ModifyWithAttribute;
-use ofws_core::data::map::generation::GenerationStep;
+use ofws_core::data::map::generation::{GenerationStep, MapGeneration};
 use ofws_core::data::map::Map2d;
 use ofws_core::data::selector::Selector;
 use ofws_core::data::size2d::Size2d;
@@ -46,42 +46,25 @@ impl BiomeExample {
 }
 
 fn create_map(size: Size2d) -> Option<Map2d> {
-    info!(
-        "Start map creation with {:?} & {} cells",
-        size,
-        size.get_area(),
-    );
+    let map_generation = MapGeneration::new("biome example", size, create_generation_steps(size));
 
-    let mut map = Map2d::with_name("biome example", size);
-
-    create_attributes(&mut map);
-
-    create_generation_steps(&map)
-        .iter()
-        .for_each(|step| step.run(&mut map));
-
-    info!("Finish map creation");
-
-    Some(map)
+    Some(map_generation.generate())
 }
 
-fn create_attributes(map: &mut Map2d) {
-    map.create_attribute("elevation", 0).unwrap();
-    map.create_attribute("temperature", 0).unwrap();
-    map.create_attribute("rainfall", 0).unwrap();
-    map.create_attribute("biome", 0).unwrap();
-}
-
-fn create_generation_steps(map: &Map2d) -> Vec<GenerationStep> {
-    let elevation_id = map.get_attribute_id("elevation").unwrap();
-    let temperature_id = map.get_attribute_id("temperature").unwrap();
-    let rainfall_id = map.get_attribute_id("rainfall").unwrap();
-    let biome_id = map.get_attribute_id("biome").unwrap();
+fn create_generation_steps(size: Size2d) -> Vec<GenerationStep> {
+    let elevation_id = 0;
+    let temperature_id = 1;
+    let rainfall_id = 2;
+    let biome_id = 3;
 
     vec![
-        add_continent(map, elevation_id),
+        create_attribute("elevation", 0),
+        create_attribute("temperature", 0),
+        create_attribute("rainfall", 0),
+        create_attribute("biome", 0),
+        add_continent(size, elevation_id),
         add_islands(elevation_id),
-        create_temperature_gradient(map, temperature_id),
+        create_temperature_gradient(size, temperature_id),
         distort_temperature(temperature_id),
         subtract_elevation_from_temperature(elevation_id, temperature_id),
         create_rainfall(rainfall_id),
@@ -90,9 +73,13 @@ fn create_generation_steps(map: &Map2d) -> Vec<GenerationStep> {
     ]
 }
 
-fn add_continent(map: &Map2d, elevation_id: usize) -> GenerationStep {
-    let half_x = map.get_size().width() / 2;
-    let half_y = map.get_size().height() / 2;
+fn create_attribute<S: Into<String>>(name: S, default: u8) -> GenerationStep {
+    GenerationStep::CreateAttribute(CreateAttribute::new(name, default))
+}
+
+fn add_continent(size: Size2d, elevation_id: usize) -> GenerationStep {
+    let half_x = size.width() / 2;
+    let half_y = size.height() / 2;
 
     let gradient = Gradient::new(125, 0, 0, half_x / 2);
     let gradient = Generator1d::Gradient1d(gradient);
@@ -108,8 +95,8 @@ fn add_islands(elevation_id: usize) -> GenerationStep {
     GenerationStep::GeneratorAdd(step)
 }
 
-fn create_temperature_gradient(map: &Map2d, temperature_id: usize) -> GenerationStep {
-    let half_y = map.get_size().height() / 2;
+fn create_temperature_gradient(size: Size2d, temperature_id: usize) -> GenerationStep {
+    let half_y = size.height() / 2;
     let gradient = Gradient::new(255, 0, half_y, half_y);
     let gradient = Generator1d::AbsoluteGradient1d(gradient);
     let generator = Generator2d::new_apply_to_y(gradient);
