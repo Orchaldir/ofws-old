@@ -67,9 +67,9 @@ impl TransformAttribute2d {
 /// For serializing, deserializing & validating [`TransformAttribute2d`].
 ///
 ///```
-/// use std::convert::TryInto;
-/// use ofws_core::data::map::generation::transformer::{TransformAttribute2dData, TransformAttribute2d};
-/// use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
+///# use std::convert::TryInto;
+///# use ofws_core::data::map::generation::transformer::{TransformAttribute2dData, TransformAttribute2d};
+///# use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
 /// let transformer = Transformer2dData::Const(99);
 /// let data = TransformAttribute2dData::new(10, 20, 30, transformer);
 /// let step: TransformAttribute2d = data.clone().try_into().unwrap();

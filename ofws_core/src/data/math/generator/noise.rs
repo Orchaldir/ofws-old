@@ -59,7 +59,7 @@ impl Noise {
 ///
 ///```
 ///# use ofws_core::data::math::generator::noise::{NoiseData, Noise};
-/// use std::convert::TryInto;
+///# use std::convert::TryInto;
 ///
 /// let data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 /// let noise: Noise = data.clone().try_into().unwrap();
