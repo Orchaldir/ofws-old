@@ -4,8 +4,6 @@ use crate::data::math::generator::generator1d::{Generator1d, Generator1dData};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
-pub mod distortion2d;
-
 /// Shifts each column or row of an [`Attribute`] based on a [`Generator1d`].
 #[derive(new)]
 pub struct Distortion1d {
