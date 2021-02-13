@@ -4,7 +4,7 @@ use core::cmp;
 use glium::glutin::dpi::PhysicalPosition;
 use glium::glutin::event::{ElementState, KeyboardInput, MouseButton};
 use glium::{glutin, Display};
-use ofws_core::data::size2d::Size2d;
+use ofws_core::data::math::size2d::Size2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::window::Window;
 use ofws_core::logging::init_logging;

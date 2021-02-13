@@ -1,5 +1,5 @@
 use crate::data::color::Color;
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 use crate::rendering::tile::TileRenderer;
 
 pub type TextureId = usize;

@@ -52,7 +52,7 @@ impl Distortion1d {
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::Distortion1d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -118,7 +118,7 @@ impl Distortion1d {
     ///# use ofws_core::data::generator::generator1d::Generator1d::InputAsOutput;
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::distortion::Distortion1d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 3);
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];

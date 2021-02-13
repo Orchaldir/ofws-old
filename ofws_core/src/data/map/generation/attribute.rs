@@ -19,7 +19,7 @@ impl CreateAttribute {
     /// ```
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::attribute::CreateAttribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// let mut map = Map2d::new(size);
     /// let step = CreateAttribute::new("test0", 9);
