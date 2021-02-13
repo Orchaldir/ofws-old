@@ -1,6 +1,9 @@
 use crate::data::map::Map2d;
+use crate::data::math::distance::is_close;
+use serde::{Deserialize, Serialize};
 
 /// Modifies one [`Attribute`] with another transformed one.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModifyWithAttribute {
     source_id: usize,
     target_id: usize,
@@ -57,3 +60,14 @@ impl ModifyWithAttribute {
         attribute.replace_all(values);
     }
 }
+
+impl PartialEq for ModifyWithAttribute {
+    fn eq(&self, other: &Self) -> bool {
+        self.source_id == other.source_id
+            && self.target_id == other.target_id
+            && is_close(self.factor, other.factor, 0.001)
+            && self.minimum == other.minimum
+    }
+}
+
+impl Eq for ModifyWithAttribute {}

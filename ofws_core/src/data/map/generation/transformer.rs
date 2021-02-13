@@ -1,5 +1,7 @@
 use crate::data::map::Map2d;
-use crate::data::math::transformer::transformer2d::Transformer2d;
+use crate::data::math::transformer::transformer2d::{Transformer2d, Transformer2dData};
+use serde::{Deserialize, Serialize};
+use std::convert::{TryFrom, TryInto};
 
 /// Transforms 2 [`Attribute`]s and writes into another.
 #[derive(new)]
@@ -59,5 +61,50 @@ impl TransformAttribute2d {
         let attribute = map.get_attribute_mut(self.target_id);
 
         attribute.replace_all(biomes);
+    }
+}
+
+/// For serializing, deserializing & validating [`Noise`].
+///
+///```
+/// use std::convert::TryInto;
+/// use ofws_core::data::map::generation::transformer::{TransformAttribute2dData, TransformAttribute2d};
+/// use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
+/// let transformer = Transformer2dData::Const(99);
+/// let data = TransformAttribute2dData::new(10, 20, 30, transformer);
+/// let step: TransformAttribute2d = data.clone().try_into().unwrap();
+/// let result: TransformAttribute2dData = step.into();
+/// assert_eq!(data, result)
+///```
+#[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+pub struct TransformAttribute2dData {
+    source_id0: usize,
+    source_id1: usize,
+    target_id: usize,
+    transformer: Transformer2dData,
+}
+
+impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
+    type Error = &'static str;
+
+    fn try_from(data: TransformAttribute2dData) -> Result<Self, Self::Error> {
+        let transformer: Transformer2d = data.transformer.try_into()?;
+        Ok(TransformAttribute2d::new(
+            data.source_id0,
+            data.source_id1,
+            data.target_id,
+            transformer,
+        ))
+    }
+}
+
+impl From<TransformAttribute2d> for TransformAttribute2dData {
+    fn from(step: TransformAttribute2d) -> Self {
+        TransformAttribute2dData {
+            source_id0: step.source_id0,
+            source_id1: step.source_id1,
+            target_id: step.target_id,
+            transformer: step.transformer.into(),
+        }
     }
 }
