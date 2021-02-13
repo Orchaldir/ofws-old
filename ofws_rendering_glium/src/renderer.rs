@@ -4,7 +4,7 @@ use crate::shader::load_program;
 use cgmath::ortho;
 use glium::{Program, Surface};
 use ofws_core::data::color::Color;
-use ofws_core::data::size2d::Size2d;
+use ofws_core::data::math::size2d::Size2d;
 use ofws_core::interface::rendering::{
     AsciiRenderer, ColorRenderer, Renderer, TextureId, TextureRenderer,
 };

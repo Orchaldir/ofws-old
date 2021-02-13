@@ -4,7 +4,7 @@ use crate::data::map::generation::distortion::{Distortion1d, Distortion2d};
 use crate::data::map::generation::generator::GeneratorStep;
 use crate::data::map::generation::modify::ModifyWithAttribute;
 use crate::data::map::Map2d;
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 use std::ops::Sub;
 
 pub mod attribute;

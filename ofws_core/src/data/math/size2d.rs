@@ -38,7 +38,7 @@ impl Size2d {
     /// Returns the area covered by this size
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.get_area(), 6);
     /// ```
@@ -49,7 +49,7 @@ impl Size2d {
     /// Returns the size along the x-axis
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.width(), 2);
     /// ```
@@ -60,7 +60,7 @@ impl Size2d {
     /// Returns the size along the y-axis
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.height(), 3);
     /// ```
@@ -71,7 +71,7 @@ impl Size2d {
     /// Converts an index to the x-coordinate of the equivalent point
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.to_x(5), 1);
     /// ```
@@ -82,7 +82,7 @@ impl Size2d {
     /// Converts an index to the y-coordinate of the equivalent point
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.to_y(5), 2);
     /// ```
@@ -93,7 +93,7 @@ impl Size2d {
     /// Converts an index to the equivalent point
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.to_x_and_y(5), [1,2]);
     /// ```
@@ -104,7 +104,7 @@ impl Size2d {
     /// Converts a point to the equivalent index
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.to_index(1, 2), 5);
     /// ```
@@ -115,7 +115,7 @@ impl Size2d {
     /// Converts a point to the equivalent index.
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// assert_eq!(size.saturating_to_index(1, 2), 5);
     /// ```
@@ -123,7 +123,7 @@ impl Size2d {
     /// Coordinates outside the map are limited to width & height.
     ///
     /// ```
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     ///
     /// assert_eq!(size.saturating_to_index(2, 2), 5);
@@ -141,7 +141,7 @@ impl Size2d {
 // Adds 2 sizes
 ///
 /// ```
-///# use ofws_core::data::size2d::Size2d;
+///# use ofws_core::data::math::size2d::Size2d;
 /// let a = Size2d::new(2, 3);
 /// let b = Size2d::new(10, 40);
 /// assert_eq!(a + b, Size2d::new(12, 43));
@@ -160,7 +160,7 @@ impl Add for Size2d {
 /// Multiplies 2 sizes
 ///
 /// ```
-///# use ofws_core::data::size2d::Size2d;
+///# use ofws_core::data::math::size2d::Size2d;
 /// let a = Size2d::new(2, 3);
 /// let b = Size2d::new(10, 40);
 /// assert_eq!(a * b, Size2d::new(20, 120));

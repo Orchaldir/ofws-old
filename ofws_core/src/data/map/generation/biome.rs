@@ -1,5 +1,5 @@
 use crate::data::map::Map2d;
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 
 /// Overwrite the target attribute with a specific value, if it is below a threshold.
 pub struct SetValueIfBelowThreshold {
@@ -124,7 +124,7 @@ impl BiomeSelector {
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::biome::BiomeSelector;
     ///# use ofws_core::data::map::generation::GenerationStep;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(3, 2);
     /// let mut map = Map2d::new(size);
     /// map.create_attribute_from("input0", vec![0, 100, 200, 60, 170, 255]);

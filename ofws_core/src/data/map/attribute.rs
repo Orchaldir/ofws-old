@@ -1,4 +1,4 @@
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 
 /// Represents a value with a specific meaning for each cell of a map.
 ///
@@ -34,7 +34,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let attribute = Attribute::default_value("elevation", Size2d::new(2, 3), 42);
     ///
     /// assert_eq!(attribute.get_name(), "elevation");
@@ -47,7 +47,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// let attribute = Attribute::default_value("elevation", size, 42);
     ///
@@ -61,7 +61,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// assert_eq!(attribute.get(0), 42);
@@ -74,7 +74,7 @@ impl Attribute {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.get(2);
@@ -87,7 +87,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// *attribute.get_mut(0) += 4;
@@ -102,7 +102,7 @@ impl Attribute {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.get_mut(2);
@@ -115,7 +115,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let attribute = Attribute::new("elevation", Size2d::new(1, 2), vec![10, 15]);
     ///
     ///  assert_eq!(attribute.get_all(), &vec![10u8, 15u8]);
@@ -128,7 +128,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.replace_all(vec![3, 4]);
@@ -143,7 +143,7 @@ impl Attribute {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.replace_all(vec![3, 4, 5]);
@@ -161,7 +161,7 @@ impl Attribute {
     ///
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 3), 42);
     ///
     /// attribute.replace_some(vec![0, 2], 5);
@@ -175,7 +175,7 @@ impl Attribute {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::attribute::Attribute;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut attribute = Attribute::default_value("elevation", Size2d::new(1, 2), 42);
     ///
     /// attribute.replace_some(vec![5], 9);

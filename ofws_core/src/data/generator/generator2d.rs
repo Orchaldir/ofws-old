@@ -1,7 +1,7 @@
 use crate::data::generator::generator1d::{Generator1d, Generator1dData};
 use crate::data::generator::noise::{Noise, NoiseData};
 use crate::data::math::distance::calculate_distance;
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
@@ -128,7 +128,7 @@ impl Generator2d {
 ///# use ofws_core::data::generator::generator2d::{Generator2dData, assert_eq};
 ///# use ofws_core::data::generator::gradient::Gradient;
 ///# use ofws_core::data::generator::noise::NoiseData;
-///# use ofws_core::data::size2d::Size2d;
+///# use ofws_core::data::math::size2d::Size2d;
 /// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 ///
 /// assert_eq(Generator2dData::ApplyToX(InputAsOutput));

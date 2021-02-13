@@ -1,5 +1,5 @@
 use crate::data::map::attribute::Attribute;
-use crate::data::size2d::Size2d;
+use crate::data::math::size2d::Size2d;
 use std::collections::HashMap;
 
 pub mod attribute;
@@ -23,7 +23,7 @@ impl Map2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// let mut map = Map2d::with_name("world", size);
     ///
@@ -51,7 +51,7 @@ impl Map2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     ///
     /// assert_eq!(map.create_attribute("elevation", 42), Some(0));
@@ -62,7 +62,7 @@ impl Map2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     ///
     /// assert_eq!(map.create_attribute("elevation", 42), Some(0));
@@ -97,7 +97,7 @@ impl Map2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     /// map.create_attribute("elevation", 42);
     /// map.create_attribute("rainfall", 100);
@@ -106,15 +106,15 @@ impl Map2d {
     /// assert_eq!(map.get_attribute_id("rainfall"), Some(1));
     /// assert_eq!(map.get_attribute_id("unknown"), None);
     /// ```
-    pub fn get_attribute_id<S: Into<String>>(&self, name: S) -> Option<usize> {
-        self.attribute_lookup.get(&name.into()).copied()
+    pub fn get_attribute_id(&self, name: &str) -> Option<usize> {
+        self.attribute_lookup.get(name).copied()
     }
 
     /// Returns an [`Attribute`] with the matching id.
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     /// map.create_attribute("elevation", 42);
     /// map.create_attribute("rainfall", 100);
@@ -129,7 +129,7 @@ impl Map2d {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     ///
     /// map.get_attribute(0);
@@ -143,7 +143,7 @@ impl Map2d {
     /// ```
     ///# use ofws_core::data::map::attribute::Attribute;
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     /// map.create_attribute("elevation", 42);
     /// map.create_attribute("rainfall", 100);
@@ -158,7 +158,7 @@ impl Map2d {
     ///
     /// ```should_panic
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let mut map = Map2d::new(Size2d::new(2, 3));
     ///
     /// map.get_attribute_mut(0);

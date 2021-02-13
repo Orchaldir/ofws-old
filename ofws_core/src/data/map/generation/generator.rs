@@ -28,7 +28,7 @@ impl GeneratorStep {
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::generator::GeneratorStep;
     ///# use ofws_core::data::map::generation::GenerationStep;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// let mut map = Map2d::new(size);
     /// let attribute_id = map.create_attribute("elevation", 40).unwrap();
@@ -69,7 +69,7 @@ impl GeneratorStep {
     ///# use ofws_core::data::map::Map2d;
     ///# use ofws_core::data::map::generation::generator::GeneratorStep;
     ///# use ofws_core::data::map::generation::GenerationStep;
-    ///# use ofws_core::data::size2d::Size2d;
+    ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
     /// let mut map = Map2d::new(size);
     /// let attribute_id = map.create_attribute("elevation", 40).unwrap();

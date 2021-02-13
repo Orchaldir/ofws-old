@@ -1,6 +1,6 @@
 use crate::renderer::GliumRenderer;
 use crate::texture::load_texture;
-use ofws_core::data::size2d::Size2d;
+use ofws_core::data::math::size2d::Size2d;
 use ofws_core::interface::rendering::{Initialization, TextureId};
 
 pub struct GliumInitialization {
