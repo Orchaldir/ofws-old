@@ -4,19 +4,13 @@ use crate::data::math::generator::generator1d::Generator1d;
 use crate::data::math::generator::generator2d::Generator2d;
 
 /// Shifts each column or row of an [`Attribute`] based on a [`Generator1d`].
+#[derive(new)]
 pub struct Distortion1d {
     attribute_id: usize,
     generator: Generator1d,
 }
 
 impl Distortion1d {
-    pub fn new(attribute_id: usize, generator: Generator1d) -> Distortion1d {
-        Distortion1d {
-            attribute_id,
-            generator,
-        }
-    }
-
     fn distort_row(&self, y: u32, shift: u8, attribute: &Attribute, values: &mut Vec<u8>) {
         let start = attribute.get_size().to_index(0, y);
         let start_value = attribute.get(start);
@@ -145,6 +139,7 @@ impl Distortion1d {
 }
 
 /// Distorts an [`Attribute`] along 2 dimensions.
+#[derive(new)]
 pub struct Distortion2d {
     attribute_id: usize,
     generator_x: Generator2d,
@@ -152,18 +147,6 @@ pub struct Distortion2d {
 }
 
 impl Distortion2d {
-    pub fn new(
-        attribute_id: usize,
-        generator_x: Generator2d,
-        generator_y: Generator2d,
-    ) -> Distortion2d {
-        Distortion2d {
-            attribute_id,
-            generator_x,
-            generator_y,
-        }
-    }
-
     fn distort_map(&self, map: &Map2d) -> Vec<u8> {
         let length = map.size.get_area();
         let attribute = map.get_attribute(self.attribute_id);

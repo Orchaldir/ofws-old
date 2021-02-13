@@ -2,17 +2,13 @@ use crate::data::math::transformer::Transformed;
 use serde::{Deserialize, Serialize};
 
 /// Overwrites the input if above or below a threshold.
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(new, Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct OverwriteWithThreshold<T: Transformed> {
     value: T,
     threshold: T,
 }
 
 impl<T: Transformed> OverwriteWithThreshold<T> {
-    pub fn new(value: T, threshold: T) -> OverwriteWithThreshold<T> {
-        OverwriteWithThreshold { value, threshold }
-    }
-
     /// Overwrites the input if equal or above a threshold.
     ///
     /// ```
