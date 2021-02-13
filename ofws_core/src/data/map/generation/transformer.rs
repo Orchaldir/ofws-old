@@ -73,7 +73,7 @@ impl TransformAttribute2d {
 /// let transformer = Transformer2dData::Const(99);
 /// let data = TransformAttribute2dData::new(10, 20, 30, transformer);
 /// let step: TransformAttribute2d = data.clone().try_into().unwrap();
-/// let result: TransformAttribute2dData = step.into();
+/// let result: TransformAttribute2dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -98,13 +98,13 @@ impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
     }
 }
 
-impl From<TransformAttribute2d> for TransformAttribute2dData {
-    fn from(step: TransformAttribute2d) -> Self {
+impl From<&TransformAttribute2d> for TransformAttribute2dData {
+    fn from(step: &TransformAttribute2d) -> Self {
         TransformAttribute2dData::new(
             step.source_id0,
             step.source_id1,
             step.target_id,
-            step.transformer.into(),
+            (&step.transformer).into(),
         )
     }
 }

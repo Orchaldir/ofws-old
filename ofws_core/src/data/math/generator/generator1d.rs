@@ -151,13 +151,13 @@ impl TryFrom<Generator1dData> for Generator1d {
     }
 }
 
-impl From<Generator1d> for Generator1dData {
-    fn from(generator: Generator1d) -> Self {
+impl From<&Generator1d> for Generator1dData {
+    fn from(generator: &Generator1d) -> Self {
         match generator {
             Generator1d::AbsoluteGradient1d(gradient) => {
-                Generator1dData::AbsoluteGradient1d(gradient)
+                Generator1dData::AbsoluteGradient1d(*gradient)
             }
-            Generator1d::Gradient1d(gradient) => Generator1dData::Gradient1d(gradient),
+            Generator1d::Gradient1d(gradient) => Generator1dData::Gradient1d(*gradient),
             Generator1d::InputAsOutput => Generator1dData::InputAsOutput,
             Generator1d::Noise1d(noise) => Generator1dData::Noise1d(noise.into()),
         }
@@ -166,6 +166,6 @@ impl From<Generator1d> for Generator1dData {
 
 pub fn assert_eq(data: Generator1dData) {
     let generator: Generator1d = data.try_into().unwrap();
-    let result: Generator1dData = generator.into();
+    let result: Generator1dData = (&generator).into();
     assert_eq!(result, data)
 }

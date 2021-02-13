@@ -80,16 +80,16 @@ impl TryFrom<Transformer2dData> for Transformer2d {
     }
 }
 
-impl From<Transformer2d> for Transformer2dData {
-    fn from(generator: Transformer2d) -> Self {
+impl From<&Transformer2d> for Transformer2dData {
+    fn from(generator: &Transformer2d) -> Self {
         match generator {
-            Transformer2d::Clusterer(c) => Transformer2dData::Clusterer(c),
-            Transformer2d::Const(value) => Transformer2dData::Const(value),
+            Transformer2d::Clusterer(c) => Transformer2dData::Clusterer(c.clone()),
+            Transformer2d::Const(value) => Transformer2dData::Const(*value),
             Transformer2d::OverwriteIfAboveThreshold(o) => {
-                Transformer2dData::OverwriteIfAboveThreshold(o)
+                Transformer2dData::OverwriteIfAboveThreshold(*o)
             }
             Transformer2d::OverwriteIfBelowThreshold(o) => {
-                Transformer2dData::OverwriteIfBelowThreshold(o)
+                Transformer2dData::OverwriteIfBelowThreshold(*o)
             }
         }
     }
@@ -97,6 +97,6 @@ impl From<Transformer2d> for Transformer2dData {
 
 pub fn assert_eq(data: Transformer2dData) {
     let generator: Transformer2d = data.clone().try_into().unwrap();
-    let result: Transformer2dData = generator.into();
+    let result: Transformer2dData = (&generator).into();
     assert_eq!(result, data)
 }

@@ -148,7 +148,7 @@ impl Distortion1d {
 ///# use std::convert::TryInto;
 /// let data = Distortion1dData::new(20, InputAsOutput);
 /// let step: Distortion1d = data.clone().try_into().unwrap();
-/// let result: Distortion1dData = step.into();
+/// let result: Distortion1dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -166,8 +166,8 @@ impl TryFrom<Distortion1dData> for Distortion1d {
     }
 }
 
-impl From<Distortion1d> for Distortion1dData {
-    fn from(step: Distortion1d) -> Self {
-        Distortion1dData::new(step.attribute_id, step.generator.into())
+impl From<&Distortion1d> for Distortion1dData {
+    fn from(step: &Distortion1d) -> Self {
+        Distortion1dData::new(step.attribute_id, (&step.generator).into())
     }
 }

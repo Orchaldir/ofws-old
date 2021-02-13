@@ -57,7 +57,7 @@ impl Distortion2d {
 /// let generator_y = IndexGenerator(Size2d::new(3, 4));
 /// let data = Distortion2dData::new(20, generator_x, generator_y);
 /// let step: Distortion2d = data.clone().try_into().unwrap();
-/// let result: Distortion2dData = step.into();
+/// let result: Distortion2dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -81,12 +81,12 @@ impl TryFrom<Distortion2dData> for Distortion2d {
     }
 }
 
-impl From<Distortion2d> for Distortion2dData {
-    fn from(step: Distortion2d) -> Self {
+impl From<&Distortion2d> for Distortion2dData {
+    fn from(step: &Distortion2d) -> Self {
         Distortion2dData::new(
             step.attribute_id,
-            step.generator_x.into(),
-            step.generator_y.into(),
+            (&step.generator_x).into(),
+            (&step.generator_y).into(),
         )
     }
 }
