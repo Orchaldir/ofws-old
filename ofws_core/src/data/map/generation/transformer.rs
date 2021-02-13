@@ -43,7 +43,7 @@ impl TransformAttribute2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::biome::TransformAttribute2d;
+    ///# use ofws_core::data::map::generation::transformer::TransformAttribute2d;
     ///# use ofws_core::data::math::size2d::Size2d;
     ///# use ofws_core::data::math::transformer::transformer2d::Transformer2d;
     /// let mut map = Map2d::new(Size2d::new(3, 2));
