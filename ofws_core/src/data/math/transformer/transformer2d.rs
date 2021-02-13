@@ -8,6 +8,8 @@ use std::convert::{TryFrom, TryInto};
 pub enum Transformer2d {
     /// Determine a cluster id from both inputs. E.g. biome from rainfall & temperature.
     Clusterer(Clusterer2d),
+    /// Returns a const value.
+    Const(u8),
     /// Overwrites the input, if it is above a threshold.
     OverwriteIfAboveThreshold(OverwriteWithThreshold<u8>),
     /// Overwrites the input, if it is below a threshold.
@@ -27,6 +29,7 @@ impl Transformer2d {
     pub fn transform(&self, input0: u8, input1: u8) -> u8 {
         match self {
             Transformer2d::Clusterer(clusterer) => clusterer.cluster(input0, input1),
+            Transformer2d::Const(value) => *value,
             Transformer2d::OverwriteIfAboveThreshold(data) => {
                 data.overwrite_output_if_above(input0, input1)
             }
@@ -48,12 +51,14 @@ impl Transformer2d {
 /// let overwrite_data = OverwriteWithThreshold::new(100, 200);
 ///
 /// assert_eq(Transformer2dData::Clusterer(clusterer));
+/// assert_eq(Transformer2dData::Const(42));
 /// assert_eq(Transformer2dData::OverwriteIfAboveThreshold(overwrite_data));
 /// assert_eq(Transformer2dData::OverwriteIfBelowThreshold(overwrite_data));
 ///```
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Transformer2dData {
     Clusterer(Clusterer2d),
+    Const(u8),
     OverwriteIfAboveThreshold(OverwriteWithThreshold<u8>),
     OverwriteIfBelowThreshold(OverwriteWithThreshold<u8>),
 }
@@ -64,6 +69,7 @@ impl TryFrom<Transformer2dData> for Transformer2d {
     fn try_from(data: Transformer2dData) -> Result<Self, Self::Error> {
         match data {
             Transformer2dData::Clusterer(c) => Ok(Transformer2d::Clusterer(c)),
+            Transformer2dData::Const(value) => Ok(Transformer2d::Const(value)),
             Transformer2dData::OverwriteIfAboveThreshold(o) => {
                 Ok(Transformer2d::OverwriteIfAboveThreshold(o))
             }
@@ -78,6 +84,7 @@ impl From<Transformer2d> for Transformer2dData {
     fn from(generator: Transformer2d) -> Self {
         match generator {
             Transformer2d::Clusterer(c) => Transformer2dData::Clusterer(c),
+            Transformer2d::Const(value) => Transformer2dData::Const(value),
             Transformer2d::OverwriteIfAboveThreshold(o) => {
                 Transformer2dData::OverwriteIfAboveThreshold(o)
             }

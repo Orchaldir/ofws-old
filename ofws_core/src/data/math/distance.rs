@@ -43,3 +43,22 @@ pub fn abs_diff(a: u32, b: u32) -> u32 {
         a - b
     }
 }
+
+/// Returns the absolute difference between 2 unsigned integers.
+///
+/// ```
+///# use ofws_core::data::math::distance::is_close;
+///
+/// assert!(is_close(0.0, 0.0, 0.001));
+/// assert!(is_close(0.0, 0.1, 0.15));
+/// assert!(!is_close(0.0, 0.2, 0.15));
+/// assert!(is_close(5.0, 4.9, 0.2));
+/// assert!(!is_close(5.0, 4.0, 0.2));
+/// ```
+pub fn is_close(a: f32, b: f32, epsilon: f32) -> bool {
+    if a < b {
+        b - a < epsilon
+    } else {
+        a - b < epsilon
+    }
+}

@@ -1,6 +1,8 @@
 use crate::data::map::Map2d;
+use serde::{Deserialize, Serialize};
 
 /// Create a new [`Attribute`] of the map.
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct CreateAttribute {
     name: String,
     default: u8,
