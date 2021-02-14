@@ -7,6 +7,7 @@ use ofws_core::data::map::generation::attributes::distortion1d::Distortion1d;
 use ofws_core::data::map::generation::attributes::generator::GeneratorStep;
 use ofws_core::data::map::generation::attributes::modify::ModifyWithAttribute;
 use ofws_core::data::map::generation::attributes::transformer::TransformAttribute2d;
+use ofws_core::data::map::generation::io::write_map_generator;
 use ofws_core::data::map::generation::step::GenerationStep;
 use ofws_core::data::map::generation::MapGeneration;
 use ofws_core::data::map::Map2d;
@@ -51,6 +52,8 @@ impl BiomeExample {
 fn create_map(size: Size2d) -> Option<Map2d> {
     let map_generation = MapGeneration::new("biome example", size, create_generation_steps(size));
 
+    write_map_generator(&map_generation, "test.yaml");
+
     Some(map_generation.generate())
 }
 
@@ -87,14 +90,14 @@ fn add_continent(size: Size2d, elevation_id: usize) -> GenerationStep {
     let gradient = Gradient::new(125, 0, 0, half_x / 2);
     let gradient = Generator1d::Gradient1d(gradient);
     let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
-    let step = GeneratorStep::new("continent", elevation_id, mountain);
+    let step = GeneratorStep::new("continent", elevation_id, "elevation", mountain);
     GenerationStep::GeneratorAdd(step)
 }
 
 fn add_islands(elevation_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 20.0, 0, 125).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    let step = GeneratorStep::new("islands", elevation_id, noise);
+    let step = GeneratorStep::new("islands", elevation_id, "elevation", noise);
     GenerationStep::GeneratorAdd(step)
 }
 
@@ -103,14 +106,14 @@ fn create_temperature_gradient(size: Size2d, temperature_id: usize) -> Generatio
     let gradient = Gradient::new(255, 0, half_y, half_y);
     let gradient = Generator1d::AbsoluteGradient1d(gradient);
     let generator = Generator2d::new_apply_to_y(gradient);
-    let step = GeneratorStep::new("gradient y", temperature_id, generator);
+    let step = GeneratorStep::new("gradient y", temperature_id, "temperature", generator);
     GenerationStep::GeneratorAdd(step)
 }
 
 fn distort_temperature(temperature_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 60.0, 0, 20).unwrap();
     let noise = Generator1d::Noise1d(noise);
-    let step = Distortion1d::new(temperature_id, noise);
+    let step = Distortion1d::new(temperature_id, "temperature".to_string(), noise);
     GenerationStep::DistortAlongY(step)
 }
 
@@ -118,14 +121,21 @@ fn subtract_elevation_from_temperature(
     elevation_id: usize,
     temperature_id: usize,
 ) -> GenerationStep {
-    let step = ModifyWithAttribute::new(elevation_id, temperature_id, -0.8, OCEAN_VALUE);
+    let step = ModifyWithAttribute::new(
+        elevation_id,
+        "elevation".to_string(),
+        temperature_id,
+        "temperature".to_string(),
+        -0.8,
+        OCEAN_VALUE,
+    );
     GenerationStep::ModifyWithAttribute(step)
 }
 
 fn create_rainfall(rainfall_id: usize) -> GenerationStep {
     let noise = Noise::new(0, 100.0, 0, 255).unwrap();
     let noise = Generator2d::Noise2d(noise);
-    let step = GeneratorStep::new("noise", rainfall_id, noise);
+    let step = GeneratorStep::new("noise", rainfall_id, "rainfall", noise);
     GenerationStep::GeneratorAdd(step)
 }
 
@@ -136,13 +146,29 @@ fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> G
     )
     .unwrap();
     let transformer = Transformer2d::Clusterer(clusterer);
-    let step = TransformAttribute2d::new(rainfall_id, temperature_id, biome_id, transformer);
+    let step = TransformAttribute2d::new(
+        rainfall_id,
+        "rainfall".to_string(),
+        temperature_id,
+        "temperature".to_string(),
+        biome_id,
+        "biome".to_string(),
+        transformer,
+    );
     GenerationStep::TransformAttribute2d(step)
 }
 
 fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {
     let transformer = Transformer2d::new_overwrite_if_below(OCEAN_ID, OCEAN_VALUE);
-    let step = TransformAttribute2d::new(elevation_id, biome_id, biome_id, transformer);
+    let step = TransformAttribute2d::new(
+        elevation_id,
+        "elevation".to_string(),
+        biome_id,
+        "biome".to_string(),
+        biome_id,
+        "biome".to_string(),
+        transformer,
+    );
     GenerationStep::TransformAttribute2d(step)
 }
 

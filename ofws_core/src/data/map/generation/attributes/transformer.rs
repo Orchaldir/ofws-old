@@ -1,15 +1,18 @@
-use crate::data::map::generation::step::GenerationStepError;
+use crate::data::map::generation::step::{get_attribute_id, GenerationStepError};
 use crate::data::map::Map2d;
 use crate::data::math::transformer::transformer2d::{Transformer2d, Transformer2dData};
 use serde::{Deserialize, Serialize};
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryInto;
 
 /// Transforms 2 [`Attribute`]s and writes into another.
 #[derive(new)]
 pub struct TransformAttribute2d {
     source_id0: usize,
+    source_name0: String,
     source_id1: usize,
+    source_name1: String,
     target_id: usize,
+    target_name: String,
     transformer: Transformer2d,
 }
 
@@ -41,7 +44,7 @@ impl TransformAttribute2d {
     /// map.create_attribute_from("input1", vec![200, 199, 198, 197, 196, 195]);
     /// map.create_attribute("target", 10);
     /// let transformer = Transformer2d::new_overwrite_if_below(42, 100);
-    /// let step = TransformAttribute2d::new(0, 1, 2, transformer);
+    /// let step = TransformAttribute2d::new(0, "input0".to_string(), 1, "input1".to_string(), 2, "target".to_string(), transformer);
     ///
     /// step.run(&mut map);
     ///
@@ -52,9 +55,9 @@ impl TransformAttribute2d {
     pub fn run(&self, map: &mut Map2d) {
         info!(
             "Transform attributes '{}' & '{}' and write into '{}' of map '{}'",
-            map.get_attribute(self.source_id0).get_name(),
-            map.get_attribute(self.source_id1).get_name(),
-            map.get_attribute(self.target_id).get_name(),
+            self.source_name0,
+            self.source_name1,
+            self.target_name,
             map.get_name()
         );
 
@@ -72,28 +75,35 @@ impl TransformAttribute2d {
 ///# use ofws_core::data::map::generation::attributes::transformer::{TransformAttribute2dData, TransformAttribute2d};
 ///# use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
 /// let transformer = Transformer2dData::Const(99);
-/// let data = TransformAttribute2dData::new(10, 20, 30, transformer);
-/// let step: TransformAttribute2d = data.clone().try_into().unwrap();
+/// let data = TransformAttribute2dData::new("s0".to_string(), "s1".to_string(), "t".to_string(), transformer);
+/// let step: TransformAttribute2d = data.clone().try_convert(&mut vec!["s0".to_string(), "s1".to_string(), "t".to_string()]).unwrap();
 /// let result: TransformAttribute2dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct TransformAttribute2dData {
-    source_id0: usize,
-    source_id1: usize,
-    target_id: usize,
+    source0: String,
+    source1: String,
+    target: String,
     transformer: Transformer2dData,
 }
 
-impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
-    type Error = GenerationStepError;
-
-    fn try_from(data: TransformAttribute2dData) -> Result<Self, Self::Error> {
-        let transformer: Transformer2d = data.transformer.try_into()?;
+impl TransformAttribute2dData {
+    pub fn try_convert(
+        self,
+        attributes: &mut Vec<String>,
+    ) -> Result<TransformAttribute2d, GenerationStepError> {
+        let source_id0 = get_attribute_id(&self.source0, attributes)?;
+        let source_id1 = get_attribute_id(&self.source1, attributes)?;
+        let target_id = get_attribute_id(&self.target, attributes)?;
+        let transformer: Transformer2d = self.transformer.try_into()?;
         Ok(TransformAttribute2d::new(
-            data.source_id0,
-            data.source_id1,
-            data.target_id,
+            source_id0,
+            self.source0,
+            source_id1,
+            self.source1,
+            target_id,
+            self.target,
             transformer,
         ))
     }
@@ -102,9 +112,9 @@ impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
 impl From<&TransformAttribute2d> for TransformAttribute2dData {
     fn from(step: &TransformAttribute2d) -> Self {
         TransformAttribute2dData::new(
-            step.source_id0,
-            step.source_id1,
-            step.target_id,
+            step.source_name0.clone(),
+            step.source_name1.clone(),
+            step.target_name.clone(),
             (&step.transformer).into(),
         )
     }

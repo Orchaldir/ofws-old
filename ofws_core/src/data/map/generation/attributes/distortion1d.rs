@@ -1,14 +1,15 @@
 use crate::data::map::attribute::Attribute;
-use crate::data::map::generation::step::GenerationStepError;
+use crate::data::map::generation::step::{get_attribute_id, GenerationStepError};
 use crate::data::map::Map2d;
 use crate::data::math::generator::generator1d::{Generator1d, Generator1dData};
 use serde::{Deserialize, Serialize};
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryInto;
 
 /// Shifts each column or row of an [`Attribute`] based on a [`Generator1d`].
 #[derive(new)]
 pub struct Distortion1d {
     attribute_id: usize,
+    attribute_name: String,
     generator: Generator1d,
 }
 
@@ -53,7 +54,7 @@ impl Distortion1d {
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let step = Distortion1d::new(attribute_id, InputAsOutput);
+    /// let step = Distortion1d::new(attribute_id, "test".to_string(), InputAsOutput);
     ///
     /// step.distort_along_x(&mut map);
     ///
@@ -101,7 +102,6 @@ impl Distortion1d {
 
         for x in 0..map.size.width() {
             let shift = self.generator.generate(x);
-            debug!("x={} shift={}", x, shift);
             self.distort_column(x, shift, attribute, &mut values);
         }
 
@@ -119,7 +119,7 @@ impl Distortion1d {
     /// let mut map = Map2d::new(size);
     /// let values = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
     /// let attribute_id = map.create_attribute_from("test", values).unwrap();
-    /// let step = Distortion1d::new(attribute_id, InputAsOutput);
+    /// let step = Distortion1d::new(attribute_id, "test".to_string(), InputAsOutput);
     ///
     /// step.distort_along_y(&mut map);
     ///
@@ -129,7 +129,7 @@ impl Distortion1d {
     pub fn distort_along_y(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' along the y-axis.",
-            map.get_attribute(self.attribute_id).get_name(),
+            self.attribute_name,
             map.get_name()
         );
 
@@ -147,28 +147,30 @@ impl Distortion1d {
 ///# use ofws_core::data::math::generator::generator1d::Generator1dData::InputAsOutput;
 ///# use ofws_core::data::math::size2d::Size2d;
 ///# use std::convert::TryInto;
-/// let data = Distortion1dData::new(20, InputAsOutput);
-/// let step: Distortion1d = data.clone().try_into().unwrap();
+/// let data = Distortion1dData::new("test".to_string(), InputAsOutput);
+/// let step: Distortion1d = data.clone().try_convert(&mut vec!["test".to_string()]).unwrap();
 /// let result: Distortion1dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Distortion1dData {
-    attribute_id: usize,
+    attribute: String,
     generator: Generator1dData,
 }
 
-impl TryFrom<Distortion1dData> for Distortion1d {
-    type Error = GenerationStepError;
-
-    fn try_from(data: Distortion1dData) -> Result<Self, Self::Error> {
-        let generator: Generator1d = data.generator.try_into()?;
-        Ok(Distortion1d::new(data.attribute_id, generator))
+impl Distortion1dData {
+    pub fn try_convert(
+        self,
+        attributes: &mut Vec<String>,
+    ) -> Result<Distortion1d, GenerationStepError> {
+        let id = get_attribute_id(&self.attribute, attributes)?;
+        let generator: Generator1d = self.generator.try_into()?;
+        Ok(Distortion1d::new(id, self.attribute, generator))
     }
 }
 
 impl From<&Distortion1d> for Distortion1dData {
     fn from(step: &Distortion1d) -> Self {
-        Distortion1dData::new(step.attribute_id, (&step.generator).into())
+        Distortion1dData::new(step.attribute_name.clone(), (&step.generator).into())
     }
 }
