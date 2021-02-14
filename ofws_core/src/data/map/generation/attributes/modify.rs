@@ -54,7 +54,12 @@ impl ModifyWithAttribute {
     // Runs the step.
     pub fn run(&self, map: &mut Map2d) {
         info!(
-            "Modify attribute '{}' with attribute '{}' of map '{}'",
+            "{} attribute '{}' with attribute '{}' of map '{}'",
+            if self.factor < 0.0 {
+                "Decrease"
+            } else {
+                "Increase"
+            },
             map.get_attribute(self.target_id).get_name(),
             map.get_attribute(self.source_id).get_name(),
             map.get_name()

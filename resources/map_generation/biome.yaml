@@ -71,6 +71,7 @@ steps:
           min_value: 0
           max_value: 255
   - TransformAttribute2d:
+      name: select biomes
       source0: rainfall
       source1: temperature
       target: biome
@@ -96,6 +97,7 @@ steps:
             - 10
             - 11
   - TransformAttribute2d:
+      name: overwrite oceans
       source0: elevation
       source1: biome
       target: biome
