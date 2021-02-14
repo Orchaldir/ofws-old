@@ -1,4 +1,4 @@
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 use std::ops::Sub;
 
 use serde::{Deserialize, Serialize};
@@ -98,7 +98,12 @@ impl TryFrom<MapGenerationData> for MapGeneration {
     type Error = MapGenerationError;
 
     fn try_from(data: MapGenerationData) -> Result<Self, Self::Error> {
-        let steps: Result<Vec<_>, _> = data.steps.into_iter().map(|data| data.try_into()).collect();
+        let mut attributes: Vec<String> = Vec::new();
+        let steps: Result<Vec<_>, _> = data
+            .steps
+            .into_iter()
+            .map(|data| data.try_convert(&mut attributes))
+            .collect();
         let steps = steps?;
         Ok(MapGeneration::new(data.name, data.size, steps))
     }

@@ -1,13 +1,14 @@
-use crate::data::map::generation::step::GenerationStepError;
+use crate::data::map::generation::step::{get_attribute_id, GenerationStepError};
 use crate::data::map::Map2d;
 use crate::data::math::generator::generator2d::{Generator2d, Generator2dData};
 use serde::{Deserialize, Serialize};
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryInto;
 
 /// Distorts an [`Attribute`] along 2 dimensions.
 #[derive(new)]
 pub struct Distortion2d {
     attribute_id: usize,
+    attribute_name: String,
     generator_x: Generator2d,
     generator_y: Generator2d,
 }
@@ -36,7 +37,7 @@ impl Distortion2d {
     pub fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' in 2 dimensions.",
-            map.get_attribute(self.attribute_id).get_name(),
+            self.attribute_name,
             map.get_name()
         );
 
@@ -56,26 +57,29 @@ impl Distortion2d {
 ///# use std::convert::TryInto;
 /// let generator_x = IndexGenerator(Size2d::new(1, 2));
 /// let generator_y = IndexGenerator(Size2d::new(3, 4));
-/// let data = Distortion2dData::new(20, generator_x, generator_y);
-/// let step: Distortion2d = data.clone().try_into().unwrap();
+/// let data = Distortion2dData::new("test".to_string(), generator_x, generator_y);
+/// let step: Distortion2d = data.clone().try_convert(&mut vec!["test".to_string()]).unwrap();
 /// let result: Distortion2dData = (&step).into();
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Distortion2dData {
-    attribute_id: usize,
+    attribute: String,
     generator_x: Generator2dData,
     generator_y: Generator2dData,
 }
 
-impl TryFrom<Distortion2dData> for Distortion2d {
-    type Error = GenerationStepError;
-
-    fn try_from(data: Distortion2dData) -> Result<Self, Self::Error> {
-        let generator_x: Generator2d = data.generator_x.try_into()?;
-        let generator_y: Generator2d = data.generator_y.try_into()?;
+impl Distortion2dData {
+    pub fn try_convert(
+        self,
+        attributes: &mut Vec<String>,
+    ) -> Result<Distortion2d, GenerationStepError> {
+        let id = get_attribute_id(&self.attribute, attributes)?;
+        let generator_x: Generator2d = self.generator_x.try_into()?;
+        let generator_y: Generator2d = self.generator_y.try_into()?;
         Ok(Distortion2d::new(
-            data.attribute_id,
+            id,
+            self.attribute,
             generator_x,
             generator_y,
         ))
@@ -85,7 +89,7 @@ impl TryFrom<Distortion2dData> for Distortion2d {
 impl From<&Distortion2d> for Distortion2dData {
     fn from(step: &Distortion2d) -> Self {
         Distortion2dData::new(
-            step.attribute_id,
+            step.attribute_name.clone(),
             (&step.generator_x).into(),
             (&step.generator_y).into(),
         )

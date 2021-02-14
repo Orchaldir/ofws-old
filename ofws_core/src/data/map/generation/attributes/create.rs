@@ -16,6 +16,10 @@ impl CreateAttribute {
         }
     }
 
+    pub fn get_attribute(&self) -> &str {
+        &self.name
+    }
+
     /// Runs the step.
     ///
     /// ```

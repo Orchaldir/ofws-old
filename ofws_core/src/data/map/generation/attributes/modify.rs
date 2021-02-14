@@ -1,12 +1,15 @@
+use crate::data::map::generation::step::{get_attribute_id, GenerationStepError};
 use crate::data::map::Map2d;
 use crate::data::math::distance::is_close;
 use serde::{Deserialize, Serialize};
 
 /// Modifies one [`Attribute`] with another transformed one.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct ModifyWithAttribute {
     source_id: usize,
+    source_name: String,
     target_id: usize,
+    target_name: String,
     factor: f32,
     minimum: u8,
 }
@@ -14,13 +17,17 @@ pub struct ModifyWithAttribute {
 impl ModifyWithAttribute {
     pub fn new(
         source_id: usize,
+        source_name: String,
         target_id: usize,
+        target_name: String,
         factor: f32,
         minimum: u8,
     ) -> ModifyWithAttribute {
         ModifyWithAttribute {
             source_id,
+            source_name,
             target_id,
+            target_name,
             factor: factor * 255.0 / (255.0 - minimum as f32),
             minimum,
         }
@@ -61,13 +68,51 @@ impl ModifyWithAttribute {
     }
 }
 
-impl PartialEq for ModifyWithAttribute {
+/// For serializing, deserializing & validating [`ModifyWithAttribute`].
+#[derive(new, Debug, Clone, Serialize, Deserialize)]
+pub struct ModifyWithAttributeData {
+    source: String,
+    target: String,
+    factor: f32,
+    minimum: u8,
+}
+
+impl ModifyWithAttributeData {
+    pub fn try_convert(
+        self,
+        attributes: &mut Vec<String>,
+    ) -> Result<ModifyWithAttribute, GenerationStepError> {
+        let source_id = get_attribute_id(&self.source, attributes)?;
+        let target_id = get_attribute_id(&self.target, attributes)?;
+        Ok(ModifyWithAttribute::new(
+            source_id,
+            self.source,
+            target_id,
+            self.target,
+            self.factor,
+            self.minimum,
+        ))
+    }
+}
+
+impl From<&ModifyWithAttribute> for ModifyWithAttributeData {
+    fn from(step: &ModifyWithAttribute) -> Self {
+        ModifyWithAttributeData::new(
+            step.source_name.clone(),
+            step.target_name.clone(),
+            step.factor,
+            step.minimum,
+        )
+    }
+}
+
+impl PartialEq for ModifyWithAttributeData {
     fn eq(&self, other: &Self) -> bool {
-        self.source_id == other.source_id
-            && self.target_id == other.target_id
+        self.source == other.source
+            && self.target == other.target
             && is_close(self.factor, other.factor, 0.001)
             && self.minimum == other.minimum
     }
 }
 
-impl Eq for ModifyWithAttribute {}
+impl Eq for ModifyWithAttributeData {}
