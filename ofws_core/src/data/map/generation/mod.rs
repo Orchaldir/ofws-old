@@ -78,7 +78,7 @@ impl MapGeneration {
 ///```
 ///# use std::convert::TryInto;
 ///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration};
-///# use ofws_core::data::map::generation::attributes::attribute::CreateAttribute;
+///# use ofws_core::data::map::generation::attributes::create::CreateAttribute;
 ///# use ofws_core::data::map::generation::step::GenerationStepData;
 ///# use ofws_core::data::math::size2d::Size2d;
 /// let steps = vec![GenerationStepData::CreateAttribute(CreateAttribute::new("attribute", 42))];
