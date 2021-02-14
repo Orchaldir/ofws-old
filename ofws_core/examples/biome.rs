@@ -126,7 +126,7 @@ fn subtract_elevation_from_temperature(
         "elevation".to_string(),
         temperature_id,
         "temperature".to_string(),
-        -0.8,
+        -1.15,
         OCEAN_VALUE,
     );
     GenerationStep::ModifyWithAttribute(step)
