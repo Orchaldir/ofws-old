@@ -1,6 +1,5 @@
 use crate::data::map::generation::step::{get_attribute_id, GenerationStepError};
 use crate::data::map::Map2d;
-use crate::data::math::distance::is_close;
 use serde::{Deserialize, Serialize};
 
 /// Modifies one [`Attribute`] with another transformed one.
@@ -28,7 +27,7 @@ impl ModifyWithAttribute {
             source_name,
             target_id,
             target_name,
-            factor: factor * 255.0 / (255.0 - minimum as f32),
+            factor,
             minimum,
         }
     }
@@ -69,11 +68,11 @@ impl ModifyWithAttribute {
 }
 
 /// For serializing, deserializing & validating [`ModifyWithAttribute`].
-#[derive(new, Debug, Clone, Serialize, Deserialize)]
+#[derive(new, Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct ModifyWithAttributeData {
     source: String,
     target: String,
-    factor: f32,
+    percentage: i32,
     minimum: u8,
 }
 
@@ -89,7 +88,7 @@ impl ModifyWithAttributeData {
             self.source,
             target_id,
             self.target,
-            self.factor,
+            self.percentage as f32 / 100.0,
             self.minimum,
         ))
     }
@@ -100,19 +99,8 @@ impl From<&ModifyWithAttribute> for ModifyWithAttributeData {
         ModifyWithAttributeData::new(
             step.source_name.clone(),
             step.target_name.clone(),
-            step.factor,
+            (step.factor * 100.0) as i32,
             step.minimum,
         )
     }
 }
-
-impl PartialEq for ModifyWithAttributeData {
-    fn eq(&self, other: &Self) -> bool {
-        self.source == other.source
-            && self.target == other.target
-            && is_close(self.factor, other.factor, 0.001)
-            && self.minimum == other.minimum
-    }
-}
-
-impl Eq for ModifyWithAttributeData {}
