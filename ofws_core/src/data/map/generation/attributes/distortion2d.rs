@@ -8,7 +8,6 @@ use std::convert::TryInto;
 #[derive(new)]
 pub struct Distortion2d {
     attribute_id: usize,
-    attribute_name: String,
     generator_x: Generator2d,
     generator_y: Generator2d,
 }
@@ -37,7 +36,7 @@ impl Distortion2d {
     pub fn run(&self, map: &mut Map2d) {
         info!(
             "Distort attribute '{}' of map '{}' in 2 dimensions.",
-            self.attribute_name,
+            map.get_attribute(self.attribute_id).get_name(),
             map.get_name()
         );
 
@@ -58,8 +57,9 @@ impl Distortion2d {
 /// let generator_x = IndexGenerator(Size2d::new(1, 2));
 /// let generator_y = IndexGenerator(Size2d::new(3, 4));
 /// let data = Distortion2dData::new("test".to_string(), generator_x, generator_y);
-/// let step: Distortion2d = data.clone().try_convert(&mut vec!["test".to_string()]).unwrap();
-/// let result: Distortion2dData = (&step).into();
+/// let attributes = vec!["test".to_string()];
+/// let step: Distortion2d = data.clone().try_convert(&attributes).unwrap();
+/// let result: Distortion2dData = step.convert(&attributes);
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -70,28 +70,21 @@ pub struct Distortion2dData {
 }
 
 impl Distortion2dData {
-    pub fn try_convert(
-        self,
-        attributes: &mut Vec<String>,
-    ) -> Result<Distortion2d, GenerationStepError> {
+    pub fn try_convert(self, attributes: &[String]) -> Result<Distortion2d, GenerationStepError> {
         let id = get_attribute_id(&self.attribute, attributes)?;
         let generator_x: Generator2d = self.generator_x.try_into()?;
         let generator_y: Generator2d = self.generator_y.try_into()?;
-        Ok(Distortion2d::new(
-            id,
-            self.attribute,
-            generator_x,
-            generator_y,
-        ))
+        Ok(Distortion2d::new(id, generator_x, generator_y))
     }
 }
 
-impl From<&Distortion2d> for Distortion2dData {
-    fn from(step: &Distortion2d) -> Self {
+impl Distortion2d {
+    pub fn convert(&self, attributes: &[String]) -> Distortion2dData {
+        let attribute = attributes[self.attribute_id].clone();
         Distortion2dData::new(
-            step.attribute_name.clone(),
-            (&step.generator_x).into(),
-            (&step.generator_y).into(),
+            attribute,
+            (&self.generator_x).into(),
+            (&self.generator_y).into(),
         )
     }
 }

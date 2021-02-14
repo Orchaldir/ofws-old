@@ -8,7 +8,6 @@ use std::convert::TryInto;
 pub struct GeneratorStep {
     name: String,
     attribute_id: usize,
-    attribute_name: String,
     generator: Generator2d,
 }
 
@@ -16,13 +15,11 @@ impl GeneratorStep {
     pub fn new<S: Into<String>>(
         name: S,
         attribute_id: usize,
-        attribute_name: S,
         generator: Generator2d,
     ) -> GeneratorStep {
         GeneratorStep {
             name: name.into(),
             attribute_id,
-            attribute_name: attribute_name.into(),
             generator,
         }
     }
@@ -39,7 +36,7 @@ impl GeneratorStep {
     /// let mut map = Map2d::new(size);
     /// let attribute_id = map.create_attribute("elevation", 40).unwrap();
     /// let generator = IndexGenerator(size);
-    /// let step = GeneratorStep::new("test", attribute_id, "elevation", generator);
+    /// let step = GeneratorStep::new("test", attribute_id,generator);
     ///
     /// step.add(&mut map);
     ///
@@ -50,7 +47,7 @@ impl GeneratorStep {
         info!(
             "Add '{}' to attribute '{}' of map '{}'",
             self.name,
-            self.attribute_name,
+            map.get_attribute(self.attribute_id).get_name(),
             map.get_name()
         );
 
@@ -80,7 +77,7 @@ impl GeneratorStep {
     /// let mut map = Map2d::new(size);
     /// let attribute_id = map.create_attribute("elevation", 40).unwrap();
     /// let generator = IndexGenerator(size);
-    /// let step = GeneratorStep::new("test", attribute_id, "elevation", generator);
+    /// let step = GeneratorStep::new("test", attribute_id, generator);
     ///
     /// step.sub(&mut map);
     ///
@@ -119,8 +116,9 @@ impl GeneratorStep {
 ///# use std::convert::TryInto;
 /// let generator = Generator2dData::IndexGenerator(Size2d::new(1, 2));
 /// let data = GeneratorStepData::new("step".to_string(), "attribute".to_string(), generator);
-/// let step: GeneratorStep = data.clone().try_convert(&mut vec!["attribute".to_string()]).unwrap();
-/// let result: GeneratorStepData = (&step).into();
+/// let attributes = vec!["attribute".to_string()];
+/// let step: GeneratorStep = data.clone().try_convert(&attributes).unwrap();
+/// let result: GeneratorStepData = step.convert(&attributes);
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -131,22 +129,16 @@ pub struct GeneratorStepData {
 }
 
 impl GeneratorStepData {
-    pub fn try_convert(
-        self,
-        attributes: &mut Vec<String>,
-    ) -> Result<GeneratorStep, GenerationStepError> {
+    pub fn try_convert(self, attributes: &[String]) -> Result<GeneratorStep, GenerationStepError> {
         let id = get_attribute_id(&self.attribute, attributes)?;
         let generator: Generator2d = self.generator.try_into()?;
-        Ok(GeneratorStep::new(self.name, id, self.attribute, generator))
+        Ok(GeneratorStep::new(self.name, id, generator))
     }
 }
 
-impl From<&GeneratorStep> for GeneratorStepData {
-    fn from(step: &GeneratorStep) -> Self {
-        GeneratorStepData::new(
-            step.name.clone(),
-            step.attribute_name.clone(),
-            (&step.generator).into(),
-        )
+impl GeneratorStep {
+    pub fn convert(&self, attributes: &[String]) -> GeneratorStepData {
+        let attribute = attributes[self.attribute_id].clone();
+        GeneratorStepData::new(self.name.clone(), attribute, (&self.generator).into())
     }
 }

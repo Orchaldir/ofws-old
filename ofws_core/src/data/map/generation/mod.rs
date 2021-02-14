@@ -151,10 +151,11 @@ impl TryFrom<MapGenerationData> for MapGeneration {
 
 impl From<&MapGeneration> for MapGenerationData {
     fn from(map_generation: &MapGeneration) -> Self {
+        let mut attributes: Vec<String> = Vec::new();
         let steps: Vec<GenerationStepData> = map_generation
             .steps
             .iter()
-            .map(|data| data.into())
+            .map(|data| data.convert(&mut attributes))
             .collect();
         MapGenerationData::new(map_generation.name.clone(), map_generation.size, steps)
     }

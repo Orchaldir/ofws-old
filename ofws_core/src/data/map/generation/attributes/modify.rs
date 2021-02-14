@@ -3,35 +3,15 @@ use crate::data::map::Map2d;
 use serde::{Deserialize, Serialize};
 
 /// Modifies one [`Attribute`] with another transformed one.
-#[derive(Debug, Clone)]
+#[derive(new, Debug, Clone)]
 pub struct ModifyWithAttribute {
     source_id: usize,
-    source_name: String,
     target_id: usize,
-    target_name: String,
     factor: f32,
     minimum: u8,
 }
 
 impl ModifyWithAttribute {
-    pub fn new(
-        source_id: usize,
-        source_name: String,
-        target_id: usize,
-        target_name: String,
-        factor: f32,
-        minimum: u8,
-    ) -> ModifyWithAttribute {
-        ModifyWithAttribute {
-            source_id,
-            source_name,
-            target_id,
-            target_name,
-            factor,
-            minimum,
-        }
-    }
-
     fn calculate_value(&self, source: u8, target: u8) -> u8 {
         (target as f32 + (source.max(self.minimum) - self.minimum) as f32 * self.factor) as u8
     }
@@ -84,28 +64,23 @@ pub struct ModifyWithAttributeData {
 impl ModifyWithAttributeData {
     pub fn try_convert(
         self,
-        attributes: &mut Vec<String>,
+        attributes: &[String],
     ) -> Result<ModifyWithAttribute, GenerationStepError> {
         let source_id = get_attribute_id(&self.source, attributes)?;
         let target_id = get_attribute_id(&self.target, attributes)?;
         Ok(ModifyWithAttribute::new(
             source_id,
-            self.source,
             target_id,
-            self.target,
             self.percentage as f32 / 100.0,
             self.minimum,
         ))
     }
 }
 
-impl From<&ModifyWithAttribute> for ModifyWithAttributeData {
-    fn from(step: &ModifyWithAttribute) -> Self {
-        ModifyWithAttributeData::new(
-            step.source_name.clone(),
-            step.target_name.clone(),
-            (step.factor * 100.0) as i32,
-            step.minimum,
-        )
+impl ModifyWithAttribute {
+    pub fn convert(&self, attributes: &[String]) -> ModifyWithAttributeData {
+        let source = attributes[self.source_id].clone();
+        let target = attributes[self.target_id].clone();
+        ModifyWithAttributeData::new(source, target, (self.factor * 100.0) as i32, self.minimum)
     }
 }
