@@ -1,18 +1,15 @@
-use crate::data::map::generation::step::{GenerationStep, GenerationStepData, GenerationStepError};
-use crate::data::map::Map2d;
-use crate::data::math::size2d::Size2d;
-use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use std::ops::Sub;
 
-pub mod attribute;
-pub mod distortion1d;
-pub mod distortion2d;
-pub mod generator;
+use serde::{Deserialize, Serialize};
+
+use crate::data::map::generation::step::{GenerationStep, GenerationStepData, GenerationStepError};
+use crate::data::map::Map2d;
+use crate::data::math::size2d::Size2d;
+
+pub mod attributes;
 pub mod io;
-pub mod modify;
 pub mod step;
-pub mod transformer;
 
 #[derive(Debug)]
 pub enum MapGenerationError {
@@ -81,7 +78,7 @@ impl MapGeneration {
 ///```
 ///# use std::convert::TryInto;
 ///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration};
-///# use ofws_core::data::map::generation::attribute::CreateAttribute;
+///# use ofws_core::data::map::generation::attributes::attribute::CreateAttribute;
 ///# use ofws_core::data::map::generation::step::GenerationStepData;
 ///# use ofws_core::data::math::size2d::Size2d;
 /// let steps = vec![GenerationStepData::CreateAttribute(CreateAttribute::new("attribute", 42))];
