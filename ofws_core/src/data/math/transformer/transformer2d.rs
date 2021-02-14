@@ -1,7 +1,18 @@
-use crate::data::math::transformer::clusterer2d::Clusterer2d;
+use crate::data::math::transformer::clusterer2d::{Clusterer2d, Clusterer2dError};
 use crate::data::math::transformer::threshold::OverwriteWithThreshold;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+
+#[derive(Debug)]
+pub enum Transformer2dError {
+    Clusterer(Clusterer2dError),
+}
+
+impl From<Clusterer2dError> for Transformer2dError {
+    fn from(error: Clusterer2dError) -> Self {
+        Transformer2dError::Clusterer(error)
+    }
+}
 
 /// Transforms 2 inputs into an output.
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,7 +75,7 @@ pub enum Transformer2dData {
 }
 
 impl TryFrom<Transformer2dData> for Transformer2d {
-    type Error = &'static str;
+    type Error = Transformer2dError;
 
     fn try_from(data: Transformer2dData) -> Result<Self, Self::Error> {
         match data {

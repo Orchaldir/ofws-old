@@ -1,4 +1,4 @@
-use crate::data::map::generation::step::{GenerationStep, GenerationStepData};
+use crate::data::map::generation::step::{GenerationStep, GenerationStepData, GenerationStepError};
 use crate::data::map::Map2d;
 use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,17 @@ pub mod io;
 pub mod modify;
 pub mod step;
 pub mod transformer;
+
+#[derive(Debug)]
+pub enum MapGenerationError {
+    GenerationStep(GenerationStepError),
+}
+
+impl From<GenerationStepError> for MapGenerationError {
+    fn from(error: GenerationStepError) -> Self {
+        MapGenerationError::GenerationStep(error)
+    }
+}
 
 /// Generates a map based on a number of steps.
 pub struct MapGeneration {
@@ -87,7 +98,7 @@ pub struct MapGenerationData {
 }
 
 impl TryFrom<MapGenerationData> for MapGeneration {
-    type Error = &'static str;
+    type Error = MapGenerationError;
 
     fn try_from(data: MapGenerationData) -> Result<Self, Self::Error> {
         let steps: Result<Vec<_>, _> = data.steps.into_iter().map(|data| data.try_into()).collect();

@@ -1,9 +1,27 @@
 use crate::data::math::distance::calculate_distance;
-use crate::data::math::generator::generator1d::{Generator1d, Generator1dData};
-use crate::data::math::generator::noise::{Noise, NoiseData};
+use crate::data::math::generator::generator1d::{Generator1d, Generator1dData, Generator1dError};
+use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
 use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+
+#[derive(Debug)]
+pub enum Generator2dError {
+    Generator1d(Generator1dError),
+    Noise(NoiseError),
+}
+
+impl From<NoiseError> for Generator2dError {
+    fn from(error: NoiseError) -> Self {
+        Generator2dError::Noise(error)
+    }
+}
+
+impl From<Generator1dError> for Generator2dError {
+    fn from(error: Generator1dError) -> Self {
+        Generator2dError::Generator1d(error)
+    }
+}
 
 #[svgbobdoc::transform]
 /// Generate values for 2d points.
@@ -151,7 +169,7 @@ pub enum Generator2dData {
 }
 
 impl TryFrom<Generator2dData> for Generator2d {
-    type Error = &'static str;
+    type Error = Generator2dError;
 
     fn try_from(data: Generator2dData) -> Result<Self, Self::Error> {
         match data {
