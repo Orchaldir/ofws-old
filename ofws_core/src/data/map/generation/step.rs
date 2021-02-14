@@ -1,4 +1,4 @@
-use crate::data::map::generation::attributes::attribute::CreateAttribute;
+use crate::data::map::generation::attributes::create::CreateAttribute;
 use crate::data::map::generation::attributes::distortion1d::{Distortion1d, Distortion1dData};
 use crate::data::map::generation::attributes::distortion2d::{Distortion2d, Distortion2dData};
 use crate::data::map::generation::attributes::generator::{GeneratorStep, GeneratorStepData};
