@@ -14,11 +14,25 @@ pub mod step;
 #[derive(Debug)]
 pub enum MapGenerationError {
     GenerationStep(GenerationStepError),
+    IoError(std::io::Error),
+    SerdeError(serde_yaml::Error),
 }
 
 impl From<GenerationStepError> for MapGenerationError {
     fn from(error: GenerationStepError) -> Self {
         MapGenerationError::GenerationStep(error)
+    }
+}
+
+impl From<std::io::Error> for MapGenerationError {
+    fn from(error: std::io::Error) -> Self {
+        MapGenerationError::IoError(error)
+    }
+}
+
+impl From<serde_yaml::Error> for MapGenerationError {
+    fn from(error: serde_yaml::Error) -> Self {
+        MapGenerationError::SerdeError(error)
     }
 }
 
