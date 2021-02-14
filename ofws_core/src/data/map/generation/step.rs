@@ -1,9 +1,11 @@
-use crate::data::map::generation::attribute::CreateAttribute;
-use crate::data::map::generation::distortion1d::{Distortion1d, Distortion1dData};
-use crate::data::map::generation::distortion2d::{Distortion2d, Distortion2dData};
-use crate::data::map::generation::generator::{GeneratorStep, GeneratorStepData};
-use crate::data::map::generation::modify::ModifyWithAttribute;
-use crate::data::map::generation::transformer::{TransformAttribute2d, TransformAttribute2dData};
+use crate::data::map::generation::attributes::attribute::CreateAttribute;
+use crate::data::map::generation::attributes::distortion1d::{Distortion1d, Distortion1dData};
+use crate::data::map::generation::attributes::distortion2d::{Distortion2d, Distortion2dData};
+use crate::data::map::generation::attributes::generator::{GeneratorStep, GeneratorStepData};
+use crate::data::map::generation::attributes::modify::ModifyWithAttribute;
+use crate::data::map::generation::attributes::transformer::{
+    TransformAttribute2d, TransformAttribute2dData,
+};
 use crate::data::map::Map2d;
 use crate::data::math::generator::generator1d::Generator1dError;
 use crate::data::math::generator::generator2d::Generator2dError;

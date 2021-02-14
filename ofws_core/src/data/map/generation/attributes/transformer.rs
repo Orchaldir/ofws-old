@@ -33,7 +33,7 @@ impl TransformAttribute2d {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::transformer::TransformAttribute2d;
+    ///# use ofws_core::data::map::generation::attributes::transformer::TransformAttribute2d;
     ///# use ofws_core::data::math::size2d::Size2d;
     ///# use ofws_core::data::math::transformer::transformer2d::Transformer2d;
     /// let mut map = Map2d::new(Size2d::new(3, 2));
@@ -69,7 +69,7 @@ impl TransformAttribute2d {
 ///
 ///```
 ///# use std::convert::TryInto;
-///# use ofws_core::data::map::generation::transformer::{TransformAttribute2dData, TransformAttribute2d};
+///# use ofws_core::data::map::generation::attributes::transformer::{TransformAttribute2dData, TransformAttribute2d};
 ///# use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
 /// let transformer = Transformer2dData::Const(99);
 /// let data = TransformAttribute2dData::new(10, 20, 30, transformer);

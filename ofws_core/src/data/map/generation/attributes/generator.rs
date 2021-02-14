@@ -28,7 +28,7 @@ impl GeneratorStep {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::generator::GeneratorStep;
+    ///# use ofws_core::data::map::generation::attributes::generator::GeneratorStep;
     ///# use ofws_core::data::map::generation::step::GenerationStep;
     ///# use ofws_core::data::math::generator::generator2d::Generator2d::IndexGenerator;
     ///# use ofws_core::data::math::size2d::Size2d;
@@ -69,7 +69,7 @@ impl GeneratorStep {
     ///
     /// ```
     ///# use ofws_core::data::map::Map2d;
-    ///# use ofws_core::data::map::generation::generator::GeneratorStep;
+    ///# use ofws_core::data::map::generation::attributes::generator::GeneratorStep;
     ///# use ofws_core::data::map::generation::step::GenerationStep;
     ///# use ofws_core::data::math::generator::generator2d::Generator2d::IndexGenerator;
     ///# use ofws_core::data::math::size2d::Size2d;
@@ -110,7 +110,7 @@ impl GeneratorStep {
 /// For serializing, deserializing & validating [`GeneratorStep`].
 ///
 ///```
-///# use ofws_core::data::map::generation::generator::{GeneratorStepData, GeneratorStep};
+///# use ofws_core::data::map::generation::attributes::generator::{GeneratorStepData, GeneratorStep};
 ///# use ofws_core::data::math::generator::generator2d::Generator2dData;
 ///# use ofws_core::data::math::size2d::Size2d;
 ///# use std::convert::TryInto;
