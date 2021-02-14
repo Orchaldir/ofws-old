@@ -116,22 +116,33 @@ impl GenerationStepData {
     }
 }
 
-impl From<&GenerationStep> for GenerationStepData {
-    fn from(generator: &GenerationStep) -> Self {
-        match generator {
+impl GenerationStep {
+    pub fn convert(&self, attributes: &mut Vec<String>) -> GenerationStepData {
+        match self {
             GenerationStep::CreateAttribute(data) => {
+                attributes.push(data.get_attribute().to_string());
                 GenerationStepData::CreateAttribute(data.clone())
             }
-            GenerationStep::DistortAlongX(data) => GenerationStepData::DistortAlongX(data.into()),
-            GenerationStep::DistortAlongY(data) => GenerationStepData::DistortAlongY(data.into()),
-            GenerationStep::Distortion2d(data) => GenerationStepData::Distortion2d(data.into()),
-            GenerationStep::GeneratorAdd(data) => GenerationStepData::GeneratorAdd(data.into()),
-            GenerationStep::GeneratorSub(data) => GenerationStepData::GeneratorSub(data.into()),
+            GenerationStep::DistortAlongX(data) => {
+                GenerationStepData::DistortAlongX(data.convert(attributes))
+            }
+            GenerationStep::DistortAlongY(data) => {
+                GenerationStepData::DistortAlongY(data.convert(attributes))
+            }
+            GenerationStep::Distortion2d(data) => {
+                GenerationStepData::Distortion2d(data.convert(attributes))
+            }
+            GenerationStep::GeneratorAdd(data) => {
+                GenerationStepData::GeneratorAdd(data.convert(attributes))
+            }
+            GenerationStep::GeneratorSub(data) => {
+                GenerationStepData::GeneratorSub(data.convert(attributes))
+            }
             GenerationStep::ModifyWithAttribute(data) => {
-                GenerationStepData::ModifyWithAttribute(data.into())
+                GenerationStepData::ModifyWithAttribute(data.convert(attributes))
             }
             GenerationStep::TransformAttribute2d(data) => {
-                GenerationStepData::TransformAttribute2d(data.into())
+                GenerationStepData::TransformAttribute2d(data.convert(attributes))
             }
         }
     }
@@ -139,7 +150,7 @@ impl From<&GenerationStep> for GenerationStepData {
 
 pub fn get_attribute_id(
     attribute: &str,
-    attributes: &mut Vec<String>,
+    attributes: &[String],
 ) -> Result<usize, GenerationStepError> {
     attributes
         .iter()
