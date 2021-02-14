@@ -93,12 +93,19 @@ impl MapGeneration {
 ///# use std::convert::TryInto;
 ///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration};
 ///# use ofws_core::data::map::generation::attributes::create::CreateAttribute;
+///# use ofws_core::data::map::generation::attributes::modify::ModifyWithAttributeData;
 ///# use ofws_core::data::map::generation::step::GenerationStepData;
 ///# use ofws_core::data::math::size2d::Size2d;
-/// let steps = vec![GenerationStepData::CreateAttribute(CreateAttribute::new("attribute", 42))];
+/// let step0 = GenerationStepData::CreateAttribute(CreateAttribute::new("a0", 42));
+/// let step1 = GenerationStepData::CreateAttribute(CreateAttribute::new("a1", 200));
+/// let modify = ModifyWithAttributeData::new("a0".to_string(), "a1".to_string(), 100, 10);
+/// let step2 = GenerationStepData::ModifyWithAttribute(modify);
+/// let steps = vec![step0, step1, step2];
 /// let data = MapGenerationData::new("map".to_string(), Size2d::new(4, 5), steps);
-/// let step: MapGeneration = data.clone().try_into().unwrap();
-/// let result: MapGenerationData = (&step).into();
+///
+/// let generation: MapGeneration = data.clone().try_into().unwrap();
+/// let result: MapGenerationData = (&generation).into();
+///
 /// assert_eq!(data, result)
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -111,6 +118,25 @@ pub struct MapGenerationData {
 impl TryFrom<MapGenerationData> for MapGeneration {
     type Error = MapGenerationError;
 
+    /// The conversion from [`MapGenerationData`] to [`MapGeneration`] can fail,
+    /// if a [`GenerationStep`] uses an unknown [`Attribute`].
+    ///
+    ///```
+    ///# use std::convert::TryInto;
+    ///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration, MapGenerationError};
+    ///# use ofws_core::data::map::generation::attributes::modify::ModifyWithAttributeData;
+    ///# use ofws_core::data::map::generation::step::GenerationStepData;
+    ///# use ofws_core::data::map::generation::step::GenerationStepError::AttributeUnknown;
+    ///# use ofws_core::data::math::size2d::Size2d;
+    /// let modify = ModifyWithAttributeData::new("a0".to_string(), "a1".to_string(), 100, 10);
+    /// let step = GenerationStepData::ModifyWithAttribute(modify);
+    /// let steps = vec![step];
+    /// let data = MapGenerationData::new("map".to_string(), Size2d::new(4, 5), steps);
+    ///
+    /// let result: Result<MapGeneration, MapGenerationError> = data.try_into();
+    ///
+    /// assert!(result.is_err());
+    ///```
     fn try_from(data: MapGenerationData) -> Result<Self, Self::Error> {
         let mut attributes: Vec<String> = Vec::new();
         let steps: Result<Vec<_>, _> = data
