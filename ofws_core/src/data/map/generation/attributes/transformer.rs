@@ -71,7 +71,6 @@ impl TransformAttribute2d {
 /// For serializing, deserializing & validating [`TransformAttribute2d`].
 ///
 ///```
-///# use std::convert::TryInto;
 ///# use ofws_core::data::map::generation::attributes::transformer::{TransformAttribute2dData, TransformAttribute2d};
 ///# use ofws_core::data::math::transformer::transformer2d::Transformer2dData;
 /// let transformer = Transformer2dData::Const(99);
