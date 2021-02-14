@@ -1,0 +1,105 @@
+---
+name: biome example
+size:
+  width: 400
+  height: 300
+steps:
+  - CreateAttribute:
+      name: elevation
+      default: 0
+  - CreateAttribute:
+      name: temperature
+      default: 0
+  - CreateAttribute:
+      name: rainfall
+      default: 0
+  - CreateAttribute:
+      name: biome
+      default: 0
+  - GeneratorAdd:
+      name: continent
+      attribute: elevation
+      generator:
+        ApplyToDistance:
+          generator:
+            Gradient1d:
+              value_start: 125
+              value_end: 0
+              start: 0
+              length: 100
+          center_x: 200
+          center_y: 150
+  - GeneratorAdd:
+      name: islands
+      attribute: elevation
+      generator:
+        Noise2d:
+          seed: 0
+          scale: 20
+          min_value: 0
+          max_value: 125
+  - GeneratorAdd:
+      name: gradient y
+      attribute: temperature
+      generator:
+        ApplyToY:
+          AbsoluteGradient1d:
+            value_start: 255
+            value_end: 0
+            start: 150
+            length: 150
+  - DistortAlongY:
+      attribute: temperature
+      generator:
+        Noise1d:
+          seed: 0
+          scale: 60
+          min_value: 0
+          max_value: 20
+  - ModifyWithAttribute:
+      source: elevation
+      target: temperature
+      percentage: -115
+      minimum: 76
+  - GeneratorAdd:
+      name: noise
+      attribute: rainfall
+      generator:
+        Noise2d:
+          seed: 0
+          scale: 100
+          min_value: 0
+          max_value: 255
+  - TransformAttribute2d:
+      source0: rainfall
+      source1: temperature
+      target: biome
+      transformer:
+        Clusterer:
+          lookup_table_size:
+            width: 3
+            height: 4
+          cluster_size:
+            width: 86
+            height: 64
+          cluster_id_lookup:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+            - 7
+            - 8
+            - 9
+            - 10
+            - 11
+  - TransformAttribute2d:
+      source0: elevation
+      source1: biome
+      target: biome
+      transformer:
+        OverwriteIfBelowThreshold:
+          value: 12
+          threshold: 76

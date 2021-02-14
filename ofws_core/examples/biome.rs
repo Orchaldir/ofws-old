@@ -1,24 +1,12 @@
+#[macro_use]
 extern crate log;
 extern crate ofws_rendering_glium;
 
 use ofws_core::data::color::{Color, BLACK, BLUE, CYAN, GREEN, ORANGE, RED, WHITE, YELLOW};
-use ofws_core::data::map::generation::attributes::create::CreateAttribute;
-use ofws_core::data::map::generation::attributes::distortion1d::Distortion1d;
-use ofws_core::data::map::generation::attributes::generator::GeneratorStep;
-use ofws_core::data::map::generation::attributes::modify::ModifyWithAttribute;
-use ofws_core::data::map::generation::attributes::transformer::TransformAttribute2d;
-use ofws_core::data::map::generation::io::write_map_generator;
-use ofws_core::data::map::generation::step::GenerationStep;
-use ofws_core::data::map::generation::MapGeneration;
+use ofws_core::data::map::generation::io::read_map_generator;
 use ofws_core::data::map::Map2d;
-use ofws_core::data::math::generator::generator1d::Generator1d;
-use ofws_core::data::math::generator::generator2d::Generator2d;
-use ofws_core::data::math::generator::gradient::Gradient;
-use ofws_core::data::math::generator::noise::Noise;
 use ofws_core::data::math::selector::Selector;
 use ofws_core::data::math::size2d::Size2d;
-use ofws_core::data::math::transformer::clusterer2d::Clusterer2d;
-use ofws_core::data::math::transformer::transformer2d::Transformer2d;
 use ofws_core::interface::app::App;
 use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
@@ -32,16 +20,16 @@ const OCEAN_ID: u8 = 12;
 const OCEAN_VALUE: u8 = 76;
 
 pub struct BiomeExample {
-    size: Size2d,
+    path: String,
     map: Option<Map2d>,
     attribute_renderer: CellRenderer,
     texture_id: TextureId,
 }
 
 impl BiomeExample {
-    pub fn new(size: Size2d) -> BiomeExample {
+    pub fn new(path: String) -> BiomeExample {
         BiomeExample {
-            size,
+            path,
             map: None,
             attribute_renderer: create_elevation_renderer(),
             texture_id: 0,
@@ -49,127 +37,17 @@ impl BiomeExample {
     }
 }
 
-fn create_map(size: Size2d) -> Option<Map2d> {
-    let map_generation = MapGeneration::new("biome example", size, create_generation_steps(size));
-
-    write_map_generator(&map_generation, "test.yaml");
-
-    Some(map_generation.generate())
-}
-
-fn create_generation_steps(size: Size2d) -> Vec<GenerationStep> {
-    let elevation_id = 0;
-    let temperature_id = 1;
-    let rainfall_id = 2;
-    let biome_id = 3;
-
-    vec![
-        create_attribute("elevation", 0),
-        create_attribute("temperature", 0),
-        create_attribute("rainfall", 0),
-        create_attribute("biome", 0),
-        add_continent(size, elevation_id),
-        add_islands(elevation_id),
-        create_temperature_gradient(size, temperature_id),
-        distort_temperature(temperature_id),
-        subtract_elevation_from_temperature(elevation_id, temperature_id),
-        create_rainfall(rainfall_id),
-        select_biome(temperature_id, rainfall_id, biome_id),
-        overwrite_ocean(elevation_id, biome_id),
-    ]
-}
-
-fn create_attribute<S: Into<String>>(name: S, default: u8) -> GenerationStep {
-    GenerationStep::CreateAttribute(CreateAttribute::new(name, default))
-}
-
-fn add_continent(size: Size2d, elevation_id: usize) -> GenerationStep {
-    let half_x = size.width() / 2;
-    let half_y = size.height() / 2;
-
-    let gradient = Gradient::new(125, 0, 0, half_x / 2);
-    let gradient = Generator1d::Gradient1d(gradient);
-    let mountain = Generator2d::new_apply_to_distance(gradient, half_x, half_y);
-    let step = GeneratorStep::new("continent", elevation_id, "elevation", mountain);
-    GenerationStep::GeneratorAdd(step)
-}
-
-fn add_islands(elevation_id: usize) -> GenerationStep {
-    let noise = Noise::new(0, 20.0, 0, 125).unwrap();
-    let noise = Generator2d::Noise2d(noise);
-    let step = GeneratorStep::new("islands", elevation_id, "elevation", noise);
-    GenerationStep::GeneratorAdd(step)
-}
-
-fn create_temperature_gradient(size: Size2d, temperature_id: usize) -> GenerationStep {
-    let half_y = size.height() / 2;
-    let gradient = Gradient::new(255, 0, half_y, half_y);
-    let gradient = Generator1d::AbsoluteGradient1d(gradient);
-    let generator = Generator2d::new_apply_to_y(gradient);
-    let step = GeneratorStep::new("gradient y", temperature_id, "temperature", generator);
-    GenerationStep::GeneratorAdd(step)
-}
-
-fn distort_temperature(temperature_id: usize) -> GenerationStep {
-    let noise = Noise::new(0, 60.0, 0, 20).unwrap();
-    let noise = Generator1d::Noise1d(noise);
-    let step = Distortion1d::new(temperature_id, "temperature".to_string(), noise);
-    GenerationStep::DistortAlongY(step)
-}
-
-fn subtract_elevation_from_temperature(
-    elevation_id: usize,
-    temperature_id: usize,
-) -> GenerationStep {
-    let step = ModifyWithAttribute::new(
-        elevation_id,
-        "elevation".to_string(),
-        temperature_id,
-        "temperature".to_string(),
-        -1.15,
-        OCEAN_VALUE,
-    );
-    GenerationStep::ModifyWithAttribute(step)
-}
-
-fn create_rainfall(rainfall_id: usize) -> GenerationStep {
-    let noise = Noise::new(0, 100.0, 0, 255).unwrap();
-    let noise = Generator2d::Noise2d(noise);
-    let step = GeneratorStep::new("noise", rainfall_id, "rainfall", noise);
-    GenerationStep::GeneratorAdd(step)
-}
-
-fn select_biome(temperature_id: usize, rainfall_id: usize, biome_id: usize) -> GenerationStep {
-    let clusterer = Clusterer2d::new(
-        Size2d::new(3, 4),
-        vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    )
-    .unwrap();
-    let transformer = Transformer2d::Clusterer(clusterer);
-    let step = TransformAttribute2d::new(
-        rainfall_id,
-        "rainfall".to_string(),
-        temperature_id,
-        "temperature".to_string(),
-        biome_id,
-        "biome".to_string(),
-        transformer,
-    );
-    GenerationStep::TransformAttribute2d(step)
-}
-
-fn overwrite_ocean(elevation_id: usize, biome_id: usize) -> GenerationStep {
-    let transformer = Transformer2d::new_overwrite_if_below(OCEAN_ID, OCEAN_VALUE);
-    let step = TransformAttribute2d::new(
-        elevation_id,
-        "elevation".to_string(),
-        biome_id,
-        "biome".to_string(),
-        biome_id,
-        "biome".to_string(),
-        transformer,
-    );
-    GenerationStep::TransformAttribute2d(step)
+fn create_map(path: &str) -> Option<Map2d> {
+    match read_map_generator(path) {
+        Ok(map_generation) => {
+            info!("Loaded map generator from '{}'", path);
+            Some(map_generation.generate())
+        }
+        Err(error) => {
+            error!("Failed loading '{}' with {:?}", path, error);
+            None
+        }
+    }
 }
 
 fn create_elevation_color_interpolator() -> Selector<Color> {
@@ -263,7 +141,7 @@ fn create_biome_renderer() -> CellRenderer {
 impl App for BiomeExample {
     fn init(&mut self, initialization: &mut dyn Initialization) {
         self.texture_id = initialization.load_texture("ascii.png");
-        self.map = create_map(self.size);
+        self.map = create_map(&self.path);
     }
 
     fn render(&mut self, renderer: &mut dyn Renderer) {
@@ -298,7 +176,9 @@ impl App for BiomeExample {
 fn main() {
     let tiles = Size2d::new(400, 300);
     let mut window = GliumWindow::new("Example with biomes", tiles, Size2d::new(2, 2));
-    let app = Rc::new(RefCell::new(BiomeExample::new(tiles)));
+    let app = Rc::new(RefCell::new(BiomeExample::new(
+        "resources/map_generation/biome.yaml".to_string(),
+    )));
 
     window.run(app.clone());
 }
