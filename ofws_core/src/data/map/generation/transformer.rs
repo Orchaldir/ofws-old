@@ -1,3 +1,4 @@
+use crate::data::map::generation::step::GenerationStepError;
 use crate::data::map::Map2d;
 use crate::data::math::transformer::transformer2d::{Transformer2d, Transformer2dData};
 use serde::{Deserialize, Serialize};
@@ -85,7 +86,7 @@ pub struct TransformAttribute2dData {
 }
 
 impl TryFrom<TransformAttribute2dData> for TransformAttribute2d {
-    type Error = &'static str;
+    type Error = GenerationStepError;
 
     fn try_from(data: TransformAttribute2dData) -> Result<Self, Self::Error> {
         let transformer: Transformer2d = data.transformer.try_into()?;

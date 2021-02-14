@@ -1,6 +1,12 @@
 use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum Clusterer2dError {
+    TooFewClusters(usize),
+    SizeMismatch(usize, usize),
+}
+
 /// Determines a cluster id from both inputs. E.g. biome from rainfall & temperature.
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct Clusterer2d {
@@ -15,16 +21,20 @@ impl Clusterer2d {
     /// ```
     ///# use ofws_core::data::math::size2d::Size2d;
     ///# use ofws_core::data::math::transformer::clusterer2d::Clusterer2d;
-    /// assert!(Clusterer2d::new(Size2d::new(2,  2), vec![10, 20, 30, 40, 50, 60]).is_err());
-    /// assert!(Clusterer2d::new(Size2d::new(2, 10), vec![10, 20, 30, 40, 50, 60]).is_err());
-    /// assert!(Clusterer2d::new(Size2d::new(0,  0), vec![10, 20, 30, 40, 50, 60]).is_err());
-    /// assert!(Clusterer2d::new(Size2d::new(0,  0), vec![]).is_err());
+    ///# use ofws_core::data::math::transformer::clusterer2d::Clusterer2dError::{TooFewClusters, SizeMismatch};
+    /// assert_eq!(Clusterer2d::new(Size2d::new(2,  2), vec![10, 20]), Err(SizeMismatch(4, 2)));
+    /// assert_eq!(Clusterer2d::new(Size2d::new(2, 10), vec![10, 20]), Err(SizeMismatch(20, 2)));
+    /// assert_eq!(Clusterer2d::new(Size2d::new(0,  0), vec![10, 20]), Err(SizeMismatch(0, 2)));
+    /// assert_eq!(Clusterer2d::new(Size2d::new(0,  0), vec![]), Err(TooFewClusters(0)));
     /// ```
-    pub fn new(size: Size2d, cluster_id_lookup: Vec<u8>) -> Result<Clusterer2d, &'static str> {
+    pub fn new(size: Size2d, cluster_id_lookup: Vec<u8>) -> Result<Clusterer2d, Clusterer2dError> {
         if size.get_area() != cluster_id_lookup.len() {
-            return Err("Size & look up table don't match!");
+            return Err(Clusterer2dError::SizeMismatch(
+                size.get_area(),
+                cluster_id_lookup.len(),
+            ));
         } else if cluster_id_lookup.len() < 2 {
-            return Err("Needs more than 1 cluster!");
+            return Err(Clusterer2dError::TooFewClusters(cluster_id_lookup.len()));
         }
 
         let width = calculate_cluster_size(size.width());

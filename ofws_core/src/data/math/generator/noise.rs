@@ -2,6 +2,12 @@ use noise::{NoiseFn, Seedable, SuperSimplex};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum NoiseError {
+    NegativeScale,
+    MinBiggerThanMax(u8, u8),
+}
+
 /// Hide the noise functions from [`noise`].
 pub struct Noise {
     algo: Box<SuperSimplex>,
@@ -24,11 +30,11 @@ impl Noise {
     /// assert!(Noise::new(0, 5.0, 200, 105).is_err())
     ///```
     ///
-    pub fn new(seed: u32, scale: f64, min_value: u8, max_value: u8) -> Result<Noise, &'static str> {
+    pub fn new(seed: u32, scale: f64, min_value: u8, max_value: u8) -> Result<Noise, NoiseError> {
         if scale <= 0.0 {
-            return Err("Noise's scale must be positive!");
+            return Err(NoiseError::NegativeScale);
         } else if min_value >= max_value {
-            return Err("Noise's min_value must be smaller than max_value!");
+            return Err(NoiseError::MinBiggerThanMax(min_value, max_value));
         }
 
         Ok(Noise {
@@ -75,7 +81,7 @@ pub struct NoiseData {
 }
 
 impl TryFrom<NoiseData> for Noise {
-    type Error = &'static str;
+    type Error = NoiseError;
 
     fn try_from(data: NoiseData) -> Result<Self, Self::Error> {
         Noise::new(data.seed, data.scale as f64, data.min_value, data.max_value)

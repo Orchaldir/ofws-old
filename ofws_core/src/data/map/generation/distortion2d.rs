@@ -1,3 +1,4 @@
+use crate::data::map::generation::step::GenerationStepError;
 use crate::data::map::Map2d;
 use crate::data::math::generator::generator2d::{Generator2d, Generator2dData};
 use serde::{Deserialize, Serialize};
@@ -68,7 +69,7 @@ pub struct Distortion2dData {
 }
 
 impl TryFrom<Distortion2dData> for Distortion2d {
-    type Error = &'static str;
+    type Error = GenerationStepError;
 
     fn try_from(data: Distortion2dData) -> Result<Self, Self::Error> {
         let generator_x: Generator2d = data.generator_x.try_into()?;

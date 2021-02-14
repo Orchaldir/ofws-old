@@ -5,8 +5,36 @@ use crate::data::map::generation::generator::{GeneratorStep, GeneratorStepData};
 use crate::data::map::generation::modify::ModifyWithAttribute;
 use crate::data::map::generation::transformer::{TransformAttribute2d, TransformAttribute2dData};
 use crate::data::map::Map2d;
+use crate::data::math::generator::generator1d::Generator1dError;
+use crate::data::math::generator::generator2d::Generator2dError;
+use crate::data::math::transformer::transformer2d::Transformer2dError;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+
+#[derive(Debug)]
+pub enum GenerationStepError {
+    Generator1d(Generator1dError),
+    Generator2d(Generator2dError),
+    Transformer2d(Transformer2dError),
+}
+
+impl From<Generator1dError> for GenerationStepError {
+    fn from(error: Generator1dError) -> Self {
+        GenerationStepError::Generator1d(error)
+    }
+}
+
+impl From<Generator2dError> for GenerationStepError {
+    fn from(error: Generator2dError) -> Self {
+        GenerationStepError::Generator2d(error)
+    }
+}
+
+impl From<Transformer2dError> for GenerationStepError {
+    fn from(error: Transformer2dError) -> Self {
+        GenerationStepError::Transformer2d(error)
+    }
+}
 
 /// A step during [`MapGeneration`].
 pub enum GenerationStep {
@@ -50,7 +78,7 @@ pub enum GenerationStepData {
 }
 
 impl TryFrom<GenerationStepData> for GenerationStep {
-    type Error = &'static str;
+    type Error = GenerationStepError;
 
     fn try_from(data: GenerationStepData) -> Result<Self, Self::Error> {
         match data {

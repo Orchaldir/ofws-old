@@ -1,7 +1,18 @@
 use crate::data::math::generator::gradient::Gradient;
-use crate::data::math::generator::noise::{Noise, NoiseData};
+use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+
+#[derive(Debug)]
+pub enum Generator1dError {
+    Noise(NoiseError),
+}
+
+impl From<NoiseError> for Generator1dError {
+    fn from(error: NoiseError) -> Self {
+        Generator1dError::Noise(error)
+    }
+}
 
 #[svgbobdoc::transform]
 /// Generates values for a 1d input.
@@ -134,7 +145,7 @@ pub enum Generator1dData {
 }
 
 impl TryFrom<Generator1dData> for Generator1d {
-    type Error = &'static str;
+    type Error = Generator1dError;
 
     fn try_from(data: Generator1dData) -> Result<Self, Self::Error> {
         match data {
