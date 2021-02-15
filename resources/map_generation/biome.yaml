@@ -77,12 +77,9 @@ steps:
       target: biome
       transformer:
         Clusterer:
-          lookup_table_size:
+          size:
             width: 3
             height: 4
-          cluster_size:
-            width: 86
-            height: 64
           cluster_id_lookup:
             - 0
             - 1

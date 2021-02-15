@@ -1,4 +1,4 @@
-use crate::data::math::transformer::clusterer2d::{Clusterer2d, Clusterer2dError};
+use crate::data::math::transformer::clusterer2d::{Clusterer2d, Clusterer2dData, Clusterer2dError};
 use crate::data::math::transformer::threshold::OverwriteWithThreshold;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
@@ -16,7 +16,7 @@ impl From<Clusterer2dError> for Transformer2dError {
 }
 
 /// Transforms 2 inputs into an output.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Transformer2d {
     /// Determine a cluster id from both inputs. E.g. biome from rainfall & temperature.
     Clusterer(Clusterer2d),
@@ -52,10 +52,10 @@ impl Transformer2d {
 ///
 ///```
 ///# use ofws_core::data::math::size2d::Size2d;
-///# use ofws_core::data::math::transformer::clusterer2d::Clusterer2d;
+///# use ofws_core::data::math::transformer::clusterer2d::Clusterer2dData;
 ///# use ofws_core::data::math::transformer::threshold::OverwriteWithThreshold;
 ///# use ofws_core::data::math::transformer::transformer2d::{Transformer2dData, assert_eq};
-/// let clusterer = Clusterer2d::new(Size2d::new(1, 2), vec![10, 11]).unwrap();
+/// let clusterer = Clusterer2dData::new(Size2d::new(1, 2), vec![10, 11]);
 /// let overwrite_data = OverwriteWithThreshold::new(100, 200);
 ///
 /// assert_eq(Transformer2dData::Clusterer(clusterer));
@@ -65,7 +65,7 @@ impl Transformer2d {
 ///```
 #[derive(new, Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Transformer2dData {
-    Clusterer(Clusterer2d),
+    Clusterer(Clusterer2dData),
     Const(u8),
     OverwriteIfAbove(OverwriteWithThreshold<u8>),
     OverwriteIfBelow(OverwriteWithThreshold<u8>),
@@ -76,7 +76,7 @@ impl TryFrom<Transformer2dData> for Transformer2d {
 
     fn try_from(data: Transformer2dData) -> Result<Self, Self::Error> {
         match data {
-            Transformer2dData::Clusterer(c) => Ok(Clusterer(c)),
+            Transformer2dData::Clusterer(c) => Ok(Clusterer(c.try_into()?)),
             Transformer2dData::Const(value) => Ok(Const(value)),
             Transformer2dData::OverwriteIfAbove(o) => Ok(OverwriteIfAbove(o)),
             Transformer2dData::OverwriteIfBelow(o) => Ok(OverwriteIfBelow(o)),
@@ -87,7 +87,7 @@ impl TryFrom<Transformer2dData> for Transformer2d {
 impl From<&Transformer2d> for Transformer2dData {
     fn from(generator: &Transformer2d) -> Self {
         match generator {
-            Clusterer(c) => Transformer2dData::Clusterer(c.clone()),
+            Clusterer(c) => Transformer2dData::Clusterer(c.into()),
             Const(value) => Transformer2dData::Const(*value),
             OverwriteIfAbove(o) => Transformer2dData::OverwriteIfAbove(*o),
             OverwriteIfBelow(o) => Transformer2dData::OverwriteIfBelow(*o),
