@@ -2,6 +2,7 @@ use crate::data::math::generator::gradient::Gradient;
 use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+use Generator1d::*;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Generator1dError {
@@ -114,10 +115,10 @@ impl Generator1d {
     /// Generates an output for an input.
     pub fn generate(&self, input: u32) -> u8 {
         match self {
-            Generator1d::AbsoluteGradient(gradient) => gradient.generate_absolute(input),
-            Generator1d::Gradient(gradient) => gradient.generate(input),
-            Generator1d::InputAsOutput => input as u8,
-            Generator1d::Noise(noise) => noise.generate1d(input),
+            AbsoluteGradient(gradient) => gradient.generate_absolute(input),
+            Gradient(gradient) => gradient.generate(input),
+            InputAsOutput => input as u8,
+            Noise(noise) => noise.generate1d(input),
         }
     }
 }
@@ -144,19 +145,19 @@ pub enum Generator1dData {
     Noise(NoiseData),
 }
 
+type Data = Generator1dData;
+
 impl TryFrom<Generator1dData> for Generator1d {
     type Error = Generator1dError;
 
     fn try_from(data: Generator1dData) -> Result<Self, Self::Error> {
         match data {
-            Generator1dData::AbsoluteGradient(gradient) => {
-                Ok(Generator1d::AbsoluteGradient(gradient))
-            }
-            Generator1dData::Gradient(gradient) => Ok(Generator1d::Gradient(gradient)),
-            Generator1dData::InputAsOutput => Ok(Generator1d::InputAsOutput),
-            Generator1dData::Noise(noise_data) => {
+            Data::AbsoluteGradient(gradient) => Ok(AbsoluteGradient(gradient)),
+            Data::Gradient(gradient) => Ok(Gradient(gradient)),
+            Data::InputAsOutput => Ok(InputAsOutput),
+            Data::Noise(noise_data) => {
                 let noise: Noise = noise_data.try_into()?;
-                Ok(Generator1d::Noise(noise))
+                Ok(Noise(noise))
             }
         }
     }
@@ -165,10 +166,10 @@ impl TryFrom<Generator1dData> for Generator1d {
 impl From<&Generator1d> for Generator1dData {
     fn from(generator: &Generator1d) -> Self {
         match generator {
-            Generator1d::AbsoluteGradient(gradient) => Generator1dData::AbsoluteGradient(*gradient),
-            Generator1d::Gradient(gradient) => Generator1dData::Gradient(*gradient),
-            Generator1d::InputAsOutput => Generator1dData::InputAsOutput,
-            Generator1d::Noise(noise) => Generator1dData::Noise(noise.into()),
+            AbsoluteGradient(gradient) => Data::AbsoluteGradient(*gradient),
+            Gradient(gradient) => Data::Gradient(*gradient),
+            InputAsOutput => Data::InputAsOutput,
+            Noise(noise) => Data::Noise(noise.into()),
         }
     }
 }

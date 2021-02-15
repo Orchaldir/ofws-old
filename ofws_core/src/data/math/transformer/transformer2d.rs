@@ -71,15 +71,17 @@ pub enum Transformer2dData {
     OverwriteIfBelow(OverwriteWithThreshold<u8>),
 }
 
+type Data = Transformer2dData;
+
 impl TryFrom<Transformer2dData> for Transformer2d {
     type Error = Transformer2dError;
 
     fn try_from(data: Transformer2dData) -> Result<Self, Self::Error> {
         match data {
-            Transformer2dData::Clusterer(c) => Ok(Clusterer(c.try_into()?)),
-            Transformer2dData::Const(value) => Ok(Const(value)),
-            Transformer2dData::OverwriteIfAbove(o) => Ok(OverwriteIfAbove(o)),
-            Transformer2dData::OverwriteIfBelow(o) => Ok(OverwriteIfBelow(o)),
+            Data::Clusterer(c) => Ok(Clusterer(c.try_into()?)),
+            Data::Const(value) => Ok(Const(value)),
+            Data::OverwriteIfAbove(o) => Ok(OverwriteIfAbove(o)),
+            Data::OverwriteIfBelow(o) => Ok(OverwriteIfBelow(o)),
         }
     }
 }
@@ -87,10 +89,10 @@ impl TryFrom<Transformer2dData> for Transformer2d {
 impl From<&Transformer2d> for Transformer2dData {
     fn from(generator: &Transformer2d) -> Self {
         match generator {
-            Clusterer(c) => Transformer2dData::Clusterer(c.into()),
-            Const(value) => Transformer2dData::Const(*value),
-            OverwriteIfAbove(o) => Transformer2dData::OverwriteIfAbove(*o),
-            OverwriteIfBelow(o) => Transformer2dData::OverwriteIfBelow(*o),
+            Clusterer(c) => Data::Clusterer(c.into()),
+            Const(value) => Data::Const(*value),
+            OverwriteIfAbove(o) => Data::OverwriteIfAbove(*o),
+            OverwriteIfBelow(o) => Data::OverwriteIfBelow(*o),
         }
     }
 }

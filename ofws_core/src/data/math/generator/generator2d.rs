@@ -4,6 +4,7 @@ use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
 use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
+use Generator2d::*;
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Generator2dError {
@@ -101,15 +102,15 @@ pub enum Generator2d {
 
 impl Generator2d {
     pub fn new_apply_to_x(generator: Generator1d) -> Generator2d {
-        Generator2d::ApplyToX(generator)
+        ApplyToX(generator)
     }
 
     pub fn new_apply_to_y(generator: Generator1d) -> Generator2d {
-        Generator2d::ApplyToY(generator)
+        ApplyToY(generator)
     }
 
     pub fn new_apply_to_distance(generator: Generator1d, x: u32, y: u32) -> Generator2d {
-        Generator2d::ApplyToDistance {
+        ApplyToDistance {
             generator,
             center_x: x,
             center_y: y,
@@ -117,15 +118,15 @@ impl Generator2d {
     }
 
     pub fn new_index(width: u32, height: u32) -> Generator2d {
-        Generator2d::IndexGenerator(Size2d::new(width, height))
+        IndexGenerator(Size2d::new(width, height))
     }
 
     /// Generates a value for a 2d point (x,y).
     pub fn generate(&self, x: u32, y: u32) -> u8 {
         match self {
-            Generator2d::ApplyToX(generator) => generator.generate(x),
-            Generator2d::ApplyToY(generator) => generator.generate(y),
-            Generator2d::ApplyToDistance {
+            ApplyToX(generator) => generator.generate(x),
+            ApplyToY(generator) => generator.generate(y),
+            ApplyToDistance {
                 generator,
                 center_x,
                 center_y,
@@ -133,8 +134,8 @@ impl Generator2d {
                 let distance = calculate_distance(*center_x, *center_y, x, y);
                 generator.generate(distance)
             }
-            Generator2d::IndexGenerator(size) => size.saturating_to_index(x, y) as u8,
-            Generator2d::Noise(noise) => noise.generate2d(x, y),
+            IndexGenerator(size) => size.saturating_to_index(x, y) as u8,
+            Noise(noise) => noise.generate2d(x, y),
         }
     }
 }
@@ -168,20 +169,16 @@ pub enum Generator2dData {
     Noise(NoiseData),
 }
 
+type Data = Generator2dData;
+
 impl TryFrom<Generator2dData> for Generator2d {
     type Error = Generator2dError;
 
     fn try_from(data: Generator2dData) -> Result<Self, Self::Error> {
         match data {
-            Generator2dData::ApplyToX(data) => {
-                let generator: Generator1d = data.try_into()?;
-                Ok(Generator2d::ApplyToX(generator))
-            }
-            Generator2dData::ApplyToY(data) => {
-                let generator: Generator1d = data.try_into()?;
-                Ok(Generator2d::ApplyToY(generator))
-            }
-            Generator2dData::ApplyToDistance {
+            Data::ApplyToX(data) => Ok(ApplyToX(data.try_into()?)),
+            Data::ApplyToY(data) => Ok(ApplyToY(data.try_into()?)),
+            Data::ApplyToDistance {
                 generator,
                 center_x,
                 center_y,
@@ -191,11 +188,8 @@ impl TryFrom<Generator2dData> for Generator2d {
                     generator, center_x, center_y,
                 ))
             }
-            Generator2dData::IndexGenerator(size) => Ok(Generator2d::IndexGenerator(size)),
-            Generator2dData::Noise(data) => {
-                let noise: Noise = data.try_into()?;
-                Ok(Generator2d::Noise(noise))
-            }
+            Data::IndexGenerator(size) => Ok(IndexGenerator(size)),
+            Data::Noise(data) => Ok(Noise(data.try_into()?)),
         }
     }
 }
@@ -203,19 +197,19 @@ impl TryFrom<Generator2dData> for Generator2d {
 impl From<&Generator2d> for Generator2dData {
     fn from(generator: &Generator2d) -> Self {
         match generator {
-            Generator2d::ApplyToX(generator) => Generator2dData::ApplyToX(generator.into()),
-            Generator2d::ApplyToY(generator) => Generator2dData::ApplyToY(generator.into()),
-            Generator2d::ApplyToDistance {
+            ApplyToX(generator) => Data::ApplyToX(generator.into()),
+            ApplyToY(generator) => Data::ApplyToY(generator.into()),
+            ApplyToDistance {
                 generator,
                 center_x,
                 center_y,
-            } => Generator2dData::ApplyToDistance {
+            } => Data::ApplyToDistance {
                 generator: generator.into(),
                 center_x: *center_x,
                 center_y: *center_y,
             },
-            Generator2d::IndexGenerator(size) => Generator2dData::IndexGenerator(*size),
-            Generator2d::Noise(noise) => Generator2dData::Noise(noise.into()),
+            IndexGenerator(size) => Data::IndexGenerator(*size),
+            Noise(noise) => Data::Noise(noise.into()),
         }
     }
 }
