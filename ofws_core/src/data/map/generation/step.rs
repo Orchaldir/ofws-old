@@ -13,6 +13,7 @@ use crate::data::math::generator::generator1d::Generator1dError;
 use crate::data::math::generator::generator2d::Generator2dError;
 use crate::data::math::transformer::transformer2d::Transformer2dError;
 use serde::{Deserialize, Serialize};
+use GenerationStep::*;
 
 #[derive(Debug)]
 pub enum GenerationStepError {
@@ -56,14 +57,14 @@ impl GenerationStep {
     /// Runs the step.
     pub fn run(&self, map: &mut Map2d) {
         match self {
-            GenerationStep::CreateAttribute(step) => step.run(map),
-            GenerationStep::DistortAlongX(step) => step.distort_along_x(map),
-            GenerationStep::DistortAlongY(step) => step.distort_along_y(map),
-            GenerationStep::Distortion2d(step) => step.run(map),
-            GenerationStep::GeneratorAdd(step) => step.add(map),
-            GenerationStep::GeneratorSub(step) => step.sub(map),
-            GenerationStep::ModifyWithAttribute(step) => step.run(map),
-            GenerationStep::TransformAttribute2d(step) => step.run(map),
+            CreateAttribute(step) => step.run(map),
+            DistortAlongX(step) => step.distort_along_x(map),
+            DistortAlongY(step) => step.distort_along_y(map),
+            Distortion2d(step) => step.run(map),
+            GeneratorAdd(step) => step.add(map),
+            GeneratorSub(step) => step.sub(map),
+            ModifyWithAttribute(step) => step.run(map),
+            TransformAttribute2d(step) => step.run(map),
         }
     }
 }
@@ -89,29 +90,29 @@ impl GenerationStepData {
         match self {
             GenerationStepData::CreateAttribute(step) => {
                 attributes.push(step.get_attribute().to_string());
-                Ok(GenerationStep::CreateAttribute(step))
+                Ok(CreateAttribute(step))
             }
             GenerationStepData::DistortAlongX(step) => {
-                Ok(GenerationStep::DistortAlongX(step.try_convert(attributes)?))
+                Ok(DistortAlongX(step.try_convert(attributes)?))
             }
             GenerationStepData::DistortAlongY(step) => {
-                Ok(GenerationStep::DistortAlongY(step.try_convert(attributes)?))
+                Ok(DistortAlongY(step.try_convert(attributes)?))
             }
             GenerationStepData::Distortion2d(step) => {
-                Ok(GenerationStep::Distortion2d(step.try_convert(attributes)?))
+                Ok(Distortion2d(step.try_convert(attributes)?))
             }
             GenerationStepData::GeneratorAdd(step) => {
-                Ok(GenerationStep::GeneratorAdd(step.try_convert(attributes)?))
+                Ok(GeneratorAdd(step.try_convert(attributes)?))
             }
             GenerationStepData::GeneratorSub(step) => {
-                Ok(GenerationStep::GeneratorSub(step.try_convert(attributes)?))
+                Ok(GeneratorSub(step.try_convert(attributes)?))
             }
-            GenerationStepData::ModifyWithAttribute(step) => Ok(
-                GenerationStep::ModifyWithAttribute(step.try_convert(attributes)?),
-            ),
-            GenerationStepData::TransformAttribute2d(step) => Ok(
-                GenerationStep::TransformAttribute2d(step.try_convert(attributes)?),
-            ),
+            GenerationStepData::ModifyWithAttribute(step) => {
+                Ok(ModifyWithAttribute(step.try_convert(attributes)?))
+            }
+            GenerationStepData::TransformAttribute2d(step) => {
+                Ok(TransformAttribute2d(step.try_convert(attributes)?))
+            }
         }
     }
 }
@@ -119,29 +120,19 @@ impl GenerationStepData {
 impl GenerationStep {
     pub fn convert(&self, attributes: &mut Vec<String>) -> GenerationStepData {
         match self {
-            GenerationStep::CreateAttribute(data) => {
+            CreateAttribute(data) => {
                 attributes.push(data.get_attribute().to_string());
                 GenerationStepData::CreateAttribute(data.clone())
             }
-            GenerationStep::DistortAlongX(data) => {
-                GenerationStepData::DistortAlongX(data.convert(attributes))
-            }
-            GenerationStep::DistortAlongY(data) => {
-                GenerationStepData::DistortAlongY(data.convert(attributes))
-            }
-            GenerationStep::Distortion2d(data) => {
-                GenerationStepData::Distortion2d(data.convert(attributes))
-            }
-            GenerationStep::GeneratorAdd(data) => {
-                GenerationStepData::GeneratorAdd(data.convert(attributes))
-            }
-            GenerationStep::GeneratorSub(data) => {
-                GenerationStepData::GeneratorSub(data.convert(attributes))
-            }
-            GenerationStep::ModifyWithAttribute(data) => {
+            DistortAlongX(data) => GenerationStepData::DistortAlongX(data.convert(attributes)),
+            DistortAlongY(data) => GenerationStepData::DistortAlongY(data.convert(attributes)),
+            Distortion2d(data) => GenerationStepData::Distortion2d(data.convert(attributes)),
+            GeneratorAdd(data) => GenerationStepData::GeneratorAdd(data.convert(attributes)),
+            GeneratorSub(data) => GenerationStepData::GeneratorSub(data.convert(attributes)),
+            ModifyWithAttribute(data) => {
                 GenerationStepData::ModifyWithAttribute(data.convert(attributes))
             }
-            GenerationStep::TransformAttribute2d(data) => {
+            TransformAttribute2d(data) => {
                 GenerationStepData::TransformAttribute2d(data.convert(attributes))
             }
         }

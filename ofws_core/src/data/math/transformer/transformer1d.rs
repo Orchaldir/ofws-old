@@ -7,9 +7,9 @@ use std::collections::HashMap;
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Transformer1d<T: Transformed> {
     /// Overwrites the input, if it is above a threshold.
-    OverwriteIfAboveThreshold(OverwriteWithThreshold<T>),
+    OverwriteIfAbove(OverwriteWithThreshold<T>),
     /// Overwrites the input, if it is below a threshold.
-    OverwriteIfBelowThreshold(OverwriteWithThreshold<T>),
+    OverwriteIfBelow(OverwriteWithThreshold<T>),
     /// Overwrites the input, if the map containes a value for it.
     ///
     /// ```
@@ -28,18 +28,18 @@ pub enum Transformer1d<T: Transformed> {
 
 impl<T: Transformed> Transformer1d<T> {
     pub fn new_overwrite_if_above(value: T, threshold: T) -> Transformer1d<T> {
-        Transformer1d::OverwriteIfAboveThreshold(OverwriteWithThreshold::new(value, threshold))
+        Transformer1d::OverwriteIfAbove(OverwriteWithThreshold::new(value, threshold))
     }
 
     pub fn new_overwrite_if_below(value: T, threshold: T) -> Transformer1d<T> {
-        Transformer1d::OverwriteIfBelowThreshold(OverwriteWithThreshold::new(value, threshold))
+        Transformer1d::OverwriteIfBelow(OverwriteWithThreshold::new(value, threshold))
     }
 
     /// Selects an object of type T based on the input.
     pub fn get(&self, input: T) -> T {
         match self {
-            Transformer1d::OverwriteIfAboveThreshold(data) => data.overwrite_if_above(input),
-            Transformer1d::OverwriteIfBelowThreshold(data) => data.overwrite_if_below(input),
+            Transformer1d::OverwriteIfAbove(data) => data.overwrite_if_above(input),
+            Transformer1d::OverwriteIfBelow(data) => data.overwrite_if_below(input),
             Transformer1d::OverwriteWithMap(hashmap) => {
                 hashmap.get(&input).copied().unwrap_or(input)
             }

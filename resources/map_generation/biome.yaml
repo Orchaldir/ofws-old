@@ -22,7 +22,7 @@ steps:
       generator:
         ApplyToDistance:
           generator:
-            Gradient1d:
+            Gradient:
               value_start: 125
               value_end: 0
               start: 0
@@ -33,7 +33,7 @@ steps:
       name: islands
       attribute: elevation
       generator:
-        Noise2d:
+        Noise:
           seed: 0
           scale: 20
           min_value: 0
@@ -43,7 +43,7 @@ steps:
       attribute: temperature
       generator:
         ApplyToY:
-          AbsoluteGradient1d:
+          AbsoluteGradient:
             value_start: 255
             value_end: 0
             start: 150
@@ -51,7 +51,7 @@ steps:
   - DistortAlongY:
       attribute: temperature
       generator:
-        Noise1d:
+        Noise:
           seed: 0
           scale: 60
           min_value: 0
@@ -65,7 +65,7 @@ steps:
       name: noise
       attribute: rainfall
       generator:
-        Noise2d:
+        Noise:
           seed: 0
           scale: 100
           min_value: 0
@@ -102,6 +102,6 @@ steps:
       source1: biome
       target: biome
       transformer:
-        OverwriteIfBelowThreshold:
+        OverwriteIfBelow:
           value: 12
           threshold: 76
