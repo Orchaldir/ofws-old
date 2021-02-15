@@ -96,7 +96,7 @@ pub enum Generator2d {
     /// ```
     IndexGenerator(Size2d),
     /// Generates noise for each 2d point.
-    Noise2d(Noise),
+    Noise(Noise),
 }
 
 impl Generator2d {
@@ -134,7 +134,7 @@ impl Generator2d {
                 generator.generate(distance)
             }
             Generator2d::IndexGenerator(size) => size.saturating_to_index(x, y) as u8,
-            Generator2d::Noise2d(noise) => noise.generate2d(x, y),
+            Generator2d::Noise(noise) => noise.generate2d(x, y),
         }
     }
 }
@@ -153,7 +153,7 @@ impl Generator2d {
 /// assert_eq(Generator2dData::ApplyToY(InputAsOutput));
 /// assert_eq(Generator2dData::ApplyToDistance { generator: InputAsOutput, center_x: 10, center_y: 20});
 /// assert_eq(Generator2dData::IndexGenerator(Size2d::new(3, 5)));
-/// assert_eq(Generator2dData::Noise2d(noise_data));
+/// assert_eq(Generator2dData::Noise(noise_data));
 ///```
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Generator2dData {
@@ -165,7 +165,7 @@ pub enum Generator2dData {
         center_y: u32,
     },
     IndexGenerator(Size2d),
-    Noise2d(NoiseData),
+    Noise(NoiseData),
 }
 
 impl TryFrom<Generator2dData> for Generator2d {
@@ -192,9 +192,9 @@ impl TryFrom<Generator2dData> for Generator2d {
                 ))
             }
             Generator2dData::IndexGenerator(size) => Ok(Generator2d::IndexGenerator(size)),
-            Generator2dData::Noise2d(data) => {
+            Generator2dData::Noise(data) => {
                 let noise: Noise = data.try_into()?;
-                Ok(Generator2d::Noise2d(noise))
+                Ok(Generator2d::Noise(noise))
             }
         }
     }
@@ -215,7 +215,7 @@ impl From<&Generator2d> for Generator2dData {
                 center_y: *center_y,
             },
             Generator2d::IndexGenerator(size) => Generator2dData::IndexGenerator(*size),
-            Generator2d::Noise2d(noise) => Generator2dData::Noise2d(noise.into()),
+            Generator2d::Noise(noise) => Generator2dData::Noise(noise.into()),
         }
     }
 }

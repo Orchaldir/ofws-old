@@ -10,7 +10,10 @@ pub fn read_map_generator(path: &str) -> Result<MapGeneration, MapGenerationErro
     data.try_into()
 }
 
-pub fn write_map_generator(map_generator: &MapGeneration, path: &str) -> Result<(), MapGenerationError> {
+pub fn write_map_generator(
+    map_generator: &MapGeneration,
+    path: &str,
+) -> Result<(), MapGenerationError> {
     let mut file = File::create(path)?;
 
     let data: MapGenerationData = map_generator.into();
