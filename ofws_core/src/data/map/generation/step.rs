@@ -15,7 +15,7 @@ use crate::data::math::transformer::transformer2d::Transformer2dError;
 use serde::{Deserialize, Serialize};
 use GenerationStep::*;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum GenerationStepError {
     AttributeUnknown(String),
     Generator1d(Generator1dError),

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use Transformer2d::*;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Transformer2dError {
     Clusterer(Clusterer2dError),
 }
