@@ -26,7 +26,7 @@ steps:
               value_start: 125
               value_end: 0
               start: 0
-              length: 100
+              length: 150
           center_x: 200
           center_y: 150
   - GeneratorAdd:

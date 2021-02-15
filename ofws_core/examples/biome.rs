@@ -169,6 +169,8 @@ impl App for BiomeExample {
             self.attribute_renderer = create_rainfall_renderer();
         } else if key == KeyCode::Key4 {
             self.attribute_renderer = create_biome_renderer();
+        } else if key == KeyCode::Space {
+            self.map = create_map(&self.path);
         }
     }
 }
