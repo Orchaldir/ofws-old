@@ -13,15 +13,9 @@ pub mod step;
 
 #[derive(Debug)]
 pub enum MapGenerationError {
-    GenerationStep(GenerationStepError),
+    GenerationStep(usize, GenerationStepError),
     IoError(std::io::Error),
     SerdeError(serde_yaml::Error),
-}
-
-impl From<GenerationStepError> for MapGenerationError {
-    fn from(error: GenerationStepError) -> Self {
-        MapGenerationError::GenerationStep(error)
-    }
 }
 
 impl From<std::io::Error> for MapGenerationError {
@@ -124,25 +118,41 @@ impl TryFrom<MapGenerationData> for MapGeneration {
     ///```
     ///# use std::convert::TryInto;
     ///# use ofws_core::data::map::generation::{MapGenerationData, MapGeneration, MapGenerationError};
+    ///# use ofws_core::data::map::generation::attributes::create::CreateAttribute;
     ///# use ofws_core::data::map::generation::attributes::modify::ModifyWithAttributeData;
     ///# use ofws_core::data::map::generation::step::GenerationStepData;
     ///# use ofws_core::data::map::generation::step::GenerationStepError::AttributeUnknown;
     ///# use ofws_core::data::math::size2d::Size2d;
+    /// let create = GenerationStepData::CreateAttribute(CreateAttribute::new("a0", 0));
     /// let modify = ModifyWithAttributeData::new("a0".to_string(), "a1".to_string(), 100, 10);
-    /// let step = GenerationStepData::ModifyWithAttribute(modify);
-    /// let steps = vec![step];
+    /// let modify = GenerationStepData::ModifyWithAttribute(modify);
+    /// let steps = vec![create, modify];
     /// let data = MapGenerationData::new("map".to_string(), Size2d::new(4, 5), steps);
     ///
     /// let result: Result<MapGeneration, MapGenerationError> = data.try_into();
     ///
-    /// assert!(result.is_err());
+    /// match result {
+    ///    Ok(_) => panic!("Wrong!"),
+    ///    Err(error) => match error {
+    ///        MapGenerationError::GenerationStep(step, error) => {
+    ///            assert_eq!(step, 1);
+    ///            assert_eq!(error, AttributeUnknown("a1".to_string()));
+    ///        },
+    ///        MapGenerationError::IoError(_) => panic!("Wrong!"),
+    ///        MapGenerationError::SerdeError(_) => panic!("Wrong!"),
+    ///    }
+    /// }
     ///```
     fn try_from(data: MapGenerationData) -> Result<Self, Self::Error> {
         let mut attributes: Vec<String> = Vec::new();
         let steps: Result<Vec<_>, _> = data
             .steps
             .into_iter()
-            .map(|data| data.try_convert(&mut attributes))
+            .enumerate()
+            .map(|(index, data)| {
+                data.try_convert(&mut attributes)
+                    .map_err(|error| MapGenerationError::GenerationStep(index, error))
+            })
             .collect();
         let steps = steps?;
         Ok(MapGeneration::new(data.name, data.size, steps))

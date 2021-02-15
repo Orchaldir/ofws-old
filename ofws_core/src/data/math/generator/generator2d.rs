@@ -5,7 +5,7 @@ use crate::data::math::size2d::Size2d;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Generator2dError {
     Generator1d(Generator1dError),
     Noise(NoiseError),

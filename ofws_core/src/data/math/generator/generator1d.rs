@@ -3,7 +3,7 @@ use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum Generator1dError {
     Noise(NoiseError),
 }
