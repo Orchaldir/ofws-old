@@ -17,10 +17,10 @@ impl App for ColoredExample {
         renderer.start(BLUE);
 
         let color_renderer = renderer.get_color_renderer();
-        color_renderer.render_triangle((20.0, 15.0), (30.0, 15.0), (25.0, 20.0), GREEN);
-        color_renderer.render_triangle((5.0, 15.0), (15.0, 15.0), (10.0, 20.0), RED);
-        color_renderer.render_rectangle((15.0, 2.0), (7.0, 2.5), YELLOW);
-        color_renderer.render_rectangle((15.0, 25.0), (7.0, 2.5), Color::new(50, 0, 0));
+        color_renderer.render_triangle((400.0, 300.0), (600.0, 300.0), (500.0, 400.0), GREEN);
+        color_renderer.render_triangle((100.0, 300.0), (300.0, 300.0), (200.0, 400.0), RED);
+        color_renderer.render_rectangle((300.0, 40.0), (140.0, 50.0), YELLOW);
+        color_renderer.render_rectangle((300.0, 500.0), (140.0, 50.0), Color::new(50, 0, 0));
 
         renderer.finish();
     }

@@ -8,7 +8,7 @@ use ofws_core::data::math::size2d::Size2d;
 use ofws_core::interface::rendering::{
     AsciiRenderer, ColorRenderer, Renderer, TextureId, TextureRenderer,
 };
-use ofws_core::rendering::tile::TileRenderer;
+use ofws_core::rendering::tile::{calculate_tiles, TileRenderer};
 
 const INDICES: glium::index::NoIndices =
     glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
@@ -168,8 +168,9 @@ impl Renderer for GliumRenderer {
         &mut self.texture_data[id].builder
     }
 
-    fn get_tile_renderer(&mut self, id: TextureId) -> TileRenderer {
-        TileRenderer::new(self.size, &mut self.texture_data[id].builder)
+    fn get_tile_renderer(&mut self, id: usize, tile_size: Size2d) -> TileRenderer {
+        let tiles = calculate_tiles(self.size, tile_size);
+        TileRenderer::new(tiles, tile_size, &mut self.texture_data[id].builder)
     }
 }
 

@@ -148,8 +148,8 @@ impl App for BiomeExample {
         renderer.start(BLACK);
 
         if let Some(map) = &self.map {
-            let tiles = renderer.get_size().get_area();
-            let mut tile_renderer = renderer.get_tile_renderer(self.texture_id);
+            let mut tile_renderer = renderer.get_tile_renderer(self.texture_id, Size2d::new(2, 2));
+            let tiles = tile_renderer.get_tiles().get_area();
 
             for index in 0..tiles {
                 let (ascii, color) = self.attribute_renderer.get(map, index);
@@ -176,8 +176,7 @@ impl App for BiomeExample {
 }
 
 fn main() {
-    let tiles = Size2d::new(400, 300);
-    let mut window = GliumWindow::new("Example with biomes", tiles, Size2d::new(2, 2));
+    let mut window = GliumWindow::default_size("Example with biomes");
     let app = Rc::new(RefCell::new(BiomeExample::new(
         "resources/map_generation/biome.yaml".to_string(),
     )));

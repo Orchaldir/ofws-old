@@ -43,7 +43,7 @@ pub trait Renderer {
     fn get_ascii_renderer(&mut self, id: TextureId) -> &mut dyn AsciiRenderer;
 
     /// Gets a renderer for tiles.
-    fn get_tile_renderer(&mut self, id: TextureId) -> TileRenderer;
+    fn get_tile_renderer(&mut self, id: TextureId, tile_size: Size2d) -> TileRenderer;
 }
 
 pub type Point = (f32, f32);
