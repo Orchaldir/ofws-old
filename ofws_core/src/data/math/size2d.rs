@@ -63,6 +63,23 @@ impl Size2d {
         self.height
     }
 
+    /// Returns the size along the y-axis
+    ///
+    /// ```
+    ///# use ofws_core::data::math::size2d::Size2d;
+    /// let size = Size2d::new(2, 3);
+    /// assert!(size.is_inside(0, 0));
+    /// assert!(size.is_inside(1, 0));
+    /// assert!(!size.is_inside(2, 0));
+    /// assert!(size.is_inside(0, 1));
+    /// assert!(size.is_inside(0, 2));
+    /// assert!(!size.is_inside(0, 3));
+    /// assert!(!size.is_inside(2, 3));
+    /// ```
+    pub fn is_inside(&self, x: u32, y: u32) -> bool {
+        x < self.width && y < self.height
+    }
+
     /// Converts an index to the x-coordinate of the equivalent point
     ///
     /// ```
@@ -96,14 +113,32 @@ impl Size2d {
         [self.to_x(index), self.to_y(index)]
     }
 
-    /// Converts a point to the equivalent index
+    /// Converts a point to the equivalent index, if the point is inside.
     ///
     /// ```
     ///# use ofws_core::data::math::size2d::Size2d;
     /// let size = Size2d::new(2, 3);
-    /// assert_eq!(size.to_index(1, 2), 5);
+    /// assert_eq!(size.to_index(1, 2), Some(5));
+    /// assert_eq!(size.to_index(2, 0), None);
+    /// assert_eq!(size.to_index(0, 3), None);
+    /// assert_eq!(size.to_index(2, 3), None);
     /// ```
-    pub fn to_index(&self, x: u32, y: u32) -> usize {
+    pub fn to_index(&self, x: u32, y: u32) -> Option<usize> {
+        if self.is_inside(x, y) {
+            return Some(self.to_index_risky(x, y));
+        }
+
+        None
+    }
+
+    /// Converts a point to the equivalent index, but returns a wrong result outside.
+    ///
+    /// ```
+    ///# use ofws_core::data::math::size2d::Size2d;
+    /// let size = Size2d::new(2, 3);
+    /// assert_eq!(size.to_index_risky(1, 2), 5);
+    /// ```
+    pub fn to_index_risky(&self, x: u32, y: u32) -> usize {
         (y * self.width + x) as usize
     }
 

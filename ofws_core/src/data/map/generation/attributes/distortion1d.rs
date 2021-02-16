@@ -14,7 +14,7 @@ pub struct Distortion1d {
 
 impl Distortion1d {
     fn distort_row(&self, y: u32, shift: u8, attribute: &Attribute, values: &mut Vec<u8>) {
-        let start = attribute.get_size().to_index(0, y);
+        let start = attribute.get_size().to_index_risky(0, y);
         let start_value = attribute.get(start);
 
         for _x in 0..shift {
@@ -73,7 +73,7 @@ impl Distortion1d {
     }
 
     fn distort_column(&self, x: u32, shift: u8, attribute: &Attribute, values: &mut Vec<u8>) {
-        let start = attribute.get_size().to_index(x, 0);
+        let start = attribute.get_size().to_index_risky(x, 0);
         let start_value = attribute.get(start);
         let mut index = start;
         let width = attribute.get_size().width() as usize;
