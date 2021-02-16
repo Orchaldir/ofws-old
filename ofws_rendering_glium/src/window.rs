@@ -15,23 +15,15 @@ use std::rc::Rc;
 pub struct GliumWindow {
     title: &'static str,
     size: Size2d,
-    tiles: Size2d,
-    tile_size: Size2d,
 }
 
 impl GliumWindow {
-    pub fn new(title: &'static str, tiles: Size2d, tile_size: Size2d) -> GliumWindow {
-        let size = tiles * tile_size;
-        GliumWindow {
-            title,
-            size,
-            tiles,
-            tile_size,
-        }
+    pub fn new(title: &'static str, size: Size2d) -> GliumWindow {
+        GliumWindow { title, size }
     }
 
     pub fn default_size(title: &'static str) -> GliumWindow {
-        GliumWindow::new(title, Size2d::new(40, 30), Size2d::new(20, 20))
+        GliumWindow::new(title, Size2d::new(800, 600))
     }
 
     fn create_display(&self, event_loop: &glutin::event_loop::EventLoop<()>) -> Display {
@@ -58,11 +50,10 @@ impl Window for GliumWindow {
             reference.init(&mut initialization);
         }
 
-        let mut renderer = initialization.finish(self.tiles);
-        let tiles = self.tiles;
-        let tile_size = self.tile_size;
+        let mut renderer = initialization.finish(self.size);
+        let size = self.size;
         let mut last_rendering = std::time::Instant::now();
-        let mut mouse_index = None;
+        let mut mouse_point = None;
 
         info!("Initialization finished");
 
@@ -85,12 +76,12 @@ impl Window for GliumWindow {
                         return;
                     }
                     glutin::event::WindowEvent::CursorMoved { position, .. } => {
-                        mouse_index = calculate_mouse_index(tiles, tile_size, position);
+                        mouse_point = calculate_mouse_point(size, position);
                         return;
                     }
                     glutin::event::WindowEvent::MouseInput { state, button, .. } => {
-                        if let Some(i) = mouse_index {
-                            handle_mouse_input(&app, i, state, button);
+                        if let Some(point) = mouse_point {
+                            handle_mouse_input(&app, point, state, button);
                         }
                         return;
                     }
@@ -132,33 +123,29 @@ fn handle_keyboard_input(app: &Rc<RefCell<dyn App>>, input: KeyboardInput) {
 
 fn handle_mouse_input(
     app: &Rc<RefCell<dyn App>>,
-    mouse_index: usize,
+    mouse_point: (u32, u32),
     state: ElementState,
     button: MouseButton,
 ) {
     if state == glutin::event::ElementState::Released {
         if let Some(button) = convert_mouse_button(button) {
-            info!("{:?} mouse click at {}", button, mouse_index);
+            info!("{:?} mouse click at {:?}", button, mouse_point);
             let mut reference = app.borrow_mut();
-            reference.on_button_released(button, mouse_index);
+            reference.on_button_released(button, mouse_point);
         }
     }
 }
 
-fn calculate_mouse_index(
-    tiles: Size2d,
-    tile_size: Size2d,
-    position: PhysicalPosition<f64>,
-) -> Option<usize> {
-    let x = position.x as u32 / tile_size.width();
-    let y = position.y as u32 / tile_size.height();
+fn calculate_mouse_point(size: Size2d, position: PhysicalPosition<f64>) -> Option<(u32, u32)> {
+    let x = position.x as u32;
+    let y = position.y as u32;
 
-    if x > tiles.width() || y > tiles.height() {
+    if x > size.width() || y > size.height() {
         return None;
     }
 
-    let y = cmp::max(tiles.height() - y, 1) - 1;
-    Some(tiles.saturating_to_index(x, y))
+    let y = cmp::max(size.height() - y, 1) - 1;
+    Some((x, y))
 }
 
 fn analyze_performance(start: std::time::Instant, last_rendering: &mut std::time::Instant) {

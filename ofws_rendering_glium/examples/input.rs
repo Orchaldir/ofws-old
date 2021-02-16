@@ -23,8 +23,8 @@ impl App for InputExample {
         println!("Released key {:?}", key);
     }
 
-    fn on_button_released(&mut self, button: MouseButton, index: usize) {
-        println!("Released button {:?} at index {}", button, index);
+    fn on_button_released(&mut self, button: MouseButton, point: (u32, u32)) {
+        println!("Released button {:?} at index {:?}", button, point);
     }
 }
 

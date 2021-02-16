@@ -13,5 +13,5 @@ pub trait App {
     fn on_key_released(&mut self, _key: KeyCode) {}
 
     /// Handles mouse input
-    fn on_button_released(&mut self, _button: MouseButton, _index: usize) {}
+    fn on_button_released(&mut self, _button: MouseButton, _point: (u32, u32)) {}
 }
