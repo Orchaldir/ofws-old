@@ -64,7 +64,7 @@ impl Clusterer2d {
     pub fn cluster(&self, input0: u8, input1: u8) -> u8 {
         let x = input0 as u32 / self.cluster_size.width();
         let y = input1 as u32 / self.cluster_size.height();
-        let index = self.lookup_table_size.to_index(x, y);
+        let index = self.lookup_table_size.to_index_risky(x, y);
 
         *self.cluster_id_lookup.get(index).unwrap_or_else(|| {
             panic!(

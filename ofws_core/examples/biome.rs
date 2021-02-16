@@ -18,10 +18,15 @@ use std::rc::Rc;
 
 const OCEAN_ID: u8 = 12;
 const OCEAN_VALUE: u8 = 76;
+const DEFAULT_TILE_SIZE: u32 = 2;
 
 pub struct BiomeExample {
     path: String,
     map: Option<Map2d>,
+    start_x: u32,
+    start_y: u32,
+    tile_size: u32,
+    speed: u32,
     attribute_renderer: CellRenderer,
     texture_id: TextureId,
 }
@@ -31,9 +36,21 @@ impl BiomeExample {
         BiomeExample {
             path,
             map: None,
+            start_x: 0,
+            start_y: 0,
+            tile_size: DEFAULT_TILE_SIZE,
+            speed: 20,
             attribute_renderer: create_elevation_renderer(),
             texture_id: 0,
         }
+    }
+
+    fn calculate_positive_movement(&mut self) -> u32 {
+        (self.speed.saturating_sub(self.tile_size)).max(1)
+    }
+
+    fn calculate_negative_movement(&mut self, pos: u32) -> u32 {
+        pos.saturating_sub((self.speed.saturating_sub(self.tile_size)).max(1))
     }
 }
 
@@ -148,12 +165,21 @@ impl App for BiomeExample {
         renderer.start(BLACK);
 
         if let Some(map) = &self.map {
-            let mut tile_renderer = renderer.get_tile_renderer(self.texture_id, Size2d::new(2, 2));
-            let tiles = tile_renderer.get_tiles().get_area();
+            let tile_size = Size2d::new(self.tile_size, self.tile_size);
+            let mut tile_renderer = renderer.get_tile_renderer(self.texture_id, tile_size);
+            let tiles = tile_renderer.get_tiles();
 
-            for index in 0..tiles {
-                let (ascii, color) = self.attribute_renderer.get(map, index);
-                tile_renderer.render_ascii(index, ascii, color);
+            for x in 0..tiles.width() {
+                for y in 0..tiles.height() {
+                    let tile_index = tiles.to_index_risky(x, y);
+                    let map_x = self.start_x + x;
+                    let map_y = self.start_y + y;
+
+                    if let Some(map_index) = map.get_size().to_index(map_x, map_y) {
+                        let (ascii, color) = self.attribute_renderer.get(map, map_index);
+                        tile_renderer.render_ascii(tile_index, ascii, color);
+                    }
+                }
             }
         }
 
@@ -171,6 +197,23 @@ impl App for BiomeExample {
             self.attribute_renderer = create_biome_renderer();
         } else if key == KeyCode::Space {
             self.map = create_map(&self.path);
+            self.start_x = 0;
+            self.start_y = 0;
+            self.tile_size = DEFAULT_TILE_SIZE;
+        } else if key == KeyCode::PageUp {
+            if self.tile_size > 1 {
+                self.tile_size -= 1;
+            }
+        } else if key == KeyCode::PageDown {
+            self.tile_size += 1;
+        } else if key == KeyCode::Right {
+            self.start_x += self.calculate_positive_movement();
+        } else if key == KeyCode::Left {
+            self.start_x = self.calculate_negative_movement(self.start_x);
+        } else if key == KeyCode::Up {
+            self.start_y += self.calculate_positive_movement();
+        } else if key == KeyCode::Down {
+            self.start_y = self.calculate_negative_movement(self.start_y);
         }
     }
 }

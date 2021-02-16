@@ -80,5 +80,5 @@ pub fn calculate_tiles(window_size: Size2d, tile_size: Size2d) -> Size2d {
 /// ```
 pub fn calculate_tile_index(window_size: Size2d, tile_size: Size2d, point: (u32, u32)) -> usize {
     let tiles = calculate_tiles(window_size, tile_size);
-    tiles.to_index(point.0 / tile_size.width(), point.1 / tile_size.height())
+    tiles.to_index_risky(point.0 / tile_size.width(), point.1 / tile_size.height())
 }
