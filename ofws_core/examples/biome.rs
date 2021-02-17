@@ -12,6 +12,7 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::CellRenderer;
+use ofws_core::rendering::tile::FULL_TILE;
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -117,15 +118,15 @@ fn create_rainfall_color_interpolator() -> Selector<Color> {
 }
 
 fn create_elevation_renderer() -> CellRenderer {
-    CellRenderer::new_attribute_renderer(0, create_elevation_color_interpolator())
+    CellRenderer::new_color_renderer(0, create_elevation_color_interpolator())
 }
 
 fn create_temperature_renderer() -> CellRenderer {
-    CellRenderer::new_attribute_renderer(1, create_temperature_color_interpolator())
+    CellRenderer::new_color_renderer(1, create_temperature_color_interpolator())
 }
 
 fn create_rainfall_renderer() -> CellRenderer {
-    CellRenderer::new_attribute_renderer(2, create_rainfall_color_interpolator())
+    CellRenderer::new_color_renderer(2, create_rainfall_color_interpolator())
 }
 
 fn create_biome_renderer() -> CellRenderer {
@@ -151,8 +152,22 @@ fn create_biome_renderer() -> CellRenderer {
     .into_iter()
     .collect();
 
-    let selector = Selector::Lookup(colors);
-    CellRenderer::new_attribute_renderer(3, selector)
+    let tiles = vec![
+        (3, 6), // cold forest
+        (4, 6),
+        (5, 6),
+        (7, 5),     // temperate forest
+        (8, 5),     // temperate forest
+        (11, b'T'), // rainforest
+    ]
+    .into_iter()
+    .collect();
+
+    CellRenderer::new_attribute_renderer(
+        3,
+        Selector::new_lookup(colors, Color::default()),
+        Selector::new_lookup(tiles, FULL_TILE),
+    )
 }
 
 impl App for BiomeExample {

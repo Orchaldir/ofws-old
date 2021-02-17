@@ -2,7 +2,7 @@ use crate::data::math::interpolation::Interpolate;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub trait Selection: Default + Interpolate + Clone + Copy {}
+pub trait Selection: Interpolate + Clone + Copy {}
 
 impl Selection for u8 {}
 
@@ -15,6 +15,13 @@ pub struct InterpolateEntry<T: Selection> {
 /// Selects an object of type T based on the input.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Selector<T: Selection> {
+    /// Returns a specific element.
+    ///
+    /// ```
+    ///# use ofws_core::data::math::selector::Selector;
+    /// assert_eq!(Selector::Const(99).get(128), 99);
+    /// ```
+    Const(T),
     /// Interpolates 2 elements.
     ///
     /// ```
@@ -44,16 +51,16 @@ pub enum Selector<T: Selection> {
     ///
     /// ```
     ///# use ofws_core::data::math::selector::Selector;
-    /// let hashmap = vec![(1u8, 25u8), (3, 100)].into_iter().collect();
-    /// let selector = Selector::Lookup(hashmap);
+    /// let lookup = vec![(1u8, 25u8), (3, 100)].into_iter().collect();
+    /// let selector = Selector::new_lookup(lookup, 1);
     ///
-    /// assert_eq!(selector.get(0), 0);
+    /// assert_eq!(selector.get(0), 1);
     /// assert_eq!(selector.get(1), 25);
-    /// assert_eq!(selector.get(2), 0);
+    /// assert_eq!(selector.get(2), 1);
     /// assert_eq!(selector.get(3), 100);
-    /// assert_eq!(selector.get(4), 0);
+    /// assert_eq!(selector.get(4), 1);
     /// ```
-    Lookup(HashMap<u8, T>),
+    Lookup { lookup: HashMap<u8, T>, default: T },
 }
 
 impl<T: Selection> Selector<T> {
@@ -99,14 +106,19 @@ impl<T: Selection> Selector<T> {
         ))
     }
 
+    pub fn new_lookup(lookup: HashMap<u8, T>, default: T) -> Selector<T> {
+        Selector::Lookup { lookup, default }
+    }
+
     /// Selects an object of type T based on the input.
     pub fn get(&self, input: u8) -> T {
         match self {
+            Selector::Const(value) => *value,
             Selector::InterpolateVector(vector) => interpolate(vector, input),
             Selector::InterpolatePair { first, second } => {
                 first.lerp(&second, input as f32 / 255.0)
             }
-            Selector::Lookup(hashmap) => hashmap.get(&input).copied().unwrap_or_else(T::default),
+            Selector::Lookup { lookup, default } => lookup.get(&input).copied().unwrap_or(*default),
         }
     }
 }
