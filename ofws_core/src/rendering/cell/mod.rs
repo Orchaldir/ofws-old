@@ -1,7 +1,7 @@
-use crate::data::color::Color;
+use crate::data::color::{Color, BLACK};
 use crate::data::map::Map2d;
 use crate::data::math::selector::Selector;
-use crate::rendering::tile::FULL_TILE;
+use crate::rendering::tile::EMPTY_TILE;
 use serde::{Deserialize, Serialize};
 
 /// Renders a cell of a [`Map2d`].
@@ -35,14 +35,14 @@ impl CellRenderer {
         CellRenderer::AttributeRenderer {
             attribute_id,
             color_selector,
-            tile_selector: Selector::Const(FULL_TILE),
+            tile_selector: Selector::Const(EMPTY_TILE),
         }
     }
 }
 
 impl CellRenderer {
     /// Returns the ascii code & color of the cell for rendering.
-    pub fn get(&self, map: &Map2d, index: usize) -> (u8, Color) {
+    pub fn get(&self, map: &Map2d, index: usize) -> (u8, Color, Color) {
         match self {
             CellRenderer::AttributeRenderer {
                 attribute_id,
@@ -51,9 +51,10 @@ impl CellRenderer {
             } => {
                 let attribute = map.get_attribute(*attribute_id);
                 let value = attribute.get(index);
-                let color = color_selector.get(value);
+                let background_color = color_selector.get(value);
                 let tile = tile_selector.get(value);
-                (tile, color)
+                let tile_color = BLACK;
+                (tile, tile_color, background_color)
             }
         }
     }

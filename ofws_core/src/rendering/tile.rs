@@ -2,6 +2,7 @@ use crate::data::color::Color;
 use crate::data::math::size2d::Size2d;
 use crate::interface::rendering::{AsciiRenderer, Point};
 
+pub const EMPTY_TILE: u8 = 0;
 pub const FULL_TILE: u8 = 219;
 
 /// Simplifies rendering by focusing on a grid of tiles

@@ -12,7 +12,7 @@ use ofws_core::interface::input::KeyCode;
 use ofws_core::interface::rendering::{Initialization, Renderer, TextureId};
 use ofws_core::interface::window::Window;
 use ofws_core::rendering::cell::CellRenderer;
-use ofws_core::rendering::tile::FULL_TILE;
+use ofws_core::rendering::tile::{EMPTY_TILE, FULL_TILE};
 use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -166,7 +166,7 @@ fn create_biome_renderer() -> CellRenderer {
     CellRenderer::new_attribute_renderer(
         3,
         Selector::new_lookup(colors, Color::default()),
-        Selector::new_lookup(tiles, FULL_TILE),
+        Selector::new_lookup(tiles, EMPTY_TILE),
     )
 }
 
@@ -191,8 +191,10 @@ impl App for BiomeExample {
                     let map_y = self.start_y + y;
 
                     if let Some(map_index) = map.get_size().to_index(map_x, map_y) {
-                        let (ascii, color) = self.attribute_renderer.get(map, map_index);
-                        tile_renderer.render_ascii(tile_index, ascii, color);
+                        let (tile, tile_color, background) =
+                            self.attribute_renderer.get(map, map_index);
+                        tile_renderer.render_ascii(tile_index, FULL_TILE, background);
+                        tile_renderer.render_ascii(tile_index, tile, tile_color);
                     }
                 }
             }
