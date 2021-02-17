@@ -17,7 +17,6 @@ use ofws_rendering_glium::window::GliumWindow;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-const OCEAN_ID: u8 = 12;
 const OCEAN_VALUE: u8 = 76;
 const DEFAULT_TILE_SIZE: u32 = 2;
 
@@ -141,24 +140,27 @@ fn create_biome_renderer() -> CellRenderer {
         (3, darker_green), // cold forest
         (4, darker_green),
         (5, darker_green),
-        (6, light_green), // temperate desert or grassland
-        (7, dark_green),  // temperate forest
-        (8, dark_green),  // temperate forest
-        (9, YELLOW),      //desert
-        (10, ORANGE),     // savanna
-        (11, GREEN),      // rainforest
-        (OCEAN_ID, BLUE), // ocean
+        (6, light_green),      // temperate desert or grassland
+        (7, dark_green),       // temperate forest
+        (8, dark_green),       // temperate forest
+        (9, YELLOW),           // desert
+        (10, ORANGE),          // savanna
+        (11, GREEN),           // rainforest
+        (12, BLUE),            // ocean
+        (13, Color::gray(50)), // mountain
     ]
     .into_iter()
     .collect();
 
     let tiles = vec![
-        (3, 6), // cold forest
-        (4, 6),
-        (5, 6),
-        (7, 5),     // temperate forest
-        (8, 5),     // temperate forest
+        (3, b'T'), // cold forest
+        (4, b'T'),
+        (5, b'T'),
+        (7, b'T'),  // temperate forest
+        (8, b'T'),  // temperate forest
         (11, b'T'), // rainforest
+        (12, b'~'), // ocean
+        (13, 30),   // mountain
     ]
     .into_iter()
     .collect();
@@ -166,6 +168,7 @@ fn create_biome_renderer() -> CellRenderer {
     CellRenderer::new_attribute_renderer(
         3,
         Selector::new_lookup(colors, Color::default()),
+        Selector::Const(BLACK),
         Selector::new_lookup(tiles, EMPTY_TILE),
     )
 }

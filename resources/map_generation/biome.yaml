@@ -102,3 +102,12 @@ steps:
         OverwriteIfBelow:
           value: 12
           threshold: 76
+  - TransformAttribute2d:
+      name: overwrite mountains
+      source0: elevation
+      source1: biome
+      target: biome
+      transformer:
+        OverwriteIfAbove:
+          value: 13
+          threshold: 160
