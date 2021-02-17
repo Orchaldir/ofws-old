@@ -11,6 +11,7 @@ pub enum CellRenderer {
     AttributeRenderer {
         attribute_id: usize,
         color_selector: Selector<Color>,
+        tile_selector: Selector<u8>,
     },
 }
 
@@ -18,10 +19,23 @@ impl CellRenderer {
     pub fn new_attribute_renderer(
         attribute_id: usize,
         color_selector: Selector<Color>,
+        tile_selector: Selector<u8>,
     ) -> CellRenderer {
         CellRenderer::AttributeRenderer {
             attribute_id,
             color_selector,
+            tile_selector,
+        }
+    }
+
+    pub fn new_color_renderer(
+        attribute_id: usize,
+        color_selector: Selector<Color>,
+    ) -> CellRenderer {
+        CellRenderer::AttributeRenderer {
+            attribute_id,
+            color_selector,
+            tile_selector: Selector::Const(FULL_TILE),
         }
     }
 }
@@ -33,11 +47,13 @@ impl CellRenderer {
             CellRenderer::AttributeRenderer {
                 attribute_id,
                 color_selector,
+                tile_selector,
             } => {
                 let attribute = map.get_attribute(*attribute_id);
                 let value = attribute.get(index);
                 let color = color_selector.get(value);
-                (FULL_TILE, color)
+                let tile = tile_selector.get(value);
+                (tile, color)
             }
         }
     }
