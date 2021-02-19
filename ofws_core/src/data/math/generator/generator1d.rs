@@ -107,7 +107,7 @@ pub enum Generator1d {
     /// assert_eq!(InputAsOutput.generate(2), 2);
     ///```
     InputAsOutput,
-    /// Generates values with Super Simplex noise.
+    /// Generates values with [`Noise`].
     Noise(Noise),
 }
 

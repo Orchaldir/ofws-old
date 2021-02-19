@@ -1,5 +1,7 @@
+pub mod vector;
+
 /// Define how to interpolate between elements of the same type.
-pub trait Interpolate {
+pub trait Interpolate: Clone {
     /// Linear interpolation between 2 elements of the same type.
     fn lerp(&self, other: &Self, factor: f32) -> Self;
 }
