@@ -156,7 +156,7 @@ impl Generator2d {
 /// assert_eq(Generator2dData::IndexGenerator(Size2d::new(3, 5)));
 /// assert_eq(Generator2dData::Noise(noise_data));
 ///```
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Generator2dData {
     ApplyToX(Generator1dData),
     ApplyToY(Generator1dData),
@@ -215,7 +215,7 @@ impl From<&Generator2d> for Generator2dData {
 }
 
 pub fn assert_eq(data: Generator2dData) {
-    let generator: Generator2d = data.try_into().unwrap();
+    let generator: Generator2d = data.clone().try_into().unwrap();
     let result: Generator2dData = (&generator).into();
     assert_eq!(result, data)
 }

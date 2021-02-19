@@ -1,5 +1,6 @@
 use crate::data::math::generator::gradient::Gradient;
 use crate::data::math::generator::noise::{Noise, NoiseData, NoiseError};
+use crate::data::math::interpolation::vector::VectorInterpolation;
 use serde::{Deserialize, Serialize};
 use std::convert::{TryFrom, TryInto};
 use Generator1d::*;
@@ -107,6 +108,36 @@ pub enum Generator1d {
     /// assert_eq!(InputAsOutput.generate(2), 2);
     ///```
     InputAsOutput,
+    /// Interpolates multiple elements.
+    ///
+    /// # Diagram
+    ///
+    /// ```svgbob
+    ///      value
+    ///        ^
+    ///        |                   *
+    ///        |                  / \
+    ///        |        *        /   \
+    ///        |       / \      /     *--
+    ///        |      /   *----*
+    ///        |     /
+    ///        |----*
+    ///        |
+    ///        +----*-----------------*--> input
+    ///           first             last
+    /// ```
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///# use ofws_core::data::math::generator::generator1d::Generator1d::InterpolateVector;
+    ///# use ofws_core::data::math::interpolation::vector::VectorInterpolation;
+    /// let interpolator = VectorInterpolation::new(vec![(100u32,150), (150,200), (200, 100)]). unwrap();
+    /// let generator = InterpolateVector(interpolator);
+    ///
+    /// assert_eq!(generator.generate(125), 175);
+    /// ```
+    InterpolateVector(VectorInterpolation<u32, u8>),
     /// Generates values with [`Noise`].
     Noise(Noise),
 }
@@ -118,6 +149,7 @@ impl Generator1d {
             AbsoluteGradient(gradient) => gradient.generate_absolute(input),
             Gradient(gradient) => gradient.generate(input),
             InputAsOutput => input as u8,
+            InterpolateVector(interpolator) => interpolator.interpolate(input),
             Noise(noise) => noise.generate1d(input),
         }
     }
@@ -129,19 +161,23 @@ impl Generator1d {
 ///# use ofws_core::data::math::generator::generator1d::{Generator1dData, assert_eq};
 ///# use ofws_core::data::math::generator::gradient::Gradient;
 ///# use ofws_core::data::math::generator::noise::NoiseData;
+///# use ofws_core::data::math::interpolation::vector::VectorInterpolation;
 /// let gradient = Gradient::new(0, 255, 1000, 500);
+/// let interpolator = VectorInterpolation::new(vec![(100,150), (150,200), (200, 100)]). unwrap();
 /// let noise_data = NoiseData { seed: 300, scale: 5, min_value: 10, max_value: 128 };
 ///
 /// assert_eq(Generator1dData::AbsoluteGradient(gradient));
 /// assert_eq(Generator1dData::Gradient(gradient));
 /// assert_eq(Generator1dData::InputAsOutput);
+/// assert_eq(Generator1dData::InterpolateVector(interpolator));
 /// assert_eq(Generator1dData::Noise(noise_data));
 ///```
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum Generator1dData {
     AbsoluteGradient(Gradient),
     Gradient(Gradient),
     InputAsOutput,
+    InterpolateVector(VectorInterpolation<u32, u8>),
     Noise(NoiseData),
 }
 
@@ -155,6 +191,7 @@ impl TryFrom<Generator1dData> for Generator1d {
             Data::AbsoluteGradient(gradient) => Ok(AbsoluteGradient(gradient)),
             Data::Gradient(gradient) => Ok(Gradient(gradient)),
             Data::InputAsOutput => Ok(InputAsOutput),
+            Data::InterpolateVector(interpolator) => Ok(InterpolateVector(interpolator)),
             Data::Noise(noise_data) => {
                 let noise: Noise = noise_data.try_into()?;
                 Ok(Noise(noise))
@@ -169,13 +206,14 @@ impl From<&Generator1d> for Generator1dData {
             AbsoluteGradient(gradient) => Data::AbsoluteGradient(*gradient),
             Gradient(gradient) => Data::Gradient(*gradient),
             InputAsOutput => Data::InputAsOutput,
+            InterpolateVector(interpolator) => Data::InterpolateVector(interpolator.clone()),
             Noise(noise) => Data::Noise(noise.into()),
         }
     }
 }
 
 pub fn assert_eq(data: Generator1dData) {
-    let generator: Generator1d = data.try_into().unwrap();
+    let generator: Generator1d = data.clone().try_into().unwrap();
     let result: Generator1dData = (&generator).into();
     assert_eq!(result, data)
 }

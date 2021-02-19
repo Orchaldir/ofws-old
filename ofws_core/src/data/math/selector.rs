@@ -34,7 +34,7 @@ pub enum Selector<T: Selection> {
     ///
     /// assert_eq!(interpolator.get(125), 175);
     /// ```
-    InterpolateVector(VectorInterpolation<T>),
+    InterpolateVector(VectorInterpolation<u8, T>),
     /// Looks the input up in a hashmap or returns the default value.
     ///
     /// ```
