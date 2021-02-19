@@ -45,7 +45,7 @@ steps:
         ApplyToY:
           AbsoluteGradient:
             value_start: 255
-            value_end: 0
+            value_end: 50
             start: 150
             length: 150
   - DistortAlongY:
@@ -62,6 +62,21 @@ steps:
       percentage: -115
       minimum: 76
   - GeneratorAdd:
+      name: rainfall bands
+      attribute: rainfall
+      generator:
+        ApplyToX:
+          InterpolateVector:
+            vector:
+              - threshold: 0
+                value: 0
+              - threshold: 150
+                value: 50
+              - threshold: 300
+                value: 200
+              - threshold: 400
+                value: 220
+  - GeneratorAdd:
       name: noise
       attribute: rainfall
       generator:
@@ -69,7 +84,7 @@ steps:
           seed: 0
           scale: 100
           min_value: 0
-          max_value: 255
+          max_value: 60
   - TransformAttribute2d:
       name: select biomes
       source0: rainfall
